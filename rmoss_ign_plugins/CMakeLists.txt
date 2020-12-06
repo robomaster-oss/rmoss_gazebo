@@ -45,7 +45,6 @@ install(TARGETS MecanumDrive ProjectileShooter
 )
 
 #environment
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/ignition.sh.in")
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/ignition.dsv.in")
 
 #test

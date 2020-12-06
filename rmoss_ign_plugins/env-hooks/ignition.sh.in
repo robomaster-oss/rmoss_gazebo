@@ -1,9 +1,0 @@
-# generated from ignition.sh.in
-
-ament_prepend_unique_value IGN_GAZEBO_RESOURCE_PATH "$AMENT_CURRENT_PREFIX/share/@PROJECT_NAME@/models"
-ament_prepend_unique_value IGN_GAZEBO_RESOURCE_PATH "$AMENT_CURRENT_PREFIX/share/@PROJECT_NAME@/worlds"
-
-ament_prepend_unique_value IGN_GAZEBO_SYSTEM_PLUGIN_PATH "$AMENT_CURRENT_PREFIX/plugins"
-
-
-export MESA_GL_VERSION_OVERRIDE=3.3
