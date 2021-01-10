@@ -16,9 +16,11 @@ rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazeb
 
 |            模块             |                           功能说明                           |
 | :-------------------------: | :----------------------------------------------------------: |
-|     `rmoss_ign_plugins`     |        为RoboMaster Ignition Simulator提供插件支持。         |
-|    `rmoss_ign_resources`    | 为RoboMaster Ignition Simulator提供公共模型资源，包含官方机器人模型，裁判系统模型，核心场地道具模型等资源 |
-| `rmoss_ign_extra_resources` | 为RoboMaster Ignition Simulator提供额外模型资源，特别是不同的机器人SDF模型。 |
+|     `rmoss_ign_plugins`     |        RoboMaster相关Ignition Gazebo Simulator插件。         |
+|   `rmoss_ign_robot_base`    |   RoboMaster基本机器人Ignition-ROS通信（仿真MCU部分功能）    |
+| `rmoss_ign_referee_system`  |                  RoboMaster裁判系统（TODO）                  |
+|    `rmoss_ign_resources`    | RoboMaster相关核心SDF模型资源，官方机器人模型和核心场地模型。 |
+| `rmoss_ign_extra_resources` |                 RoboMaster相关额外模型资源。                 |
 
 * `rmoss_ign_resources` 和`rmoss_ign_extra_resources`主要包含资源文件，体积较大，单独成库。
 
