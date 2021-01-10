@@ -7,17 +7,16 @@ else:
     import tty
 
 import rclpy
-from rmoss_interfaces.msg import ChassisCmd
+from rmoss_interfaces.msg import GimbalCmd
 
 msg = """
 This node takes keypresses from the keyboard and publishes them
-as ChassisCmd messages.
+as GimbalCmd messages.
 ---------------------------
-Moving around:
+contorl around:
         w    
    a    s    d
-turn : '[' for left  ']' for right
-stop : space key
+change  interval : '[' to decrease,  ']' to increase
 ---------------------------
 CTRL-C to quit
 """
@@ -45,49 +44,49 @@ def restoreTerminalSettings(old_settings):
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 
-def getChassisContolMsg(x,y,w):
-    control_info = ChassisCmd()
-    control_info.twist.linear.x = x
-    control_info.twist.linear.y = y
-    control_info.twist.linear.z = 0.0
-    control_info.twist.angular.x = 0.0
-    control_info.twist.angular.y = 0.0
-    control_info.twist.angular.z = w
+def getGimbalContolMsg(pitch,yaw):
+    control_info = GimbalCmd()
+    control_info.position.yaw=yaw
+    control_info.position.pitch=pitch
     return control_info
+
+def clip(value,min_value,max_value):
+    if(value<min_value):
+        return min_value
+    if(value>max_value):
+        return max_value
+    return value
 
 def main():
     settings = saveTerminalSettings()
     rclpy.init()
-    node = rclpy.create_node('control_chassis_test')
-    #get params
-    node.declare_parameter('v',1.0)
-    node.declare_parameter('w',1.0)
-    v=node.get_parameter('v').value
-    w=node.get_parameter('w').value
-    pub = node.create_publisher(ChassisCmd, 'robot_base/chassis_cmd', 10)
-    print("node params v:%f,w:%f"%(v,w))
+    node = rclpy.create_node('control_gimbal_test')
+    pub = node.create_publisher(GimbalCmd, 'gimbal_cmd', 10)
     print(msg)
-    vel_x=vel_y=vel_w=0.0
+    pitch=yaw=0.0
+    da=0.05
     while True:
         key=getKey(settings)
         if key == 'w':
-            vel_x=1.0 * v
+            pitch=pitch-da
         elif key == 's':
-            vel_x=-1.0 * v
+            pitch=pitch+da
         elif key == 'a':
-            vel_y=1.0 * v
+            yaw=yaw+da
         elif key == 'd':
-            vel_y=-1.0 * v
+            yaw=yaw-da
         elif key == '[':
-            vel_w=1.0 * w
+            da=da-0.01
         elif key == ']':
-            vel_w=-1.0 * w
-        elif key == ' ':
-            vel_x=vel_y=vel_w=0.0
+            da=da+0.01
         elif key == '\x03':
             break
-        info=getChassisContolMsg(vel_x,vel_y,vel_w)
+        da=clip(da,0.01,0.2)
+        yaw=clip(yaw,-1.57,1.57)
+        pitch=clip(pitch,-0.5,0.5)
+        info=getGimbalContolMsg(pitch,yaw)
         pub.publish(info)
 
 if __name__ == '__main__':
     main()
+

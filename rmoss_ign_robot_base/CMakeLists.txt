@@ -78,8 +78,10 @@ install(TARGETS
 
 # Install executable scripts
 install(PROGRAMS 
-        scripts/test_control_chassis.py 
-        scripts/test_control_gimbal.py
+        scripts/test_chassis_cmd.py 
+        scripts/test_gimbal_cmd.py
+        scripts/test_gimbal_cmd2.py
+        scripts/test_shoot_cmd.py
     DESTINATION lib/${PROJECT_NAME})
 
 #test

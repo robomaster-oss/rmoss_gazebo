@@ -30,5 +30,8 @@ ShooterSimpleController::ShooterSimpleController(const rclcpp::Node::SharedPtr& 
 
 void ShooterSimpleController::shootCb(const rmoss_interfaces::msg::ShootCmd::SharedPtr msg)
 {
-    std::cout << "TODO: shootCb,shoot num:" << msg->projectile_num << std::endl;
+    std::cout << "TODO: shootCb,shoot num:" << (int)(msg->projectile_num) << std::endl;
+    ignition::msgs::Int32 ign_msg;
+    ign_msg.set_data(msg->projectile_num);
+    ign_shoot_cmd_pub_->Publish(ign_msg);
 }
