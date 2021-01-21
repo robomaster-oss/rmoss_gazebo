@@ -8,15 +8,15 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#ifndef RMOSS_IGN_ROBOT_BASE_GIMBAL_SIMPLE_CONTROLLER_H
-#define RMOSS_IGN_ROBOT_BASE_GIMBAL_SIMPLE_CONTROLLER_H
+#ifndef RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H
+#define RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H
 
 #include <mutex>
 #include <ignition/transport/Node.hh>
 #include <rclcpp/rclcpp.hpp>
 #include "rmoss_interfaces/msg/gimbal_cmd.hpp"
 
-namespace rmoss_ign_robot_base {
+namespace rmoss_ign_base {
 
 class GimbalSimpleController {
 public:
@@ -38,4 +38,4 @@ private:
     std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_pub_;
 };
 }
-#endif //RMOSS_IGN_ROBOT_BASE_GIMBAL_SIMPLE_CONTROLLER_H
+#endif //RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H

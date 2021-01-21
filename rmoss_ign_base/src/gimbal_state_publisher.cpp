@@ -8,10 +8,10 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_robot_base/gimbal_state_publisher.hpp"
+#include "rmoss_ign_base/gimbal_state_publisher.hpp"
 
 using namespace std;
-using namespace rmoss_ign_robot_base;
+using namespace rmoss_ign_base;
 
 GimbalStatePublisher::GimbalStatePublisher(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_topic,

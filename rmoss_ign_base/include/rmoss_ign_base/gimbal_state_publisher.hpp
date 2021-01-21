@@ -8,15 +8,15 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#ifndef RMOSS_IGN_ROBOT_BASE_GIMBAL_STATE_PUBLISHER_H
-#define RMOSS_IGN_ROBOT_BASE_GIMBAL_STATE_PUBLISHER_H
+#ifndef RMOSS_IGN_BASE_GIMBAL_STATE_PUBLISHER_H
+#define RMOSS_IGN_BASE_GIMBAL_STATE_PUBLISHER_H
 
 #include "rmoss_interfaces/msg/gimbal_cmd.hpp"
 #include <ignition/transport/Node.hh>
 #include <mutex>
 #include <rclcpp/rclcpp.hpp>
 
-namespace rmoss_ign_robot_base {
+namespace rmoss_ign_base {
 
 class GimbalStatePublisher {
 public:
@@ -45,4 +45,4 @@ private:
     int ign_yaw_idx_;
 };
 }
-#endif //RMOSS_IGN_ROBOT_BASE_GIMBAL_STATE_PUBLISHER_H
+#endif //RMOSS_IGN_BASE_GIMBAL_STATE_PUBLISHER_H

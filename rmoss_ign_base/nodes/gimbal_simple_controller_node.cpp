@@ -9,7 +9,7 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_robot_base/gimbal_simple_controller.hpp"
+#include "rmoss_ign_base/gimbal_simple_controller.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     ign_pitch_topic = ros_node->get_parameter("ign_pitch_topic").as_string();
     ign_yaw_topic = ros_node->get_parameter("ign_yaw_topic").as_string();
     // create controller 
-    auto gimbal_controller = std::make_shared<rmoss_ign_robot_base::GimbalSimpleController>(ros_node,
+    auto gimbal_controller = std::make_shared<rmoss_ign_base::GimbalSimpleController>(ros_node,
          ros_gimbal_cmd_topic, ign_pitch_topic, ign_yaw_topic);
     // run node until it's exited
     rclcpp::spin(ros_node);

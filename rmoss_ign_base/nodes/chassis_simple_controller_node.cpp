@@ -9,7 +9,7 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_robot_base/chassis_simple_controller.hpp"
+#include "rmoss_ign_base/chassis_simple_controller.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     ros_chassis_cmd_topic = ros_node->get_parameter("ros_chassis_cmd_topic").as_string();
     ign_chassis_cmd_topic = ros_node->get_parameter("ign_chassis_cmd_topic").as_string();
     // create controller 
-    auto chassis_controller = std::make_shared<rmoss_ign_robot_base::ChassisSimpleController>(ros_node,
+    auto chassis_controller = std::make_shared<rmoss_ign_base::ChassisSimpleController>(ros_node,
          ros_chassis_cmd_topic, ign_chassis_cmd_topic);
     // run node until it's exited
     rclcpp::spin(ros_node);

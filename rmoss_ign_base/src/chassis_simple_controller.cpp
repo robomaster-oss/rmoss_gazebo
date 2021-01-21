@@ -8,10 +8,10 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_robot_base/chassis_simple_controller.hpp"
+#include "rmoss_ign_base/chassis_simple_controller.hpp"
 
 using namespace std;
-using namespace rmoss_ign_robot_base;
+using namespace rmoss_ign_base;
 
 ChassisSimpleController::ChassisSimpleController(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_cmd_topic,

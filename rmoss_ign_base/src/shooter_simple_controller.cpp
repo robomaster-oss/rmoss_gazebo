@@ -8,10 +8,10 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_robot_base/shooter_simple_controller.hpp"
+#include "rmoss_ign_base/shooter_simple_controller.hpp"
 
 using namespace std;
-using namespace rmoss_ign_robot_base;
+using namespace rmoss_ign_base;
 
 ShooterSimpleController::ShooterSimpleController(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_cmd_topic,

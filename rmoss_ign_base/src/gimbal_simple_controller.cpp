@@ -8,10 +8,10 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_robot_base/gimbal_simple_controller.hpp"
+#include "rmoss_ign_base/gimbal_simple_controller.hpp"
 
 using namespace std;
-using namespace rmoss_ign_robot_base;
+using namespace rmoss_ign_base;
 
 GimbalSimpleController::GimbalSimpleController(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_cmd_topic,

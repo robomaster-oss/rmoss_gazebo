@@ -9,7 +9,7 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_robot_base/gimbal_state_publisher.hpp"
+#include "rmoss_ign_base/gimbal_state_publisher.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     ign_topic = ros_node->get_parameter("ign_topic").as_string();
     update_rate = ros_node->get_parameter("update_rate").as_int();
     // create publisher
-    auto gimbal_publisher = std::make_shared<rmoss_ign_robot_base::GimbalStatePublisher>(ros_node,
+    auto gimbal_publisher = std::make_shared<rmoss_ign_base::GimbalStatePublisher>(ros_node,
         ros_topic, ign_topic, 0, 1 ,update_rate);
     // run node until it's exited
     rclcpp::spin(ros_node);

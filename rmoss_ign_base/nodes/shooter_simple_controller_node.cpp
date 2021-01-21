@@ -9,7 +9,7 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_robot_base/shooter_simple_controller.hpp"
+#include "rmoss_ign_base/shooter_simple_controller.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     ros_shoot_cmd_topic = ros_node->get_parameter("ros_shoot_cmd_topic").as_string();
     ign_shoot_cmd_topic = ros_node->get_parameter("ign_shoot_cmd_topic").as_string();
     // create controller 
-    auto shooter_controller = std::make_shared<rmoss_ign_robot_base::ShooterSimpleController>(ros_node,
+    auto shooter_controller = std::make_shared<rmoss_ign_base::ShooterSimpleController>(ros_node,
          ros_shoot_cmd_topic, ign_shoot_cmd_topic);
     // run node until it's exited
     rclcpp::spin(ros_node);
