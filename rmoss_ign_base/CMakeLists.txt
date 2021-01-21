@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rmoss_ign_robot_base)
+project(rmoss_ign_base)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -25,7 +25,7 @@ set(IGN_MSGS_VER 6)
 # include
 include_directories(include)
 
-# generate rmua19_ignition_simulator lib
+# generate rmoss_ign_base lib
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src DIR_SRCS)
 add_library(${PROJECT_NAME} ${DIR_SRCS})
 
