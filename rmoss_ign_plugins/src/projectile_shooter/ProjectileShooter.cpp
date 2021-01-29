@@ -78,7 +78,7 @@ public:
     Entity model { kNullEntity };
     Entity shooterLink { kNullEntity };
     std::string modelName;
-    std::string shooterName;
+    std::string shooterName {"default_shooter"};
     math::Pose3d shooterOffset;
     // projectile
     sdf::Model projectileSdfModel;
@@ -280,12 +280,9 @@ void ProjectileShooterPrivate::PreUpdate(const ignition::gazebo::UpdateInfo& _in
                 //         }
                 //     }
                 // }
-                std::string result;
-                auto name1 = scopedName(this->shooterLink, _ecm);
-                auto name2 = scopedName(targetCollision, _ecm);
-                result.insert(0, name2);
-                result.insert(0, ">");
-                result.insert(0, name1);
+                auto src_name = this->modelName+"/"+this->shooterName;
+                auto dst_name = scopedName(targetCollision, _ecm);
+                std::string result=src_name+">"+dst_name;
                 // publish msg
                 msgs::StringMsg msg;
                 msg.mutable_header()->mutable_stamp()->CopyFrom(convert<msgs::Time>(_info.simTime));
