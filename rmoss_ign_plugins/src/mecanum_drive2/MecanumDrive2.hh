@@ -21,16 +21,16 @@ namespace ignition
     {
         namespace systems
         {
-            class MecanumDrivePrivate;
-            class IGNITION_GAZEBO_VISIBLE MecanumDrive
+            class MecanumDrive2Private;
+            class IGNITION_GAZEBO_VISIBLE MecanumDrive2
                 : public ignition::gazebo::System,
                   public ISystemConfigure,
                   public ISystemPreUpdate,
                   public ISystemPostUpdate
             {
             public:
-                MecanumDrive();
-                ~MecanumDrive() override = default;
+                MecanumDrive2();
+                ~MecanumDrive2() override = default;
 
             public:
                 void Configure(const Entity &_entity,
@@ -43,7 +43,7 @@ namespace ignition
                                 const ignition::gazebo::EntityComponentManager &_ecm) override;
 
             private:
-                std::unique_ptr<MecanumDrivePrivate> dataPtr;
+                std::unique_ptr<MecanumDrive2Private> dataPtr;
             };
         } // namespace systems
     }     // namespace gazebo

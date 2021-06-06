@@ -23,16 +23,16 @@ find_package(ignition-msgs6 REQUIRED)
 set(IGN_MSGS_VER 6)
 
 
-# for plugins MecanumDrive
-add_library(MecanumDrive SHARED src/mecanum_drive/MecanumDrive.cpp)
+# for plugins MecanumDrive2
+add_library(MecanumDrive2 SHARED src/mecanum_drive2/MecanumDrive2.cc)
 
-target_link_libraries(MecanumDrive
+target_link_libraries(MecanumDrive2
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
   ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
 )
 
 # for plugins ProjectileShooter
-add_library(ProjectileShooter SHARED src/projectile_shooter/ProjectileShooter.cpp)
+add_library(ProjectileShooter SHARED src/projectile_shooter/ProjectileShooter.cc)
 
 target_link_libraries(ProjectileShooter
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
@@ -40,8 +40,8 @@ target_link_libraries(ProjectileShooter
 )
 
 # Install plugins
-install(TARGETS MecanumDrive ProjectileShooter
-    DESTINATION lib
+install(TARGETS MecanumDrive2 ProjectileShooter
+    DESTINATION plugins
 )
 
 #environment
