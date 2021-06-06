@@ -53,6 +53,9 @@ target_link_libraries(chassis_simple_controller ${PROJECT_NAME})
 add_executable(shooter_simple_controller nodes/shooter_simple_controller_node.cpp)
 target_link_libraries(shooter_simple_controller ${PROJECT_NAME})
 
+add_executable(rmua19_robot_base nodes/rmua19_robot_base_node.cpp)
+target_link_libraries(rmua19_robot_base ${PROJECT_NAME})
+
 # Install include directories
 install(DIRECTORY include/
   DESTINATION include
@@ -73,6 +76,7 @@ install(TARGETS
       gimbal_state_publisher
       chassis_simple_controller 
       shooter_simple_controller
+      rmua19_robot_base
   DESTINATION lib/${PROJECT_NAME} 
 )
 
@@ -83,6 +87,13 @@ install(PROGRAMS
         scripts/test_gimbal_cmd2.py
         scripts/test_shoot_cmd.py
     DESTINATION lib/${PROJECT_NAME})
+
+
+ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(std_msgs)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(rmoss_interfaces)
 
 #test
 if(BUILD_TESTING)
