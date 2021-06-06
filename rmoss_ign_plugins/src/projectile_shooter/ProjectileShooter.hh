@@ -25,8 +25,7 @@ namespace ignition
             class IGNITION_GAZEBO_VISIBLE ProjectileShooter
                 : public ignition::gazebo::System,
                   public ISystemConfigure,
-                  public ISystemPreUpdate,
-                  public ISystemPostUpdate
+                  public ISystemPreUpdate
             {
             public:
                 ProjectileShooter();
@@ -39,8 +38,6 @@ namespace ignition
                                EventManager &_eventMgr) override;
                 void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
                                ignition::gazebo::EntityComponentManager &_ecm) override;
-                void PostUpdate(const ignition::gazebo::UpdateInfo &_info,
-                                const ignition::gazebo::EntityComponentManager &_ecm) override;
 
             private:
                 std::unique_ptr<ProjectileShooterPrivate> dataPtr;
