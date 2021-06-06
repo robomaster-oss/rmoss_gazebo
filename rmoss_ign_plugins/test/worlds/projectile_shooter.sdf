@@ -93,7 +93,7 @@
                 <shooter_offset>0.27 0 0 0 0 0</shooter_offset>
                 <shooter_name>small_shooter</shooter_name>
                 <projectile_velocity>20</projectile_velocity>
-                <projectile_uri>model://rm_fluorescent_projectile_17mm</projectile_uri>
+                <projectile_uri>model://rm_projectile_17mm</projectile_uri>
             </plugin>
         </model>
     </world>
