@@ -9,10 +9,11 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_base/chassis_simple_controller.hpp"
-#include "rmoss_ign_base/gimbal_simple_controller.hpp"
+#include "rmoss_ign_base/simple_chassis_controller.hpp"
+#include "rmoss_ign_base/simple_gimbal_controller.hpp"
+#include "rmoss_ign_base/simple_shooter_controller.hpp"
+
 #include "rmoss_ign_base/gimbal_state_publisher.hpp"
-#include "rmoss_ign_base/shooter_simple_controller.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -27,13 +28,13 @@ int main(int argc, char* argv[])
     ros_node->declare_parameter("robot_name");
     robot_name = ros_node->get_parameter("robot_name").as_string();
     // create controller 
-    auto chassis_controller = std::make_shared<rmoss_ign_base::ChassisSimpleController>(
+    auto chassis_controller = std::make_shared<rmoss_ign_base::SimpleChassisController>(
         ros_node,"chassis_cmd", "/"+robot_name+"/cmd_vel");
-    auto gimbal_controller = std::make_shared<rmoss_ign_base::GimbalSimpleController>(
+    auto gimbal_controller = std::make_shared<rmoss_ign_base::SimpleGimbalController>(
         ros_node,"gimbal_cmd", 
         "/model/"+robot_name+"/joint/gimbal_pitch_joint/0/cmd_pos", 
         "/model/"+robot_name+"/joint/gimbal_yaw_joint/0/cmd_pos");
-    auto shooter_controller = std::make_shared<rmoss_ign_base::ShooterSimpleController>(
+    auto shooter_controller = std::make_shared<rmoss_ign_base::SimpleShooterController>(
         ros_node,"shoot_cmd","/"+robot_name+"/small_shooter/shoot");
     // create gimbal publisher
     auto gimbal_publisher = std::make_shared<rmoss_ign_base::GimbalStatePublisher>(

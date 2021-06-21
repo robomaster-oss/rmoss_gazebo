@@ -41,17 +41,17 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 #nodes
-add_executable(gimbal_simple_controller nodes/gimbal_simple_controller_node.cpp)
-target_link_libraries(gimbal_simple_controller ${PROJECT_NAME})
+add_executable(simple_gimbal_controller nodes/simple_gimbal_controller_node.cpp)
+target_link_libraries(simple_gimbal_controller ${PROJECT_NAME})
 
 add_executable(gimbal_state_publisher nodes/gimbal_state_publisher_node.cpp)
 target_link_libraries(gimbal_state_publisher ${PROJECT_NAME})
 
-add_executable(chassis_simple_controller nodes/chassis_simple_controller_node.cpp)
-target_link_libraries(chassis_simple_controller ${PROJECT_NAME})
+add_executable(simple_chassis_controller nodes/simple_chassis_controller_node.cpp)
+target_link_libraries(simple_chassis_controller ${PROJECT_NAME})
 
-add_executable(shooter_simple_controller nodes/shooter_simple_controller_node.cpp)
-target_link_libraries(shooter_simple_controller ${PROJECT_NAME})
+add_executable(simple_shooter_controller nodes/simple_shooter_controller_node.cpp)
+target_link_libraries(simple_shooter_controller ${PROJECT_NAME})
 
 add_executable(rmua19_robot_base nodes/rmua19_robot_base_node.cpp)
 target_link_libraries(rmua19_robot_base ${PROJECT_NAME})
@@ -72,10 +72,10 @@ install(TARGETS ${PROJECT_NAME}
 
 # Install executables
 install(TARGETS 
-      gimbal_simple_controller
       gimbal_state_publisher
-      chassis_simple_controller 
-      shooter_simple_controller
+      simple_gimbal_controller
+      simple_chassis_controller 
+      simple_shooter_controller
       rmua19_robot_base
   DESTINATION lib/${PROJECT_NAME} 
 )

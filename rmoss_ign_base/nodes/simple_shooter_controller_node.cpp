@@ -9,25 +9,23 @@
  *
  ******************************************************************************/
 #include <rclcpp/rclcpp.hpp>
-#include "rmoss_ign_base/gimbal_simple_controller.hpp"
+#include "rmoss_ign_base/simple_shooter_controller.hpp"
 
 int main(int argc, char* argv[])
 {
     // create ros2 node
     rclcpp::init(argc, argv);
-    auto ros_node = std::make_shared<rclcpp::Node>("chassis_simple_controller");
+    auto ros_node = std::make_shared<rclcpp::Node>("simple_shooter_controller");
     // variables
-    std::string ros_gimbal_cmd_topic,ign_pitch_topic,ign_yaw_topic;
+    std::string ros_shoot_cmd_topic,ign_shoot_cmd_topic;
     // parameters
-    ros_node->declare_parameter("ros_gimbal_cmd_topic","gimbal_cmd");
-    ros_node->declare_parameter("ign_pitch_topic");
-    ros_node->declare_parameter("ign_yaw_topic");
-    ros_gimbal_cmd_topic = ros_node->get_parameter("ros_gimbal_cmd_topic").as_string();
-    ign_pitch_topic = ros_node->get_parameter("ign_pitch_topic").as_string();
-    ign_yaw_topic = ros_node->get_parameter("ign_yaw_topic").as_string();
+    ros_node->declare_parameter("ros_shoot_cmd_topic","shoot_cmd");
+    ros_node->declare_parameter("ign_shoot_cmd_topic");
+    ros_shoot_cmd_topic = ros_node->get_parameter("ros_shoot_cmd_topic").as_string();
+    ign_shoot_cmd_topic = ros_node->get_parameter("ign_shoot_cmd_topic").as_string();
     // create controller 
-    auto gimbal_controller = std::make_shared<rmoss_ign_base::GimbalSimpleController>(ros_node,
-         ros_gimbal_cmd_topic, ign_pitch_topic, ign_yaw_topic);
+    auto shooter_controller = std::make_shared<rmoss_ign_base::SimpleShooterController>(ros_node,
+         ros_shoot_cmd_topic, ign_shoot_cmd_topic);
     // run node until it's exited
     rclcpp::spin(ros_node);
     //clean up

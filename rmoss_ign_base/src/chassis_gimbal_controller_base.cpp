@@ -37,8 +37,8 @@ ChassisGimbalControllerBase::ChassisGimbalControllerBase(const rclcpp::Node::Sha
     auto ros_chassis_cmd_topic = nh_->get_parameter("ros_chassis_cmd_topic").as_string();
     auto ros_gimbal_cmd_topic = nh_->get_parameter("ros_gimbal_cmd_topic").as_string();
     auto ign_chassis_cmd_topic = nh_->get_parameter("ign_chassis_cmd_topic").as_string();
-    auto ign_gimbal_pitch_cmd_topic = nh_->get_parameter("ign_gimbal_pitch_cmd_topic").as_string();
-    auto ign_gimbal_yaw_cmd_topic = nh_->get_parameter("ign_gimbal_yaw_cmd_topic").as_string();
+    auto ign_pitch_cmd_topic = nh_->get_parameter("ign_pitch_cmd_topic").as_string();
+    auto ign_yaw_cmd_topic = nh_->get_parameter("ign_yaw_cmd_topic").as_string();
     auto ign_joint_state_topic = nh_->get_parameter("ign_joint_state_topic").as_string();
     auto ign_chassis_imu_topic = nh_->get_parameter("ign_chassis_imu_topic").as_string();
     auto ign_gimbal_imu_topic = nh_->get_parameter("ign_gimbal_imu_topic").as_string();
@@ -53,9 +53,9 @@ ChassisGimbalControllerBase::ChassisGimbalControllerBase(const rclcpp::Node::Sha
     ign_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
         ign_node_->Advertise<ignition::msgs::Twist>(ign_chassis_cmd_topic));
     ign_gimbal_pitch_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-        ign_node_->Advertise<ignition::msgs::Double>(ign_gimbal_pitch_cmd_topic));
+        ign_node_->Advertise<ignition::msgs::Double>(ign_pitch_cmd_topic));
     ign_gimbal_yaw_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-        ign_node_->Advertise<ignition::msgs::Double>(ign_gimbal_yaw_cmd_topic));
+        ign_node_->Advertise<ignition::msgs::Double>(ign_yaw_cmd_topic));
     // create ign sub
     ign_node_->Subscribe(ign_joint_state_topic, &ChassisGimbalControllerBase::ignJointStateCb, this);
     ign_node_->Subscribe(ign_gimbal_imu_topic, &ChassisGimbalControllerBase::ignGimbalImuCb, this);

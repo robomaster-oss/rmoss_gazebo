@@ -8,12 +8,12 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_base/chassis_simple_controller.hpp"
+#include "rmoss_ign_base/simple_chassis_controller.hpp"
 
 using namespace std;
 using namespace rmoss_ign_base;
 
-ChassisSimpleController::ChassisSimpleController(const rclcpp::Node::SharedPtr& nh,
+SimpleChassisController::SimpleChassisController(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_cmd_topic,
     const std::string& ign_cmd_topic)
 {
@@ -22,13 +22,13 @@ ChassisSimpleController::ChassisSimpleController(const rclcpp::Node::SharedPtr& 
     ign_node_ = std::make_shared<ignition::transport::Node>();
     //create ros pub and sub
     ros_chassis_cmd_sub_ = nh_->create_subscription<rmoss_interfaces::msg::ChassisCmd>(ros_cmd_topic,
-        10, std::bind(&ChassisSimpleController::chassisCb, this, std::placeholders::_1));
+        10, std::bind(&SimpleChassisController::chassisCb, this, std::placeholders::_1));
     //create ignition pub
     ign_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
         ign_node_->Advertise<ignition::msgs::Twist>(ign_cmd_topic));
 }
 
-void ChassisSimpleController::chassisCb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
+void SimpleChassisController::chassisCb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
 {
     ignition::msgs::Twist ign_msg;
     ign_msg.mutable_linear()->set_x(msg->twist.linear.x);

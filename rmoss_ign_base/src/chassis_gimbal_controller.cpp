@@ -8,7 +8,7 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_base/chassis_gimbal_controller_base.hpp"
+#include "rmoss_ign_base/chassis_gimbal_controller.hpp"
 
 using namespace std;
 using namespace rmoss_ign_base;
@@ -80,7 +80,7 @@ void ChassisGimbalController::update(){
         w_cmd = chassis_pid_.Update(w_err, dt);
     }else{
          // independent mode
-        w_cmd = chassis_cmd_msg_.twist.angular.z
+        w_cmd = chassis_cmd_msg_.twist.angular.z;
     }
     // publish CMD
     publishIgnGimbal(pitch_cmd,yaw_cmd);
@@ -106,5 +106,3 @@ rcl_interfaces::msg::SetParametersResult ChassisGimbalController::parametersCb(
     update_pid_flag_ = true;
     return result;
 }
-
-#endif //RMOSS_IGN_BASE_CHASSIS_GIMBAL_CONTROLLER_H

@@ -8,8 +8,8 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#ifndef RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H
-#define RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H
+#ifndef RMOSS_IGN_BASE_SIMPLE_GIMBAL_CONTROLLER_H
+#define RMOSS_IGN_BASE_SIMPLE_GIMBAL_CONTROLLER_H
 
 #include <mutex>
 #include <ignition/transport/Node.hh>
@@ -18,13 +18,14 @@
 
 namespace rmoss_ign_base {
 
-class GimbalSimpleController {
+class SimpleGimbalController {
 public:
-    GimbalSimpleController(const rclcpp::Node::SharedPtr& nh,
+    SimpleGimbalController(const rclcpp::Node::SharedPtr& nh,
     const std::string& ros_cmd_topic,
-    const std::string& ign_pitch_topic,
-    const std::string& ign_yaw_topic);
-    ~GimbalSimpleController() {};
+    const std::string& ign_pitch_cmd_topic,
+    const std::string& ign_yaw_cmd_topic,
+    bool position_control=true);
+    ~SimpleGimbalController() {};
 
 private:
     void gimbalCb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg);
@@ -36,6 +37,8 @@ private:
     rclcpp::Subscription<rmoss_interfaces::msg::GimbalCmd>::SharedPtr ros_gimbal_cmd_sub_;
     std::unique_ptr<ignition::transport::Node::Publisher> ign_pitch_pub_;
     std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_pub_;
+    // mode
+    bool is_position_controller_;
 };
 }
-#endif //RMOSS_IGN_BASE_GIMBAL_SIMPLE_CONTROLLER_H
+#endif //RMOSS_IGN_BASE_SIMPLE_GIMBAL_CONTROLLER_H

@@ -8,8 +8,8 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#ifndef RMOSS_IGN_BASE_CHASSIS_SIMPLE_CONTROLLER_H
-#define RMOSS_IGN_BASE_CHASSIS_SIMPLE_CONTROLLER_H
+#ifndef RMOSS_IGN_BASE_SIMPLE_CHASSIS_CONTROLLER_H
+#define RMOSS_IGN_BASE_SIMPLE_CHASSIS_CONTROLLER_H
 
 #include <mutex>
 #include <ignition/transport/Node.hh>
@@ -18,12 +18,12 @@
 
 namespace rmoss_ign_base {
 
-class ChassisSimpleController {
+class SimpleChassisController {
 public:
-    ChassisSimpleController(const rclcpp::Node::SharedPtr& nh,
+    SimpleChassisController(const rclcpp::Node::SharedPtr& nh,
         const std::string& ros_cmd_topic,
         const std::string& ign_cmd_topic);
-    ~ChassisSimpleController() {};
+    ~SimpleChassisController() {};
 
 private:
     void chassisCb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
@@ -37,4 +37,4 @@ private:
     std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
 };
 }
-#endif //RMOSS_IGN_BASE_CHASSIS_SIMPLE_CONTROLLER_H
+#endif //RMOSS_IGN_BASE_SIMPLE_CHASSIS_CONTROLLER_H
