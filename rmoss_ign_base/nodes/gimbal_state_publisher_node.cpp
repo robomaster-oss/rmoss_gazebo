@@ -16,19 +16,18 @@ int main(int argc, char* argv[])
     // create ros2 node
     rclcpp::init(argc, argv);
     auto ros_node = std::make_shared<rclcpp::Node>("gimbal_state_publisher");
-    // variables
-    std::string ros_topic,ign_topic;
-    int update_rate;
+    auto ign_node = std::make_shared<ignition::transport::Node>();
     // get parameter
-    ros_node->declare_parameter("ros_topic","gimbal_state");
-    ros_node->declare_parameter("ign_topic");
+    ros_node->declare_parameter("ign_gimbal_imu_topic");
     ros_node->declare_parameter("update_rate", 30);
-    ros_topic = ros_node->get_parameter("ros_topic").as_string();
-    ign_topic = ros_node->get_parameter("ign_topic").as_string();
-    update_rate = ros_node->get_parameter("update_rate").as_int();
+    auto ros_gimbal_state_topic = ros_node->get_parameter("ros_topic").as_string();
+    auto ign_gimbal_imu_topic = ros_node->get_parameter("ign_gimbal_imu_topic").as_string();
+    auto update_rate = ros_node->get_parameter("update_rate").as_int();
+    // ign gimbal sensor (imu)
+    auto ign_gimbal_imu = std::make_shared<rmoss_ign_base::IgnImu>(ign_node,ign_gimbal_imu_topic);
     // create publisher
     auto gimbal_publisher = std::make_shared<rmoss_ign_base::GimbalStatePublisher>(ros_node,
-        ros_topic, ign_topic, 0, 1 ,update_rate);
+        "gimbal_state",ign_gimbal_imu ,update_rate);
     // run node until it's exited
     rclcpp::spin(ros_node);
     //clean up
