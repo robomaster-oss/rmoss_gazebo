@@ -15,11 +15,11 @@
 
 namespace rmoss_ign_base {
 
-class IgnChassisCmdPublisher {
+class IgnChassisCmd {
 public:
-    IgnChassisCmdPublisher(const std::shared_ptr<ignition::transport::Node> &ign_node,
+    IgnChassisCmd(const std::shared_ptr<ignition::transport::Node> &ign_node,
                const std::string &ign_chassis_cmd_topic);
-    ~IgnChassisCmdPublisher() {};
+    ~IgnChassisCmd() {};
 
 public:
     void publish(double v_x,double v_y,double v_w);

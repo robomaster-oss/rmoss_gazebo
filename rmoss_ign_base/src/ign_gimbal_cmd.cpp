@@ -8,12 +8,12 @@
  *  If not, see <https://opensource.org/licenses/MIT/>.
  *
  ******************************************************************************/
-#include "rmoss_ign_base/ign_gimbal_cmd_publisher.hpp"
+#include "rmoss_ign_base/ign_gimbal_cmd.hpp"
 
 using namespace std;
 using namespace rmoss_ign_base;
 
-IgnGimbalCmdPublisher::IgnGimbalCmdPublisher(const std::shared_ptr<ignition::transport::Node> &ign_node,
+IgnGimbalCmd::IgnGimbalCmd(const std::shared_ptr<ignition::transport::Node> &ign_node,
             const std::string &ign_pitch_cmd_topic,
             const std::string &ign_yaw_cmd_topic){
     ign_node_ =  ign_node;         
@@ -23,7 +23,7 @@ IgnGimbalCmdPublisher::IgnGimbalCmdPublisher(const std::shared_ptr<ignition::tra
         ign_node_->Advertise<ignition::msgs::Double>(ign_yaw_cmd_topic));        
 }
 
-void IgnGimbalCmdPublisher::publish(double pitch,double yaw){
+void IgnGimbalCmd::publish(double pitch,double yaw){
     ignition::msgs::Double ign_msg;
     ign_msg.set_data(pitch);
     ign_pitch_cmd_pub_->Publish(ign_msg);

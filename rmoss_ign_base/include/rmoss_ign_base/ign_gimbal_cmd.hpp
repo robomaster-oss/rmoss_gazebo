@@ -15,12 +15,12 @@
 
 namespace rmoss_ign_base {
 
-class IgnGimbalCmdPublisher {
+class IgnGimbalCmd {
 public:
-    IgnGimbalCmdPublisher(const std::shared_ptr<ignition::transport::Node> &ign_node,
+    IgnGimbalCmd(const std::shared_ptr<ignition::transport::Node> &ign_node,
                const std::string &ign_pitch_cmd_topic,
                const std::string &ign_yaw_cmd_topic);
-    ~IgnGimbalCmdPublisher() {};
+    ~IgnGimbalCmd() {};
 
 public:
     void publish(double pitch,double yaw);
