@@ -14,7 +14,7 @@
 
 * IgnImu：IMU传感器模块，并增加云台API，`getYaw()`和`getPitch()` 
 * IgnJointEncoder：关节编码器模块，并为云台增加额外API，`getYaw()`和`getPitch()` 
-* IgnChassisCmd：Ignition云台指令
+* IgnChassisCmd：Ignition底盘指令
 * IgnGimbalCmd：Ignition云台指令
 
 > 传感器模块通过订阅Ignition topic，其数据与Ignition Gazbeo中保持同步。
