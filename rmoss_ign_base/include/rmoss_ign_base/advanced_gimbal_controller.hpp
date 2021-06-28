@@ -35,6 +35,9 @@ public:
 public:
     void setYawPid(struct PidParam pid_param);
     void setPitchPid(struct PidParam pid_param);
+    // set gimbal's motor limit (TODO)
+    void setYawMotorLimit(double min,double max){};
+    void setPitchMotorLimit(double min,double max){};
 private:
     void gimbalCb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg);
     void update();
