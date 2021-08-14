@@ -14,7 +14,9 @@ find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(rmoss_interfaces REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 # ignition package
 find_package(ignition-transport9 REQUIRED)
@@ -33,7 +35,9 @@ ament_target_dependencies(${PROJECT_NAME}
     rclcpp 
     std_msgs
     geometry_msgs
+    nav_msgs
     rmoss_interfaces
+    tf2_ros
 )
 target_link_libraries(${PROJECT_NAME}
     ignition-msgs${IGN_MSGS_VER}::core
@@ -92,7 +96,9 @@ ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(std_msgs)
 ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rmoss_interfaces)
+ament_export_dependencies(tf2_ros)
 
 #test
 if(BUILD_TESTING)
