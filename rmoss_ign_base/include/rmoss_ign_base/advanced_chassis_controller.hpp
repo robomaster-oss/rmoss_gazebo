@@ -13,6 +13,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include "rmoss_interfaces/msg/chassis_cmd.hpp"
+#include "geometry_msgs/msg/twist.hpp"
 
 #include "rmoss_ign_base/ign_chassis_cmd.hpp"
 #include "rmoss_ign_base/ign_joint_encoder.hpp"
@@ -33,17 +34,21 @@ public:
     void setControlMode(bool follow_mode_flag){ follow_mode_flag_=follow_mode_flag; }
 private:
     void chassisCb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
+    void cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
     void update();
 private:
     rclcpp::Node::SharedPtr nh_;
     rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr ros_chassis_cmd_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr ros_cmd_vel_sub_;
     rclcpp::callback_group::CallbackGroup::SharedPtr callback_group_;
     rclcpp::TimerBase::SharedPtr controller_timer_;
     // ignition tool
     std::shared_ptr<IgnChassisCmd> ign_chassis_cmd_;
     std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder_;
     // target data
-    rmoss_interfaces::msg::ChassisCmd chassis_cmd_msg_;
+    double target_vx_;
+    double target_vy_;
+    double target_w_;
     std::mutex msg_mut_;
     // pid and pid parameter
     ignition::math::PID chassis_pid_;

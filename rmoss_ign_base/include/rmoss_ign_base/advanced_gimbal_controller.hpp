@@ -51,7 +51,8 @@ private:
     std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder_;
     std::shared_ptr<IgnImu> ign_gimbal_imu_;
     // target data
-    rmoss_interfaces::msg::GimbalCmd gimbal_cmd_msg_;
+    double target_pitch_{0};
+    double target_yaw_{0};
     std::mutex msg_mut_;
     // pid and pid parameter
     ignition::math::PID picth_pid_;

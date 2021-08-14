@@ -47,13 +47,12 @@ void AdvancedGimbalController::update(){
         update_pid_flag_=false;
     }
     // pid for pitch 
-    double pitch_err = ign_gimbal_imu_->getPitch() - gimbal_cmd_msg_.position.pitch;
+    double pitch_err = ign_gimbal_imu_->getPitch() - target_pitch_;
     double pitch_cmd = picth_pid_.Update(pitch_err, dt);
     // pid for yaw
-    double yaw_err = ign_gimbal_imu_->getYaw() - gimbal_cmd_msg_.position.yaw;
+    double yaw_err = ign_gimbal_imu_->getYaw() - target_yaw_;
     double yaw_cmd = yaw_pid_.Update(yaw_err, dt);
-    //printf("imu:%lf,%lf\n",pitch_imu_angle_,yaw_imu_angle_);
-    //printf("data:%lf,%lf,%lf,%lf\n",pitch_err,pitch_cmd,yaw_err,yaw_cmd);
+    //printf("imu:%lf,%lf\n",ign_gimbal_imu_->getYaw() ,ign_gimbal_imu_->getPitch());
     // publish CMD
     ign_gimbal_cmd_->publish(pitch_cmd,yaw_cmd);
 }
@@ -61,7 +60,8 @@ void AdvancedGimbalController::update(){
 
 void AdvancedGimbalController::gimbalCb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg){
     std::lock_guard<std::mutex> lock(msg_mut_);
-    gimbal_cmd_msg_ = *msg;
+    target_yaw_ = msg->position.yaw;
+    target_pitch_ = msg->position.pitch;
 }
 
 void AdvancedGimbalController::setYawPid(struct PidParam pid_param){

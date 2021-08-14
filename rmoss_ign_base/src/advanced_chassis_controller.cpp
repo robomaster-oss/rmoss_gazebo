@@ -26,6 +26,8 @@ AdvancedChassisController::AdvancedChassisController(const rclcpp::Node::SharedP
     //ros sub
     ros_chassis_cmd_sub_ = nh_->create_subscription<rmoss_interfaces::msg::ChassisCmd>(ros_chassis_cmd_topic,
         10, std::bind(&AdvancedChassisController::chassisCb, this, std::placeholders::_1));
+    ros_cmd_vel_sub_ = nh_->create_subscription<geometry_msgs::msg::Twist>("cmd_vel",
+        10, std::bind(&AdvancedChassisController::cmd_vel_cb, this, std::placeholders::_1));
     //timer and set_parameters callback
     auto period = std::chrono::microseconds(1000000 / 100);
     callback_group_ = nh_->create_callback_group(rclcpp::callback_group::CallbackGroupType::MutuallyExclusive);
@@ -49,17 +51,26 @@ void AdvancedChassisController::update(){
         w_cmd = chassis_pid_.Update(w_err, dt);
     }else{
          // independent mode
-        w_cmd = chassis_cmd_msg_.twist.angular.z;
+        w_cmd = target_w_;
     }
     // publish CMD
-    ign_chassis_cmd_->publish(chassis_cmd_msg_.twist.linear.x,
-            chassis_cmd_msg_.twist.linear.y,w_cmd); 
+    ign_chassis_cmd_->publish(target_vx_,target_vy_,w_cmd); 
 }
 
 void AdvancedChassisController::chassisCb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg){
     std::lock_guard<std::mutex> lock(msg_mut_);
-    chassis_cmd_msg_ = *msg;
+    target_vx_ = msg->twist.linear.x;
+    target_vy_ = msg->twist.linear.y;
+    target_w_ = msg->twist.angular.z;
+
 }
+
+void AdvancedChassisController::cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg){
+    std::lock_guard<std::mutex> lock(msg_mut_);
+    target_vx_ = msg->linear.x;
+    target_vy_ = msg->linear.y;
+    target_w_ = msg->angular.z;
+ }
 
 void AdvancedChassisController::setChassisPid(struct PidParam pid_param){
     chassis_pid_param_ = pid_param;
