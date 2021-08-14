@@ -35,10 +35,10 @@ private:
     std::mutex msg_mut_;
     // sensor data
     ignition::msgs::IMU imu_msg_;
-    double pitch_angle_;
-    double yaw_angle_;
-    double last_yaw_angle_;
-    double continuous_yaw_angle_;
+    double pitch_angle_{0};
+    double yaw_angle_{0};
+    double last_yaw_angle_{0};
+    double continuous_yaw_angle_{0};
 };
 
 }

@@ -16,7 +16,6 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rmoss_interfaces REQUIRED)
 
-
 # ignition package
 find_package(ignition-transport9 REQUIRED)
 set(IGN_TRANSPORT_VER 9)
