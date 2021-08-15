@@ -56,5 +56,5 @@ colcon build
 
 Maintainer : Zhenpeng Ge,  zhenpeng.ge@qq.com
 
-rmoss_core is provided under Apache License 2.0.
+rmoss_ign is provided under Apache License 2.0.
 
