@@ -54,8 +54,6 @@ chassis_controller->set_control_mode(true);  // 跟随云台模块
 
 ## 3. 高级控制器
 
-**云台控制和底盘控制**
-
 为了实现云台与底盘控制器高扩展性，将ign命令与传感器数据进行模块化，有如下模块：
 
 * IgnImu：IMU传感器模块，并增加云台API，`get_yaw()`和`get_pitch()` 
