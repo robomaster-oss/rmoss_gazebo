@@ -12,40 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/simple_chassis_controller.hpp"
+#include "rmoss_ign_base/shooter_controller.hpp"
 
 #include <memory>
 #include <string>
 
-
 namespace rmoss_ign_base
 {
 
-
-SimpleChassisController::SimpleChassisController(
-  const rclcpp::Node::SharedPtr & nh,
+ShooterController::ShooterController(
+  rclcpp::Node::SharedPtr node,
+  std::shared_ptr<ignition::transport::Node> ign_node,
   const std::string & ros_cmd_topic,
   const std::string & ign_cmd_topic)
 {
   // ROS and Ignition node
-  nh_ = nh;
+  node_ = node;
   ign_node_ = std::make_shared<ignition::transport::Node>();
   // create ros pub and sub
-  ros_chassis_cmd_sub_ = nh_->create_subscription<rmoss_interfaces::msg::ChassisCmd>(
+  ros_shoot_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::ShootCmd>(
     ros_cmd_topic,
-    10, std::bind(&SimpleChassisController::chassis_cb, this, std::placeholders::_1));
+    10, std::bind(&ShooterController::shoot_cb, this, std::placeholders::_1));
   // create ignition pub
-  ign_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Twist>(ign_cmd_topic));
+  ign_shoot_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));
 }
 
-void SimpleChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
+void ShooterController::shoot_cb(const rmoss_interfaces::msg::ShootCmd::SharedPtr msg)
 {
-  ignition::msgs::Twist ign_msg;
-  ign_msg.mutable_linear()->set_x(msg->twist.linear.x);
-  ign_msg.mutable_linear()->set_y(msg->twist.linear.y);
-  ign_msg.mutable_angular()->set_z(msg->twist.angular.z);
-  ign_chassis_cmd_pub_->Publish(ign_msg);
+  ignition::msgs::Int32 ign_msg;
+  ign_msg.set_data(msg->projectile_num);
+  ign_shoot_cmd_pub_->Publish(ign_msg);
+  // std::cout << " shoot_cb,shoot num:" << (int)(msg->projectile_num) << std::endl;
 }
 
 

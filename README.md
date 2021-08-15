@@ -1,3 +1,7 @@
+# rmoss_ign
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 ![](rmoss_bg.png)
 RoboMasterOSS是一个面向RoboMaster的开源软件栈项目，目的是为RoboMaster机器人软件开发提供了一个快速的，灵活的开发工具，支持算法原型研究和robomaster比赛应用开发。
 
@@ -8,8 +12,6 @@ RoboMasterOSS是一个面向RoboMaster的开源软件栈项目，目的是为Rob
 >
 > 更多详情参考官网：[www.robomaster.com](https://www.robomaster.com/)
 
-# rmoss_ign
-
 rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazebo仿真支持，主要提供Ignition插件，相关机器人模型资源等。
 
 ## 1.主要模块
@@ -17,7 +19,7 @@ rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazeb
 |            模块             |                           功能说明                           |
 | :-------------------------: | :----------------------------------------------------------: |
 |     `rmoss_ign_plugins`     |        RoboMaster相关Ignition Gazebo Simulator插件。         |
-|      `rmoss_ign_base`       |   RoboMaster基本机器人Ignition-ROS通信（仿真MCU部分功能）    |
+|      `rmoss_ign_base`       |   RoboMaster基本机器人Ignition-ROS通信桥接（仿真MCU部分功能）    |
 |     `rmoss_ign_referee`     |                  RoboMaster裁判系统（TODO）                  |
 |    `rmoss_ign_resources`    | RoboMaster相关核心SDF模型资源，官方机器人模型和核心场地模型。 |
 | `rmoss_ign_extra_resources` |                 RoboMaster相关额外模型资源。                 |
@@ -26,20 +28,19 @@ rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazeb
 
 ## 2.使用说明
 
-* 目前仅支持`ROS2 foxy` & `Ignition Dome` 版本
-* 环境依赖：
+* ROS2版本要求: `Galatic` (目前处于开发期，基于ROS2最新版本)
+* Ignition仿真器版本要求: ` Edifice` (目前处于开发期，基于Ignition最新版本)
+* 其他包依赖：
   *  [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) : ROS2 interfaces (.msg, .srv, .action) used in the RoboMaster OSS Projects
 
 环境配置
 
 ```bash
-#cd ros2 workspaces src
+# cd ros2 workspaces src
 git clone https://github.com/robomaster-oss/rmoss_interfaces.git
 git clone https://github.com/robomaster-oss/rmoss_ign.git
-# 资源仓库比较大，可视情况使用。
-#git clone https://github.com/robomaster-oss/rmoss_ign_resources.git --depth=1
-#git clone https://github.com/robomaster-oss/rmoss_ign_extra_resources.git --depth=1
-#cd ros2 workspaces
+git clone https://github.com/robomaster-oss/rmoss_ign_resources.git --depth=1
+# cd ros2 workspaces
 colcon build
 ```
 
@@ -55,5 +56,5 @@ colcon build
 
 Maintainer : Zhenpeng Ge,  zhenpeng.ge@qq.com
 
-rmoss_ign is provided under MIT License.
+rmoss_core is provided under Apache License 2.0.
 

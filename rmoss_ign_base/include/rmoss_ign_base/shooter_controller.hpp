@@ -12,39 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__SIMPLE_CHASSIS_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__SIMPLE_CHASSIS_CONTROLLER_HPP_
+#ifndef RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
+#define RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
 
-#include <mutex>
 #include <memory>
 #include <string>
+#include <mutex>
 
 #include "ignition/transport/Node.hh"
 #include "rclcpp/rclcpp.hpp"
-#include "rmoss_interfaces/msg/chassis_cmd.hpp"
+#include "rmoss_interfaces/msg/shoot_cmd.hpp"
 
 namespace rmoss_ign_base
 {
 
-class SimpleChassisController
+class ShooterController
 {
 public:
-  SimpleChassisController(
-    const rclcpp::Node::SharedPtr & nh,
+  ShooterController(
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<ignition::transport::Node> ign_node,
     const std::string & ros_cmd_topic,
     const std::string & ign_cmd_topic);
-  ~SimpleChassisController() {}
+  ~ShooterController() {}
 
 private:
-  void chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
+  void shoot_cb(const rmoss_interfaces::msg::ShootCmd::SharedPtr msg);
 
 private:
-  rclcpp::Node::SharedPtr nh_;
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
   // ros pub and sub
-  rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr ros_chassis_cmd_sub_;
+  rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr ros_shoot_cmd_sub_;
   // ign pub and sub
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
 };
 }  // namespace rmoss_ign_base
-#endif  // RMOSS_IGN_BASE__SIMPLE_CHASSIS_CONTROLLER_HPP_
+#endif  // RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_

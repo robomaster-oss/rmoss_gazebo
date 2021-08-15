@@ -12,55 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
-#define RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
+#ifndef RMOSS_IGN_BASE__LIDAR_PUBLISHER_HPP_
+#define RMOSS_IGN_BASE__LIDAR_PUBLISHER_HPP_
 
 #include <memory>
 #include <string>
+#include <mutex>
 
-#include "ignition/transport/Node.hh"
 #include "rclcpp/rclcpp.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "tf2_ros/transform_broadcaster.h"
+#include "ignition/transport/Node.hh"
+#include "sensor_msgs/msg/laser_scan.hpp"
 
 namespace rmoss_ign_base
 {
 
-class OdometryPublisher
+class LidarPublisher
 {
 public:
-  OdometryPublisher(
+  LidarPublisher(
     rclcpp::Node::SharedPtr ros_node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_odom_topic,
-    const std::string & ros_odom_topic = "odom",
-    int update_rate = 50,
-    bool publish_tf = true);
-  ~OdometryPublisher() {}
+    const std::string & ign_lidar_topic,
+    const std::string & ros_lidar_topic = "scan",
+    int update_rate = 30);
+  ~LidarPublisher() {}
 
   void set_frame_id(const std::string & frame_id);
-  void set_child_frame_id(const std::string & child_frame_id);
-  void set_footprint(bool use_footprint) {use_footprint_ = use_footprint;}
 
 private:
-  void ign_odometry_cb(const ignition::msgs::Odometry & msg);
+  void ign_lidar_cb(const ignition::msgs::LaserScan & msg);
   void timer_callback();
 
 private:
   rclcpp::Node::SharedPtr ros_node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
   // ros pub and sub
-  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
-  std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
   // sensor data
   std::mutex msg_mut_;
-  ignition::msgs::Odometry odom_msg_;
+  ignition::msgs::LaserScan laser_msg_;
+  rclcpp::Time laser_msg_time_;
   std::string frame_id_;
-  std::string child_frame_id_;
-  // flag
-  bool use_footprint_{false};
-  bool publish_tf_{true};
+  bool init_frame_{false};
 };
 }  // namespace rmoss_ign_base
-#endif  // RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
+#endif  // RMOSS_IGN_BASE__LIDAR_PUBLISHER_HPP_

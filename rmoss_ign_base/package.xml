@@ -5,14 +5,14 @@
     <version>1.0.0</version>
     <description>Robot Base for Ignition Gazebo Simulator</description>
     <maintainer email="zhenpeng.ge@qq.com">Zhenpeng Ge</maintainer>
-    <license>MIT</license>
+    <license>Apache License 2.0</license>
     <buildtool_depend>ament_cmake</buildtool_depend>
-    <build_depend>rclcpp</build_depend>
-    <build_depend>std_msgs</build_depend>
-    <build_depend>geometry_msgs</build_depend>
-    <build_depend>rmoss_interfaces</build_depend>
+    <depend>rclcpp</depend>
+    <depend>std_msgs</depend>
+    <depend>geometry_msgs</depend>
+    <depend>rmoss_interfaces</depend>
     <depend>ros_ign_gazebo</depend>
-    <exec_depend>ros_ign_bridge</exec_depend>
+    <depend>ros_ign_bridge</depend>
     <exec_depend>rmoss_ign_resources</exec_depend>
     <exec_depend>rmoss_ign_plugins</exec_depend>
     <test_depend>ament_lint_auto</test_depend>

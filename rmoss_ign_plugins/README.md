@@ -33,9 +33,3 @@ ProjectileShooter：
             <projectile_uri>model://rm_fluorescent_projectile_17mm</projectile_uri>
 </plugin>
 ```
-
-## 3.维护者及开源许可证
-
-maintainer：Zhenpeng Ge,  zhenpeng.ge@qq.com
-
-rmoss_ign_plugins is provided under MIT.
