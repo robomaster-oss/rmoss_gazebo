@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-`rmoss_ign_base`为Ignition Gazebo Simulator中的机器人（主要为官方机器人`rmua19_standard_robot`）提供ROS接口，类似Robot Base功能（类似`rmoss_core/rm_base`），这样就可以通过ROS接口控制Ignition Gazebo仿真器中的机器人，也能通过ROS接口获得Ignition Gazebo仿真器中传感器的数据。包含以下两类模型：
+`rmoss_ign_base`为Ignition Gazebo Simulator中的机器人（主要为官方机器人`rmua19_standard_robot`）提供ROS接口，类似Robot Base功能（类似`rmoss_core/rmoss_base`），这样就可以通过ROS接口控制Ignition Gazebo仿真器中的机器人，也能通过ROS接口获得Ignition Gazebo仿真器中传感器的数据。包含以下两类模型：
 
 * `Controller` : 主要面向机器人控制器，为ROS->Ignition Gazebo的通信，将ROS命令发送给Ignition Gazebo Simulator中的机器人，控制机器人的执行机构，同时实现基于PID的控制器，可以在ROS中实现相关控制任务，如底盘跟随云台控制器。
 * `Publisher` : 主要面向机器人传感器，为Ignition Gazebo->ROS的通信，将Ignition Gazebo Simulator中的机器人的传感器数据以Topic的形式发送到ROS中，可以被上层应用，如IMU数据。
