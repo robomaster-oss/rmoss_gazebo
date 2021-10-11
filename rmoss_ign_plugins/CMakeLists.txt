@@ -24,7 +24,7 @@ set(IGN_MSGS_VER 7)
 
 
 # for plugins MecanumDrive2
-add_library(MecanumDrive2 SHARED src/mecanum_drive2/MecanumDrive2.cc)
+add_library(MecanumDrive2 SHARED plugins/mecanum_drive2/MecanumDrive2.cc)
 
 target_link_libraries(MecanumDrive2
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
@@ -32,25 +32,34 @@ target_link_libraries(MecanumDrive2
 )
 
 # for plugins ProjectileShooter
-add_library(ProjectileShooter SHARED src/projectile_shooter/ProjectileShooter.cc)
+add_library(ProjectileShooter SHARED plugins/projectile_shooter/ProjectileShooter.cc)
 
 target_link_libraries(ProjectileShooter
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
   ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
 )
 
+# for plugins LightIndicator
+add_library(LightIndicator SHARED plugins/light_indicator/LightIndicator.cc)
+target_link_libraries(LightIndicator
+  ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
+  ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
+  # ignition-rendering4::ignition-rendering4
+)
+
+
 # Install plugins
-install(TARGETS MecanumDrive2 ProjectileShooter
+install(TARGETS MecanumDrive2 ProjectileShooter LightIndicator
     DESTINATION plugins
 )
 
 #environment
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/ignition.dsv.in")
 
-#test
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
+  # no lint test
+  # find_package(ament_lint_auto REQUIRED)
+  # ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_package()
