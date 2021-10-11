@@ -21,35 +21,68 @@ find_package(tf2_ros REQUIRED)
 find_package(ros_ign_bridge REQUIRED)
 
 # ignition package
-find_package(ignition-transport10 REQUIRED)
-set(IGN_TRANSPORT_VER 10)
-find_package(ignition-msgs7 REQUIRED)
-set(IGN_MSGS_VER 7)
+# Fortress
+if("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
+  find_package(ignition-transport11 REQUIRED)
+  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+
+  find_package(ignition-msgs8 REQUIRED)
+  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Fortress")
+# Default to Edifice
+else()
+  find_package(ignition-transport10 REQUIRED)
+  set(IGN_TRANSPORT_VER ${ignition-transport10_VERSION_MAJOR})
+
+  find_package(ignition-msgs7 REQUIRED)
+  set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+endif()
+
+
 
 # include
 include_directories(include)
 
 # generate rmoss_ign_base lib
-aux_source_directory(${PROJECT_SOURCE_DIR}/src DIR_SRCS)
-add_library(${PROJECT_NAME} ${DIR_SRCS})
-
-ament_target_dependencies(${PROJECT_NAME}
-    rclcpp
-    std_msgs
-    geometry_msgs
-    sensor_msgs
-    nav_msgs
-    rmoss_interfaces
-    tf2_ros
-    ros_ign_bridge
+add_library(${PROJECT_NAME}
+  src/controller/simple_chassis_controller.cpp
+  src/controller/simple_gimbal_controller.cpp
+  src/controller/advanced_chassis_controller.cpp
+  src/controller/advanced_gimbal_controller.cpp
+  src/controller/shooter_controller.cpp
+  src/publisher/gimbal_state_publisher.cpp
+  src/publisher/lidar_publisher.cpp
+  src/publisher/odometry_publisher.cpp
+  src/ign_chassis_cmd.cpp
+  src/ign_gimbal_cmd.cpp
+  src/ign_imu.cpp
+  src/ign_joint_encoder.cpp
+  src/pid.cpp
 )
+
+set(dependencies
+  rclcpp
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+  nav_msgs
+  rmoss_interfaces
+  tf2_ros
+  ros_ign_bridge
+)
+
+ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+
 target_link_libraries(${PROJECT_NAME}
     ignition-msgs${IGN_MSGS_VER}::core
     ignition-transport${IGN_TRANSPORT_VER}::core
 )
 
-#nodes
-add_executable(rmua19_robot_base nodes/rmua19_robot_base_node.cpp)
+# nodes
+add_executable(rmua19_robot_base src/rmua19_robot_base_main.cpp)
 target_link_libraries(rmua19_robot_base ${PROJECT_NAME})
 
 # Install include directories
@@ -80,22 +113,14 @@ install(PROGRAMS
         scripts/test_shoot_cmd.py
     DESTINATION lib/${PROJECT_NAME})
 
-ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(std_msgs)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(sensor_msgs)
-ament_export_dependencies(nav_msgs)
-ament_export_dependencies(rmoss_interfaces)
-ament_export_dependencies(tf2_ros)
-ament_export_dependencies(ros_ign_bridge)
-ament_export_dependencies(ignition-transport10)
-ament_export_dependencies(ignition-msgs7)
-
 # test
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(${dependencies})
+ament_export_dependencies(ignition-msgs${IGN_MSGS_VER})
+ament_export_dependencies(ignition-transport${IGN_TRANSPORT_VER})
 ament_package()
