@@ -1,0 +1,38 @@
+name: Build and Test (Galactic $ Edifice)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      - name: Check Changed files
+        id: check_changed_files
+        uses: tj-actions/changed-files@v9.2
+      - name: Setup ROS 2
+        uses: ros-tooling/setup-ros@v0.2
+        with:
+          required-ros-distributions: galactic
+      - name: Setup Ignition Gazebo
+        run: .github/workflows/setup_ignition.sh
+      - name: Build rmoss_ign
+        uses: ros-tooling/action-ros-ci@v0.2
+        env:
+          IGNITION_VERSION: edifice
+        with:
+          target-ros2-distro: galactic
+          vcs-repo-file-url: "${{ github.workspace }}/tools/dependency.repos"
+          skip-tests: true
+      - name: Test rmoss_ign_base
+        run: |
+          source /opt/ros/galactic/setup.sh
+          cd ros_ws
+          colcon test --packages-select rmoss_ign_base --event-handlers console_cohesion+ --return-code-on-test-failure
+        env:
+          IGNITION_VERSION: edifice
