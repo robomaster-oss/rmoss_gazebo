@@ -10,17 +10,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 # find package
 find_package(ament_cmake REQUIRED)
-find_package(ignition-cmake2 REQUIRED)
-find_package(ignition-plugin1 REQUIRED)
-set(IGN_PLUGIN_VER 1)
-find_package(ignition-gazebo5 REQUIRED)
-set(IGN_GAZEBO_VER 5)
-find_package(ignition-common4 REQUIRED)
-set(IGN_COMMON_VER 4)
-find_package(ignition-transport10 REQUIRED)
-set(IGN_TRANSPORT_VER 10)
 find_package(ignition-msgs7 REQUIRED)
 set(IGN_MSGS_VER 7)
+find_package(ignition-transport10 REQUIRED)
+set(IGN_TRANSPORT_VER 10)
+find_package(ignition-gazebo5 REQUIRED)
+set(IGN_GAZEBO_VER 5)
 
 
 # for plugins MecanumDrive2
@@ -28,7 +23,6 @@ add_library(MecanumDrive2 SHARED plugins/mecanum_drive2/MecanumDrive2.cc)
 
 target_link_libraries(MecanumDrive2
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
-  ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
 )
 
 # for plugins ProjectileShooter
@@ -36,15 +30,12 @@ add_library(ProjectileShooter SHARED plugins/projectile_shooter/ProjectileShoote
 
 target_link_libraries(ProjectileShooter
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
-  ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
 )
 
 # for plugins LightIndicator
 add_library(LightIndicator SHARED plugins/light_indicator/LightIndicator.cc)
 target_link_libraries(LightIndicator
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
-  ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
-  # ignition-rendering4::ignition-rendering4
 )
 
 
