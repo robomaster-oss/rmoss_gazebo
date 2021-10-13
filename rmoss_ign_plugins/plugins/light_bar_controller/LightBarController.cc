@@ -9,6 +9,7 @@
  *
  ******************************************************************************/
 #include <mutex>
+#include <map>
 #include <ignition/common/Util.hh>
 #include <ignition/plugin/Register.hh>
 #include <ignition/transport/Node.hh>
@@ -27,7 +28,7 @@
 #include <ignition/gazebo/Util.hh>
 #include <ignition/gazebo/Conversions.hh>
 
-#include "LightIndicator.hh"
+#include "LightBarController.hh"
 
 using namespace ignition;
 using namespace gazebo;
@@ -43,16 +44,15 @@ sdf::Material GetMaterial(int state){
         color.Set(1,0,0,1);
     }else if(state == 2){
         color.Set(0,0,1,1);
-    }else{
+    }else if(state == 3){
         color.Set(1,1,0,1);
+    }else{
+        color.Set(1,1,1,1);
     }
     m.SetAmbient(color);
     m.SetDiffuse(color);
     m.SetSpecular(color);
-    if(state == 0){
-        color.Set(0.3,0.3,0.3,1);
-        m.SetEmissive(color);
-    }else{
+    if(state != 0){
         m.SetEmissive(color);
     }
     return m;
@@ -73,7 +73,7 @@ struct VisualEntityInfo {
     }
 };
 
-class ignition::gazebo::systems::LightIndicatorPrivate
+class ignition::gazebo::systems::LightBarControllerPrivate
 {
 public:
     void OnCmd(const ignition::msgs::Int32 &_msg);
@@ -91,18 +91,18 @@ public:
     bool isInit{false};
     bool isDone{true};
     // cmd
-    // 0:white, 1:red light, 2:blue light, 3:yellow light
+    // 0:no light, 1:red light, 2:blue light, 3:yellow light, 4:white light
     int targetState;
     bool change{false};
     std::mutex targetMutex;
 };
 
-/******************implementation for LightIndicator************************/
-LightIndicator::LightIndicator() : dataPtr(std::make_unique<LightIndicatorPrivate>())
+/******************implementation for LightBarController************************/
+LightBarController::LightBarController() : dataPtr(std::make_unique<LightBarControllerPrivate>())
 {
 }
 
-void LightIndicator::Configure(const Entity &_entity,
+void LightBarController::Configure(const Entity &_entity,
                              const std::shared_ptr<const sdf::Element> &_sdf,
                              EntityComponentManager &_ecm,
                              EventManager & _eventMgr)
@@ -110,19 +110,26 @@ void LightIndicator::Configure(const Entity &_entity,
     this->dataPtr->model = Model(_entity);
     if (!this->dataPtr->model.Valid(_ecm))
     {
-        ignerr << "LightIndicator plugin should be attached to a model entity. Failed to initialize." << std::endl;
+        ignerr << "LightBarController plugin should be attached to a model entity. Failed to initialize." << std::endl;
         return;
     }
     // Get params from SDF
-    std::string indicator_name = "indicator";
-    if (_sdf->HasElement("indicator_name"))
+    std::string controller_name = "light_bar_controller";
+    if (_sdf->HasElement("controller_name"))
     {
-        indicator_name = _sdf->Get<std::string>("indicator_name");
+        controller_name = _sdf->Get<std::string>("controller_name");
     }
-    if (_sdf->HasElement("initial_state"))
+    
+    if (_sdf->HasElement("initial_color"))
     {
-        this->dataPtr->targetState = _sdf->Get<int>("initial_state");
-        this->dataPtr->change = true;
+        std::map<std::string,int> color_map{{"none",0},{"red",1},{"blue",2},{"yellow",3},{"white",4}};
+        auto color = _sdf->Get<std::string>("initial_color");
+        if(color_map.find(color)!=color_map.end()){
+            this->dataPtr->targetState = color_map[color];
+            this->dataPtr->change = true;
+        }else{
+            ignwarn << "LightBarController color [" << color << "] is invalid." << std::endl;
+        }
     }
     // link_visual
     auto ptr = const_cast<sdf::Element *>(_sdf.get());
@@ -138,12 +145,12 @@ void LightIndicator::Configure(const Entity &_entity,
     // Model Sdf
     this->dataPtr->modelSdf = _ecm.Component<components::ModelSdf>(_entity)->Data();
     // Subscribe to commands
-    std::string topic{this->dataPtr->model.Name(_ecm) +"/"+indicator_name+ "/set_state"};
-    this->dataPtr->node.Subscribe(topic, &LightIndicatorPrivate::OnCmd, this->dataPtr.get());
-    ignmsg << "LightIndicator subscribing to int32 messages on [" << topic << "]" << std::endl;
+    std::string topic{this->dataPtr->model.Name(_ecm) +"/"+controller_name+ "/set_state"};
+    this->dataPtr->node.Subscribe(topic, &LightBarControllerPrivate::OnCmd, this->dataPtr.get());
+    ignmsg << "LightBarController subscribing to int32 messages on [" << topic << "]" << std::endl;
 }
 
-void LightIndicator::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
+void LightBarController::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
                              ignition::gazebo::EntityComponentManager &_ecm)
 {
     if(_info.paused){
@@ -156,7 +163,7 @@ void LightIndicator::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
     {
         std::lock_guard<std::mutex> lock(this->dataPtr->targetMutex);
         //
-        if(this->dataPtr->change){
+        if(this->dataPtr->isDone && this->dataPtr->change){
             auto targetMaterial = GetMaterial(this->dataPtr->targetState);
             for(auto &info: this->dataPtr->visualEntityInfos){
                 info.state = 0;
@@ -181,15 +188,15 @@ void LightIndicator::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
 }
 
 
-/******************implementation for LightIndicatorPrivate******************/
-void LightIndicatorPrivate::OnCmd(const ignition::msgs::Int32 &_msg)
+/******************implementation for LightBarControllerPrivate******************/
+void LightBarControllerPrivate::OnCmd(const ignition::msgs::Int32 &_msg)
 {
     std::lock_guard<std::mutex> lock(this->targetMutex);
     this->targetState = _msg.data();
     this->change = true;
 }
 
-void LightIndicatorPrivate::Init(ignition::gazebo::EntityComponentManager &_ecm){
+void LightBarControllerPrivate::Init(ignition::gazebo::EntityComponentManager &_ecm){
     bool flag = false;
     for(auto linkVisual : this->linkVisuals){
         flag = false;
@@ -204,12 +211,12 @@ void LightIndicatorPrivate::Init(ignition::gazebo::EntityComponentManager &_ecm)
             }
         }
         if(!flag){
-            ignerr << "LightIndicator: visual element of link [" << linkVisual << "] is invaild" << std::endl;
+            ignerr << "LightBarController: visual element of link [" << linkVisual << "] is invaild" << std::endl;
         }
     }
 }
 
-void LightIndicatorPrivate::UpdateVisualEnitiies(){
+void LightBarControllerPrivate::UpdateVisualEnitiies(){
     for(auto &info: this->visualEntityInfos){
         if(info.state == 0){
             this->creator->RequestRemoveEntity(info.entity);
@@ -224,10 +231,10 @@ void LightIndicatorPrivate::UpdateVisualEnitiies(){
 }
 
 /******************register*************************************************/
-IGNITION_ADD_PLUGIN(LightIndicator,
+IGNITION_ADD_PLUGIN(LightBarController,
                     ignition::gazebo::System,
-                    LightIndicator::ISystemConfigure,
-                    LightIndicator::ISystemPreUpdate
+                    LightBarController::ISystemConfigure,
+                    LightBarController::ISystemPreUpdate
                     )
 
-IGNITION_ADD_PLUGIN_ALIAS(LightIndicator, "ignition::gazebo::systems::LightIndicator")
+IGNITION_ADD_PLUGIN_ALIAS(LightBarController, "ignition::gazebo::systems::LightBarController")

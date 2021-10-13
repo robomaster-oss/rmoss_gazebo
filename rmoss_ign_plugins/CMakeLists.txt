@@ -32,15 +32,15 @@ target_link_libraries(ProjectileShooter
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
 )
 
-# for plugins LightIndicator
-add_library(LightIndicator SHARED plugins/light_indicator/LightIndicator.cc)
-target_link_libraries(LightIndicator
+# for plugins LightBarController
+add_library(LightBarController SHARED plugins/light_bar_controller/LightBarController.cc)
+target_link_libraries(LightBarController
   ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}
 )
 
 
 # Install plugins
-install(TARGETS MecanumDrive2 ProjectileShooter LightIndicator
+install(TARGETS MecanumDrive2 ProjectileShooter LightBarController
     DESTINATION plugins
 )
 

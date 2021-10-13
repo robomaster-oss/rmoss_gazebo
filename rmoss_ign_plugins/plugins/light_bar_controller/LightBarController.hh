@@ -9,8 +9,8 @@
  *
  ******************************************************************************/
 
-#ifndef IGNITION_GAZEBO_SYSTEMS_LIGHT_INDICATOR_HH
-#define IGNITION_GAZEBO_SYSTEMS_LIGHT_INDICATOR_HH
+#ifndef IGNITION_GAZEBO_SYSTEMS_LIGHT_BAR_CONTROLLER_HH
+#define IGNITION_GAZEBO_SYSTEMS_LIGHT_BAR_CONTROLLER_HH
 
 #include <memory>
 #include <ignition/gazebo/System.hh>
@@ -21,15 +21,15 @@ namespace ignition
     {
         namespace systems
         {
-            class LightIndicatorPrivate;
-            class IGNITION_GAZEBO_VISIBLE LightIndicator
+            class LightBarControllerPrivate;
+            class IGNITION_GAZEBO_VISIBLE LightBarController
                 : public ignition::gazebo::System,
                   public ISystemConfigure,
                   public ISystemPreUpdate
             {
             public:
-                LightIndicator();
-                ~LightIndicator() override = default;
+                LightBarController();
+                ~LightBarController() override = default;
 
             public:
                 void Configure(const Entity &_entity,
@@ -39,10 +39,10 @@ namespace ignition
                 void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
                                ignition::gazebo::EntityComponentManager &_ecm) override;
             private:
-                std::unique_ptr<LightIndicatorPrivate> dataPtr;
+                std::unique_ptr<LightBarControllerPrivate> dataPtr;
             };
         } // namespace systems
     }     // namespace gazebo
 } // namespace ignition
 
-#endif //IGNITION_GAZEBO_SYSTEMS_LIGHT_INDICATOR_HH
+#endif //IGNITION_GAZEBO_SYSTEMS_LIGHT_BAR_CONTROLLER_HH
