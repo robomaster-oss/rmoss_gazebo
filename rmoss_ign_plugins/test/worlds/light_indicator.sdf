@@ -70,9 +70,9 @@
             </link>
 
             <plugin filename="LightIndicator" name="ignition::gazebo::systems::LightIndicator">
-                <indicator_name>hp_indicator</indicator_name>
+                <controller_name>hp_indicator</controller_name>
                 <link_visual>link/visual2</link_visual>
-                <initial_state>1</initial_state>
+                <initial_color>red</initial_color>
             </plugin>
         </model>
 
