@@ -15,6 +15,8 @@
 #ifndef RMOSS_IGN_BASE__PID_HPP_
 #define RMOSS_IGN_BASE__PID_HPP_
 
+#include <string>
+
 #include "ignition/math/PID.hh"
 #include "rclcpp/rclcpp.hpp"
 
@@ -33,14 +35,17 @@ struct PidParam
   double offset;
 };
 
-void declare_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name);
+void declare_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name);
 
-void declare_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name,PidParam &pid_param );
+void declare_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name, PidParam & pid_param);
 
-void get_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name, PidParam &pid_param);
+void get_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name, PidParam & pid_param);
 
 }  // namespace rmoss_ign_base
 

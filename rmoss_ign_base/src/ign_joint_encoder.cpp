@@ -57,7 +57,7 @@ int IgnJointEncoder::get_joint_idx(std::string & joint_name)
 double IgnJointEncoder::get_pos(int joint_idx)
 {
   std::lock_guard<std::mutex> lock(msg_mut_);
-  if (is_init_ && joint_idx >= 0 && joint_idx< joint_names_.size()) {
+  if (is_init_ && joint_idx >= 0 && joint_idx < joint_names_.size()) {
     return joint_state_msg_.joint(joint_idx).axis1().position();
   } else {
     return 0;

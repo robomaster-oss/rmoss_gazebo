@@ -14,45 +14,51 @@
 
 #include "rmoss_ign_base/pid.hpp"
 
+#include <string>
+
 namespace rmoss_ign_base
 {
 
-void declare_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name){
-    node->declare_parameter(name+".p", 10.0);
-    node->declare_parameter(name+".i", 0.0);
-    node->declare_parameter(name+".d", 0.0);
-    node->declare_parameter(name+".imin", -1.0);
-    node->declare_parameter(name+".imax", 1.0);
-    node->declare_parameter(name+".cmdmin", -1000.0);
-    node->declare_parameter(name+".cmdmax", 1000.0);
-    node->declare_parameter(name+".offset", 0.0);
+void declare_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name)
+{
+  node->declare_parameter(name + ".p", 10.0);
+  node->declare_parameter(name + ".i", 0.0);
+  node->declare_parameter(name + ".d", 0.0);
+  node->declare_parameter(name + ".imin", -1.0);
+  node->declare_parameter(name + ".imax", 1.0);
+  node->declare_parameter(name + ".cmdmin", -1000.0);
+  node->declare_parameter(name + ".cmdmax", 1000.0);
+  node->declare_parameter(name + ".offset", 0.0);
 }
 
-void declare_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name,PidParam &pid_param ){
-    node->declare_parameter(name+".p", pid_param.p);
-    node->declare_parameter(name+".i", pid_param.i);
-    node->declare_parameter(name+".d", pid_param.d);
-    node->declare_parameter(name+".imin", pid_param.imin);
-    node->declare_parameter(name+".imax", pid_param.imin);
-    node->declare_parameter(name+".cmdmin", pid_param.cmdmin);
-    node->declare_parameter(name+".cmdmax", pid_param.cmdmax);
-    node->declare_parameter(name+".offset", pid_param.offset);
+void declare_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name, PidParam & pid_param)
+{
+  node->declare_parameter(name + ".p", pid_param.p);
+  node->declare_parameter(name + ".i", pid_param.i);
+  node->declare_parameter(name + ".d", pid_param.d);
+  node->declare_parameter(name + ".imin", pid_param.imin);
+  node->declare_parameter(name + ".imax", pid_param.imin);
+  node->declare_parameter(name + ".cmdmin", pid_param.cmdmin);
+  node->declare_parameter(name + ".cmdmax", pid_param.cmdmax);
+  node->declare_parameter(name + ".offset", pid_param.offset);
 }
 
-void get_pid_parameter(rclcpp::Node::SharedPtr node,
-        const std::string &name, PidParam &pid_param){
-    pid_param.p=node->get_parameter(name+".p").as_double();
-    pid_param.i=node->get_parameter(name+".i").as_double();
-    pid_param.d=node->get_parameter(name+".d").as_double();
-    pid_param.imin=node->get_parameter(name+".imin").as_double();
-    pid_param.imax=node->get_parameter(name+".imax").as_double();
-    pid_param.cmdmin=node->get_parameter(name+".cmdmin").as_double();
-    pid_param.cmdmax=node->get_parameter(name+".cmdmax").as_double();
-    pid_param.offset=node->get_parameter(name+".offset").as_double();
+void get_pid_parameter(
+  rclcpp::Node::SharedPtr node,
+  const std::string & name, PidParam & pid_param)
+{
+  pid_param.p = node->get_parameter(name + ".p").as_double();
+  pid_param.i = node->get_parameter(name + ".i").as_double();
+  pid_param.d = node->get_parameter(name + ".d").as_double();
+  pid_param.imin = node->get_parameter(name + ".imin").as_double();
+  pid_param.imax = node->get_parameter(name + ".imax").as_double();
+  pid_param.cmdmin = node->get_parameter(name + ".cmdmin").as_double();
+  pid_param.cmdmax = node->get_parameter(name + ".cmdmax").as_double();
+  pid_param.offset = node->get_parameter(name + ".offset").as_double();
 }
 
 }  // namespace rmoss_ign_base
-
-

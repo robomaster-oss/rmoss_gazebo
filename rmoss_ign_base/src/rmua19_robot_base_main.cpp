@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <memory>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rmoss_ign_base/advanced_chassis_controller.hpp"
@@ -59,7 +60,9 @@ int main(int argc, char * argv[])
     ign_node, ign_joint_state_topic);
   auto ign_gimbal_imu = std::make_shared<rmoss_ign_base::IgnImu>(ign_node, ign_gimbal_imu_topic);
   // create ign basic controller cmd (chassis cmd and gimbal cmd)
-  auto ign_chassis_cmd = std::make_shared<rmoss_ign_base::IgnChassisCmd>(ign_node, ign_chassis_cmd_topic);
+  auto ign_chassis_cmd = std::make_shared<rmoss_ign_base::IgnChassisCmd>(
+    ign_node,
+    ign_chassis_cmd_topic);
   auto ign_gimbal_cmd = std::make_shared<rmoss_ign_base::IgnGimbalCmd>(
     ign_node, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
 
