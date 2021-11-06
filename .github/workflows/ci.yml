@@ -36,3 +36,10 @@ jobs:
           colcon test --packages-select rmoss_ign_base --event-handlers console_cohesion+ --return-code-on-test-failure
         env:
           IGNITION_VERSION: edifice
+      - name: Test rmoss_ign_cam
+        run: |
+          source /opt/ros/galactic/setup.sh
+          cd ros_ws
+          colcon test --packages-select rmoss_ign_cam --event-handlers console_cohesion+ --return-code-on-test-failure
+        env:
+          IGNITION_VERSION: edifice
