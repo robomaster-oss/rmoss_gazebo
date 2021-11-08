@@ -115,6 +115,7 @@ bool IgnCam::open()
   }
   auto ret = ign_node_->Subscribe(topic_name_, &IgnCam::ign_image_cb, this);
   if (!ret) {
+    error_message_ = "failed to create ignition subscriber";
     return false;
   }
   std::this_thread::sleep_for(1000ms);
@@ -145,6 +146,7 @@ void IgnCam::ign_image_cb(const ignition::msgs::Image & msg)
 bool IgnCam::grab_image(cv::Mat & image)
 {
   if (!is_open_) {
+    error_message_ = "camera is not open";
     return false;
   }
   // wait image
@@ -155,30 +157,30 @@ bool IgnCam::grab_image(cv::Mat & image)
       cnt++;
     }
     if (!grap_ok_) {
-      std::cout << "wait" << std::endl;
+      error_message_ = "grap timeout";
       return false;
     }
   }
   // copy image
+  sensor_msgs::msg::Image ros_msg;
   {
     std::lock_guard<std::mutex> lock(msg_mut_);
-    sensor_msgs::msg::Image ros_msg;
     convert_ign_to_ros(ign_msg_, ros_msg);
-    image = cv_bridge::toCvCopy(ros_msg, "bgr8")->image.clone();
-    grap_ok_ = false;
-    return true;
   }
+  image = cv_bridge::toCvCopy(ros_msg, "bgr8")->image.clone();
+  grap_ok_ = false;
+  return true;
 }
 
 // set and get parameter
 bool IgnCam::set_parameter(rmoss_cam::CamParamType type, int value)
 {
-  if (params_.find(type) != params_.end()) {
+  if (type == rmoss_cam::CamParamType::Fps) {
     params_[type] = value;
     return true;
-  } else {
-    return false;
   }
+  error_message_ = "only support Fps";
+  return false;
 }
 bool IgnCam::get_parameter(rmoss_cam::CamParamType type, int & value)
 {
@@ -186,6 +188,7 @@ bool IgnCam::get_parameter(rmoss_cam::CamParamType type, int & value)
     value = params_[type];
     return true;
   } else {
+    error_message_ = "";
     return false;
   }
 }

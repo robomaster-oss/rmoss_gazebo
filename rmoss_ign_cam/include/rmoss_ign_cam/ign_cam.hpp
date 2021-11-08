@@ -42,6 +42,7 @@ public:
   bool grab_image(cv::Mat & image) override;
   bool set_parameter(rmoss_cam::CamParamType type, int value) override;
   bool get_parameter(rmoss_cam::CamParamType type, int & value) override;
+  std::string error_message() override {return error_message_;}
 
 private:
   void ign_image_cb(const ignition::msgs::Image & msg);
@@ -54,6 +55,7 @@ private:
   std::mutex msg_mut_;
   // camera parameters
   std::unordered_map<rmoss_cam::CamParamType, int> params_;
+  std::string error_message_;
   // flag
   bool is_open_{false};
 };
