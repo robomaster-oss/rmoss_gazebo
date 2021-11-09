@@ -82,8 +82,6 @@ def main():
         elif key == '\x03':
             break
         da=clip(da,0.01,0.2)
-        yaw=clip(yaw,-1.57,1.57)
-        pitch=clip(pitch,-0.5,0.5)
         info=getGimbalContolMsg(pitch,yaw)
         pub.publish(info)
 

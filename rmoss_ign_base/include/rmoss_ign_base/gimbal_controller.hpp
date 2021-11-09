@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__ADVANCED_GIMBAL_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__ADVANCED_GIMBAL_CONTROLLER_HPP_
+#ifndef RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_
+#define RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_
 
 #include <memory>
 #include <string>
@@ -31,16 +31,16 @@
 namespace rmoss_ign_base
 {
 
-class AdvancedGimbalController
+class GimbalController
 {
 public:
-  AdvancedGimbalController(
+  GimbalController(
     const rclcpp::Node::SharedPtr & nh,
     const std::string & ros_gimbal_cmd_topic,
     std::shared_ptr<IgnGimbalCmd> & ign_gimbal_cmd,
     std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder,
     std::shared_ptr<IgnImu> & ign_gimbal_imu);
-  ~AdvancedGimbalController() {}
+  ~GimbalController() {}
 
 public:
   void set_yaw_pid(struct PidParam pid_param);
@@ -77,4 +77,4 @@ private:
 
 }  // namespace rmoss_ign_base
 
-#endif  // RMOSS_IGN_BASE__ADVANCED_GIMBAL_CONTROLLER_HPP_
+#endif  // RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_

@@ -12,6 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -47,31 +48,29 @@ endif()
 include_directories(include)
 
 # generate rmoss_ign_base lib
-add_library(${PROJECT_NAME}
-  src/controller/simple_chassis_controller.cpp
-  src/controller/simple_gimbal_controller.cpp
-  src/controller/advanced_chassis_controller.cpp
-  src/controller/advanced_gimbal_controller.cpp
+add_library(${PROJECT_NAME} SHARED
+  src/controller/chassis_controller.cpp
+  src/controller/gimbal_controller.cpp
   src/controller/shooter_controller.cpp
   src/publisher/gimbal_state_publisher.cpp
-  src/publisher/lidar_publisher.cpp
   src/publisher/odometry_publisher.cpp
   src/ign_chassis_cmd.cpp
   src/ign_gimbal_cmd.cpp
   src/ign_imu.cpp
   src/ign_joint_encoder.cpp
   src/pid.cpp
+  src/rmua19_robot_base_node.cpp
 )
 
 set(dependencies
   rclcpp
+  rclcpp_components
   std_msgs
   geometry_msgs
   sensor_msgs
   nav_msgs
   rmoss_interfaces
   tf2_ros
-  ros_ign_bridge
 )
 
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
@@ -84,6 +83,9 @@ target_link_libraries(${PROJECT_NAME}
 # nodes
 add_executable(rmua19_robot_base src/rmua19_robot_base_main.cpp)
 target_link_libraries(rmua19_robot_base ${PROJECT_NAME})
+
+# register component nodes
+rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_ign_base::Rmua19RobotBaseNode")
 
 # Install include directories
 install(DIRECTORY include/

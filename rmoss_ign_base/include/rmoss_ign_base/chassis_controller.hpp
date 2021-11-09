@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__ADVANCED_CHASSIS_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__ADVANCED_CHASSIS_CONTROLLER_HPP_
+#ifndef RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_
+#define RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_
 
 #include <memory>
 #include <string>
@@ -29,15 +29,15 @@
 namespace rmoss_ign_base
 {
 
-class AdvancedChassisController
+class ChassisController
 {
 public:
-  AdvancedChassisController(
+  ChassisController(
     const rclcpp::Node::SharedPtr & node,
     const std::string & ros_chassis_cmd_topic,
     std::shared_ptr<IgnChassisCmd> & ign_chassis_cmd,
     std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder);
-  ~AdvancedChassisController() {}
+  ~ChassisController() {}
 
 public:
   void set_chassis_pid(struct PidParam pid_param);
@@ -73,4 +73,4 @@ private:
 
 }  // namespace rmoss_ign_base
 
-#endif  // RMOSS_IGN_BASE__ADVANCED_CHASSIS_CONTROLLER_HPP_
+#endif  // RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_

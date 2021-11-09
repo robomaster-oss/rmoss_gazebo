@@ -57,12 +57,14 @@ void IgnImu::ign_imu_cb(const ignition::msgs::IMU & msg)
   pitch_angle_ = toPitch(q.x(), q.y(), q.z(), q.w());
   yaw_angle_ = toYaw(q.x(), q.y(), q.z(), q.w());
   // continuous yaw
-  continuous_yaw_angle_ = continuous_yaw_angle_ + (yaw_angle_ - last_yaw_angle_);
-  if (yaw_angle_ - last_yaw_angle_ > 3) {
-    continuous_yaw_angle_ = continuous_yaw_angle_ - 3.1415926535;
-  } else if (yaw_angle_ - last_yaw_angle_ < -3) {
-    continuous_yaw_angle_ = continuous_yaw_angle_ + 3.1415926535;
+  double dyaw = yaw_angle_ - last_yaw_angle_;
+  if (dyaw > 3) {
+    dyaw = dyaw - 3.1415926535 * 2;
   }
+  if (dyaw < -3) {
+    dyaw = dyaw + 3.1415926535 * 2;
+  }
+  continuous_yaw_angle_ = continuous_yaw_angle_ + dyaw;
   last_yaw_angle_ = yaw_angle_;
 }
 

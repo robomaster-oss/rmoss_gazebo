@@ -17,8 +17,6 @@
 #include <memory>
 #include <string>
 
-#include "ros_ign_bridge/convert.hpp"
-
 namespace rmoss_ign_base
 {
 
@@ -78,8 +76,17 @@ void OdometryPublisher::timer_callback()
   odom_msg.header.frame_id = frame_id_;
   odom_msg.header.stamp = time;
   odom_msg.child_frame_id = child_frame_id_;
-  ros_ign_bridge::convert_ign_to_ros(odom_msg_.pose(), odom_msg.pose.pose);
-  ros_ign_bridge::convert_ign_to_ros(odom_msg_.twist(), odom_msg.twist.twist);
+  auto & pose = odom_msg_.pose();
+  odom_msg.pose.pose.position.x = pose.position().x();
+  odom_msg.pose.pose.position.y = pose.position().y();
+  odom_msg.pose.pose.position.z = pose.position().z();
+  odom_msg.pose.pose.orientation.x = pose.orientation().x();
+  odom_msg.pose.pose.orientation.y = pose.orientation().y();
+  odom_msg.pose.pose.orientation.z = pose.orientation().z();
+  odom_msg.pose.pose.orientation.w = pose.orientation().w();
+  odom_msg.twist.twist.linear.x = odom_msg_.twist().linear().x();
+  odom_msg.twist.twist.linear.y = odom_msg_.twist().linear().y();
+  odom_msg.twist.twist.angular.z = odom_msg_.twist().angular().z();
   if (use_footprint_) {
     odom_msg.pose.pose.position.z = 0;
   }

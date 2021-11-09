@@ -11,7 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/advanced_gimbal_controller.hpp"
+
+#include "rmoss_ign_base/gimbal_controller.hpp"
 
 #include <memory>
 #include <string>
@@ -19,8 +20,7 @@
 namespace rmoss_ign_base
 {
 
-
-AdvancedGimbalController::AdvancedGimbalController(
+GimbalController::GimbalController(
   const rclcpp::Node::SharedPtr & nh,
   const std::string & ros_gimbal_cmd_topic,
   std::shared_ptr<IgnGimbalCmd> & ign_gimbal_cmd,
@@ -37,21 +37,18 @@ AdvancedGimbalController::AdvancedGimbalController(
   // ros sub
   ros_gimbal_cmd_sub_ = nh_->create_subscription<rmoss_interfaces::msg::GimbalCmd>(
     ros_gimbal_cmd_topic,
-    10, std::bind(&AdvancedGimbalController::gimbal_cb, this, std::placeholders::_1));
+    10, std::bind(&GimbalController::gimbal_cb, this, std::placeholders::_1));
   // timer and set_parameters callback
-  auto period = std::chrono::microseconds(1000000 / 100);
+  auto period = std::chrono::milliseconds(10);
   callback_group_ = nh_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-  controller_timer_ =
-    nh_->create_wall_timer(
-    period, std::bind(
-      &AdvancedGimbalController::update,
-      this), callback_group_);
+  controller_timer_ = nh_->create_wall_timer(
+    period, std::bind(&GimbalController::update, this), callback_group_);
 }
 
-void AdvancedGimbalController::update()
+void GimbalController::update()
 {
   std::lock_guard<std::mutex> lock(msg_mut_);
-  auto dt = std::chrono::microseconds(1000000 / 100);
+  auto dt = std::chrono::milliseconds(10);
   // check
   if (update_pid_flag_) {
     picth_pid_.Init(
@@ -71,24 +68,31 @@ void AdvancedGimbalController::update()
   double yaw_err = ign_gimbal_imu_->get_yaw() - target_yaw_;
   double yaw_cmd = yaw_pid_.Update(yaw_err, dt);
   // printf("imu:%lf,%lf\n",ign_gimbal_imu_->get_yaw() ,ign_gimbal_imu_->get_pitch());
+  // printf("imu:%lf,%lf\n",ign_gimbal_imu_->get_yaw() ,target_yaw_);
   // publish CMD
   ign_gimbal_cmd_->publish(pitch_cmd, yaw_cmd);
 }
 
 
-void AdvancedGimbalController::gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg)
+void GimbalController::gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg)
 {
   std::lock_guard<std::mutex> lock(msg_mut_);
   target_yaw_ = msg->position.yaw;
   target_pitch_ = msg->position.pitch;
+  if (target_pitch_ > 1) {
+    target_pitch_ = 1;
+  }
+  if (target_pitch_ < -1) {
+    target_pitch_ = -1;
+  }
 }
 
-void AdvancedGimbalController::set_yaw_pid(struct PidParam pid_param)
+void GimbalController::set_yaw_pid(struct PidParam pid_param)
 {
   yaw_pid_param_ = pid_param;
   update_pid_flag_ = true;
 }
-void AdvancedGimbalController::set_pitch_pid(struct PidParam pid_param)
+void GimbalController::set_pitch_pid(struct PidParam pid_param)
 {
   pitch_pid_param_ = pid_param;
   update_pid_flag_ = true;
