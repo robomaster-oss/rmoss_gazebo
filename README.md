@@ -14,7 +14,7 @@ RoboMasterOSS是一个面向RoboMaster的开源软件栈项目，目的是为Rob
 
 rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazebo仿真支持，主要提供Ignition插件，相关机器人模型资源等。
 
-## 1.主要模块
+## 主要模块
 
 |            模块             |                           功能说明                           |
 | :-------------------------: | :----------------------------------------------------------: |
@@ -26,7 +26,7 @@ rmoss_ign是RoboMaster OSS中的基础项目，为RoboMaster提供Ignition Gazeb
 
 * `rmoss_ign_resources` 和`rmoss_ign_extra_resources`主要包含资源文件，体积较大，单独成库。
 
-## 2.使用说明
+## 使用说明
 
 * ROS2版本要求: `Galatic` (目前处于开发期，基于ROS2最新版本)
 * Ignition仿真器版本要求: ` Edifice` (目前处于开发期，基于Ignition最新版本)
@@ -47,13 +47,11 @@ colcon build
 
 * 相关功能包使用详见相应package的README.md
 
-## 3.RMOSS Ign架构
+## RMOSS Ign设计
 
-![](rmoss_ign_arch.png)
+* 详见[RMOSS Ign设计模式](https://robomaster-oss.github.io/rmoss_tutorials/#/design/rmoss_ign_design)
 
-* RMOSS Ign项目将遵循该架构进行开发。
-
-## 4.维护者及开源许可证
+## 维护者及开源许可证
 
 Maintainer : Zhenpeng Ge,  zhenpeng.ge@qq.com
 
