@@ -27,15 +27,12 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   ign_node_ = std::make_shared<ignition::transport::Node>();
   // parameters
   std::string world_name, robot_name;
-  bool follow_gimbal = true;
   bool use_odometry = false;
   node_->declare_parameter("world_name", "default");
   node_->declare_parameter("robot_name", "standard_robot_red1");
-  node_->declare_parameter("follow_gimbal", follow_gimbal);
   node_->declare_parameter("use_odometry", use_odometry);
   node_->get_parameter("robot_name", robot_name);
   node_->get_parameter("world_name", world_name);
-  node_->get_parameter("follow_gimbal", follow_gimbal);
   node_->get_parameter("use_odometry", use_odometry);
   // ign topic string
   std::string ign_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
@@ -65,22 +62,19 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
     ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
   // create ros controller and publisher
   chassis_controller_ = std::make_shared<rmoss_ign_base::ChassisController>(
-    node_, "robot_base/chassis_cmd", ign_chassis_cmd_, ign_gimbal_encoder_);
+    node_, ign_chassis_cmd_, ign_gimbal_encoder_);
   gimbal_controller_ = std::make_shared<rmoss_ign_base::GimbalController>(
-    node_, "robot_base/gimbal_cmd", ign_gimbal_cmd_, ign_gimbal_encoder_, ign_gimbal_imu_);
+    node_, ign_gimbal_cmd_, ign_gimbal_encoder_, ign_gimbal_imu_);
   shooter_controller_ = std::make_shared<rmoss_ign_base::ShooterController>(
-    node_, ign_node_, "robot_base/shoot_cmd", ign_shooter_cmd_topic);
+    node_, ign_node_, ign_shooter_cmd_topic);
   gimbal_publisher_ = std::make_shared<rmoss_ign_base::GimbalStatePublisher>(
-    node_, "robot_base/gimbal_state", ign_gimbal_imu_, 50);
+    node_, ign_gimbal_imu_, 50);
   if (use_odometry) {
     odometry_publisher_ = std::make_shared<rmoss_ign_base::OdometryPublisher>(
       node_, ign_node_, "/" + robot_name + "/odometry");
     odometry_publisher_->set_child_frame_id(robot_name + "/footprint");
     odometry_publisher_->set_footprint(true);
   }
-
-  // config chassis mode
-  chassis_controller_->set_control_mode(follow_gimbal);
   // set pid
   chassis_controller_->set_chassis_pid(chassis_pid_param);
   gimbal_controller_->set_pitch_pid(picth_pid_param);

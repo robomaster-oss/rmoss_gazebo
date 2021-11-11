@@ -51,14 +51,14 @@ void get_pid_parameter(
   rclcpp::Node::SharedPtr node,
   const std::string & name, PidParam & pid_param)
 {
-  pid_param.p = node->get_parameter(name + ".p").as_double();
-  pid_param.i = node->get_parameter(name + ".i").as_double();
-  pid_param.d = node->get_parameter(name + ".d").as_double();
-  pid_param.imin = node->get_parameter(name + ".imin").as_double();
-  pid_param.imax = node->get_parameter(name + ".imax").as_double();
-  pid_param.cmdmin = node->get_parameter(name + ".cmdmin").as_double();
-  pid_param.cmdmax = node->get_parameter(name + ".cmdmax").as_double();
-  pid_param.offset = node->get_parameter(name + ".offset").as_double();
+  node->get_parameter(name + ".p", pid_param.p);
+  node->get_parameter(name + ".i", pid_param.i);
+  node->get_parameter(name + ".d", pid_param.d);
+  node->get_parameter(name + ".imin", pid_param.imin);
+  node->get_parameter(name + ".imax", pid_param.imin);
+  node->get_parameter(name + ".cmdmin", pid_param.cmdmin);
+  node->get_parameter(name + ".cmdmax", pid_param.cmdmax);
+  node->get_parameter(name + ".offset", pid_param.offset);
 }
 
 }  // namespace rmoss_ign_base

@@ -33,9 +33,9 @@ public:
     rclcpp::Node::SharedPtr ros_node,
     std::shared_ptr<ignition::transport::Node> ign_node,
     const std::string & ign_odom_topic,
-    const std::string & ros_odom_topic = "odom",
     int update_rate = 50,
-    bool publish_tf = true);
+    bool publish_tf = true,
+    const std::string & odometry_name = "");
   ~OdometryPublisher() {}
 
   void set_frame_id(const std::string & frame_id);

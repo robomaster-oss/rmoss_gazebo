@@ -34,14 +34,12 @@ class ChassisController
 public:
   ChassisController(
     const rclcpp::Node::SharedPtr & node,
-    const std::string & ros_chassis_cmd_topic,
     std::shared_ptr<IgnChassisCmd> & ign_chassis_cmd,
     std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder);
   ~ChassisController() {}
 
 public:
   void set_chassis_pid(struct PidParam pid_param);
-  void set_control_mode(bool follow_mode_flag) {follow_mode_flag_ = follow_mode_flag;}
 
 private:
   void chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
@@ -52,7 +50,6 @@ private:
   rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr ros_chassis_cmd_sub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr ros_cmd_vel_sub_;
-  rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
   // ignition tool
   std::shared_ptr<IgnChassisCmd> ign_chassis_cmd_;
@@ -61,10 +58,8 @@ private:
   double target_vx_{0};
   double target_vy_{0};
   double target_w_{0};
-  std::mutex msg_mut_;
   // pid and pid parameter
   ignition::math::PID chassis_pid_;
-  PidParam chassis_pid_param_;
   // flag
   bool update_pid_flag_{false};
   bool follow_mode_flag_{true};

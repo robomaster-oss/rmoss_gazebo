@@ -19,21 +19,24 @@
 namespace rmoss_ign_base
 {
 GimbalStatePublisher::GimbalStatePublisher(
-  const rclcpp::Node::SharedPtr & nh,
-  const std::string & ros_gimbal_state_topic,
-  std::shared_ptr<IgnImu> & ign_gimbal_imu,
-  unsigned int update_rate)
+  rclcpp::Node::SharedPtr node,
+  std::shared_ptr<IgnImu> ign_gimbal_imu,
+  unsigned int update_rate,
+  const std::string & gimbal_name)
 {
   // ROS and Ignition node
-  nh_ = nh;
+  node_ = node;
   ign_gimbal_imu_ = ign_gimbal_imu;
   // create ros pub and timer
-  ros_gimbal_state_pub_ = nh_->create_publisher<rmoss_interfaces::msg::Gimbal>(
+  std::string ros_gimbal_state_topic = "robot_base/gimbal_state";
+  if (gimbal_name != "") {
+    ros_gimbal_state_topic = "robot_base/" + gimbal_name + "/gimbal_state";
+  }
+  ros_gimbal_state_pub_ = node_->create_publisher<rmoss_interfaces::msg::Gimbal>(
     ros_gimbal_state_topic, 10);
   auto period = std::chrono::microseconds(1000000 / update_rate);
-  gimbal_state_timer_ = nh_->create_wall_timer(
-    period,
-    std::bind(&GimbalStatePublisher::gimbalStateTimerCb, this));
+  gimbal_state_timer_ = node_->create_wall_timer(
+    period, std::bind(&GimbalStatePublisher::gimbalStateTimerCb, this));
 }
 
 void GimbalStatePublisher::gimbalStateTimerCb()

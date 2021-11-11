@@ -21,7 +21,6 @@ namespace rmoss_ign_base
 {
 ChassisController::ChassisController(
   const rclcpp::Node::SharedPtr & node,
-  const std::string & ros_chassis_cmd_topic,
   std::shared_ptr<IgnChassisCmd> & ign_chassis_cmd,
   std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder)
 {
@@ -29,38 +28,21 @@ ChassisController::ChassisController(
   node_ = node;
   ign_chassis_cmd_ = ign_chassis_cmd;
   ign_gimbal_encoder_ = ign_gimbal_encoder;
-  // init pid
-  update_pid_flag_ = true;
   // ros sub
+  using namespace std::placeholders;
   ros_chassis_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::ChassisCmd>(
-    ros_chassis_cmd_topic,
-    10, std::bind(&ChassisController::chassis_cb, this, std::placeholders::_1));
+    "robot_base/chassis_cmd", 10, std::bind(&ChassisController::chassis_cb, this, _1));
   ros_cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
-    "cmd_vel",
-    10, std::bind(&ChassisController::cmd_vel_cb, this, std::placeholders::_1));
+    "cmd_vel", 10, std::bind(&ChassisController::cmd_vel_cb, this, _1));
   // timer and set_parameters callback
   auto period = std::chrono::milliseconds(10);
-  callback_group_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-  controller_timer_ =
-    node_->create_wall_timer(
-    period, std::bind(
-      &ChassisController::update,
-      this), callback_group_);
+  controller_timer_ = node_->create_wall_timer(
+    period, std::bind(&ChassisController::update, this));
 }
 
 void ChassisController::update()
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
   auto dt = std::chrono::milliseconds(10);
-  // check
-  if (update_pid_flag_) {
-    chassis_pid_.Init(
-      chassis_pid_param_.p, chassis_pid_param_.i, chassis_pid_param_.d, chassis_pid_param_.imax,
-      chassis_pid_param_.imin, chassis_pid_param_.cmdmax, chassis_pid_param_.cmdmin,
-      chassis_pid_param_.offset);
-    RCLCPP_INFO(node_->get_logger(), "update PID!");
-    update_pid_flag_ = false;
-  }
   double w_cmd = 0;
   if (follow_mode_flag_) {
     // follow mode
@@ -76,24 +58,36 @@ void ChassisController::update()
 
 void ChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
-  target_vx_ = msg->twist.linear.x;
-  target_vy_ = msg->twist.linear.y;
-  target_w_ = msg->twist.angular.z;
+  if (msg->type == msg->VELOCITY) {
+    target_vx_ = msg->twist.linear.x;
+    target_vy_ = msg->twist.linear.y;
+    target_w_ = msg->twist.angular.z;
+    follow_mode_flag_ = false;
+  } else if (msg->type == msg->FOLLOW_GIMBAL) {
+    target_vx_ = msg->twist.linear.x;
+    target_vy_ = msg->twist.linear.y;
+    if (!follow_mode_flag_) {
+      follow_mode_flag_ = true;
+      chassis_pid_.Reset();
+    }
+  } else {
+    RCLCPP_WARN(node_->get_logger(), "chassis type[%d] isn't supported!", msg->type);
+  }
 }
 
 void ChassisController::cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
   target_vx_ = msg->linear.x;
   target_vy_ = msg->linear.y;
   target_w_ = msg->angular.z;
+  follow_mode_flag_ = false;
 }
 
 void ChassisController::set_chassis_pid(struct PidParam pid_param)
 {
-  chassis_pid_param_ = pid_param;
-  update_pid_flag_ = true;
+  chassis_pid_.Init(
+    pid_param.p, pid_param.i, pid_param.d, pid_param.imax,
+    pid_param.imin, pid_param.cmdmax, pid_param.cmdmin, pid_param.offset);
 }
 
 }  // namespace rmoss_ign_base

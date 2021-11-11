@@ -29,17 +29,17 @@ class GimbalStatePublisher
 {
 public:
   GimbalStatePublisher(
-    const rclcpp::Node::SharedPtr & nh,
-    const std::string & ros_gimbal_state_topic,
-    std::shared_ptr<IgnImu> & ign_gimbal_imu,
-    unsigned int update_rate);
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<IgnImu> ign_gimbal_imu,
+    unsigned int update_rate,
+    const std::string & gimbal_name = "");
   ~GimbalStatePublisher() {}
 
 private:
   void gimbalStateTimerCb();
 
 private:
-  rclcpp::Node::SharedPtr nh_;
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<IgnImu> ign_gimbal_imu_;
   // ros pub and sub
   rclcpp::Publisher<rmoss_interfaces::msg::Gimbal>::SharedPtr ros_gimbal_state_pub_;

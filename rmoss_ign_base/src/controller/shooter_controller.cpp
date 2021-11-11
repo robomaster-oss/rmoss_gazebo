@@ -23,16 +23,20 @@ namespace rmoss_ign_base
 ShooterController::ShooterController(
   rclcpp::Node::SharedPtr node,
   std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ros_cmd_topic,
-  const std::string & ign_cmd_topic)
+  const std::string & ign_cmd_topic,
+  const std::string & shooter_name)
 {
   // ROS and Ignition node
   node_ = node;
   ign_node_ = std::make_shared<ignition::transport::Node>();
   // create ros pub and sub
+  using namespace std::placeholders;
+  std::string ros_shoot_cmd_topic = "robot_base/shoot_cmd";
+  if (shooter_name != "") {
+    ros_shoot_cmd_topic = "robot_base/" + shooter_name + "/shoot_cmd";
+  }
   ros_shoot_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::ShootCmd>(
-    ros_cmd_topic,
-    10, std::bind(&ShooterController::shoot_cb, this, std::placeholders::_1));
+    ros_shoot_cmd_topic, 10, std::bind(&ShooterController::shoot_cb, this, _1));
   // create ignition pub
   ign_shoot_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
     ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));

@@ -35,11 +35,11 @@ class GimbalController
 {
 public:
   GimbalController(
-    const rclcpp::Node::SharedPtr & nh,
-    const std::string & ros_gimbal_cmd_topic,
-    std::shared_ptr<IgnGimbalCmd> & ign_gimbal_cmd,
-    std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder,
-    std::shared_ptr<IgnImu> & ign_gimbal_imu);
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd,
+    std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder,
+    std::shared_ptr<IgnImu> ign_gimbal_imu,
+    const std::string & gimbal_name = "");
   ~GimbalController() {}
 
 public:
@@ -54,9 +54,8 @@ private:
   void update();
 
 private:
-  rclcpp::Node::SharedPtr nh_;
+  rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<rmoss_interfaces::msg::GimbalCmd>::SharedPtr ros_gimbal_cmd_sub_;
-  rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
   // ignition tool
   std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd_;
@@ -65,12 +64,9 @@ private:
   // target data
   double target_pitch_{0};
   double target_yaw_{0};
-  std::mutex msg_mut_;
   // pid and pid parameter
   ignition::math::PID picth_pid_;
   ignition::math::PID yaw_pid_;
-  PidParam pitch_pid_param_;
-  PidParam yaw_pid_param_;
   // flag
   bool update_pid_flag_{false};
 };

@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 import sys
-if sys.platform == 'win32':
-    import msvcrt
-else:
-    import termios
-    import tty
+import termios
+import tty
 
 import rclpy
 from rmoss_interfaces.msg import ChassisCmd
@@ -16,6 +13,7 @@ as ChassisCmd messages.
 Moving around:
         w    
    a    s    d
+control mode: z for velocity, x for follow gimbal
 turn : '[' for left  ']' for right
 stop : space key
 ---------------------------
@@ -23,30 +21,15 @@ CTRL-C to quit
 """
 
 def getKey(settings):
-    if sys.platform == 'win32':
-        # getwch() returns a string on Windows
-        key = msvcrt.getwch()
-    else:
-        tty.setraw(sys.stdin.fileno())
-        # sys.stdin.read() returns a string on Linux
-        key = sys.stdin.read(1)
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+    tty.setraw(sys.stdin.fileno())
+    # sys.stdin.read() returns a string on Linux
+    key = sys.stdin.read(1)
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-def saveTerminalSettings():
-    if sys.platform == 'win32':
-        return None
-    return termios.tcgetattr(sys.stdin)
-
-
-def restoreTerminalSettings(old_settings):
-    if sys.platform == 'win32':
-        return
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-
-
-def getChassisContolMsg(x,y,w):
+def getChassisContolMsg(x,y,w,type = 1):
     control_info = ChassisCmd()
+    control_info.type = type
     control_info.twist.linear.x = x
     control_info.twist.linear.y = y
     control_info.twist.linear.z = 0.0
@@ -56,7 +39,7 @@ def getChassisContolMsg(x,y,w):
     return control_info
 
 def main():
-    settings = saveTerminalSettings()
+    settings = termios.tcgetattr(sys.stdin)
     rclpy.init()
     node = rclpy.create_node('control_chassis_test')
     #get params
@@ -68,6 +51,7 @@ def main():
     print("node params v:%f,w:%f"%(v,w))
     print(msg)
     vel_x=vel_y=vel_w=0.0
+    chassis_type = 1
     while True:
         key=getKey(settings)
         if key == 'w':
@@ -84,9 +68,13 @@ def main():
             vel_w=-1.0 * w
         elif key == ' ':
             vel_x=vel_y=vel_w=0.0
+        elif key == 'z':
+            chassis_type = 1
+        elif key == 'x':
+            chassis_type = 2
         elif key == '\x03':
             break
-        info=getChassisContolMsg(vel_x,vel_y,vel_w)
+        info=getChassisContolMsg(vel_x,vel_y,vel_w,chassis_type)
         pub.publish(info)
 
 if __name__ == '__main__':

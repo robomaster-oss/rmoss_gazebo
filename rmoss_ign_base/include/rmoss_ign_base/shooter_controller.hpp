@@ -32,8 +32,8 @@ public:
   ShooterController(
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ros_cmd_topic,
-    const std::string & ign_cmd_topic);
+    const std::string & ign_cmd_topic,
+    const std::string & shooter_name = "");
   ~ShooterController() {}
 
 private:

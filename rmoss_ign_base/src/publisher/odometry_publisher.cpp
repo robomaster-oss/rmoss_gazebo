@@ -24,12 +24,16 @@ OdometryPublisher::OdometryPublisher(
   rclcpp::Node::SharedPtr ros_node,
   std::shared_ptr<ignition::transport::Node> ign_node,
   const std::string & ign_odom_topic,
-  const std::string & ros_odom_topic,
   int update_rate,
-  bool publish_tf)
+  bool publish_tf,
+  const std::string & odometry_name)
 : ros_node_(ros_node), ign_node_(ign_node), publish_tf_(publish_tf)
 {
   // create ros pub and timer
+  std::string ros_odom_topic = "robot_base/odom";
+  if (odometry_name != "") {
+    ros_odom_topic = "robot_base/" + odometry_name + "/odom";
+  }
   odom_pub_ = ros_node_->create_publisher<nav_msgs::msg::Odometry>(ros_odom_topic, 10);
   ign_node_->Subscribe(ign_odom_topic, &OdometryPublisher::ign_odometry_cb, this);
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(ros_node_);
