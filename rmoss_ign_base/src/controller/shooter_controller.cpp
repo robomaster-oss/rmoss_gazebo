@@ -28,7 +28,7 @@ ShooterController::ShooterController(
 {
   // ROS and Ignition node
   node_ = node;
-  ign_node_ = std::make_shared<ignition::transport::Node>();
+  ign_node_ = ign_node;
   // create ros pub and sub
   using namespace std::placeholders;
   std::string ros_shoot_cmd_topic = "robot_base/shoot_cmd";
