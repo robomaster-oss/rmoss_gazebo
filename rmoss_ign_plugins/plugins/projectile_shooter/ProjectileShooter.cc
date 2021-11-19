@@ -70,7 +70,7 @@ struct ProjectileInfo {
 class ignition::gazebo::systems::ProjectileShooterPrivate {
 public:
     void OnCmd(const ignition::msgs::Int32& _msg);
-    void OnSetVel(const ignition::msgs::Int32& _msg);
+    void OnSetVel(const ignition::msgs::Double& _msg);
     void PreUpdate(const ignition::gazebo::UpdateInfo& _info, 
                     ignition::gazebo::EntityComponentManager& _ecm);
     void publishAttackInfo(const ignition::gazebo::UpdateInfo& _info,
@@ -213,7 +213,7 @@ void ProjectileShooterPrivate::OnCmd(const ignition::msgs::Int32& _msg)
 }
 
 
-void ProjectileShooterPrivate::OnSetVel(const ignition::msgs::Int32& _msg)
+void ProjectileShooterPrivate::OnSetVel(const ignition::msgs::Double& _msg)
 {
     std::lock_guard<std::mutex> lock(this->waitShootNumMutex);
     if (_msg.data() >0 && _msg.data() < 30) {
