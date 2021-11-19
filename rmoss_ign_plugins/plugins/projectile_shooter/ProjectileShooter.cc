@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <mutex>
-#include <queue>
+#include <list>
 #include <sstream>
 
 #include <ignition/common/Profiler.hh>
@@ -52,6 +52,7 @@ struct ProjectileInfo {
     std::string name;
     std::chrono::steady_clock::duration spawnTime;
     bool isInit;
+    bool remove{false};
     ProjectileInfo(Entity _entity, std::string _name, 
                     std::chrono::steady_clock::duration _time)
         : entity(_entity)
@@ -69,10 +70,9 @@ struct ProjectileInfo {
 class ignition::gazebo::systems::ProjectileShooterPrivate {
 public:
     void OnCmd(const ignition::msgs::Int32& _msg);
-    void OnSupply(const ignition::msgs::Int32& _msg);
+    void OnSetVel(const ignition::msgs::Int32& _msg);
     void PreUpdate(const ignition::gazebo::UpdateInfo& _info, 
                     ignition::gazebo::EntityComponentManager& _ecm);
-    //
     void publishAttackInfo(const ignition::gazebo::UpdateInfo& _info,
              ignition::gazebo::EntityComponentManager& _ecm,Entity _targetCollision);
     void publishShootInfo(const ignition::gazebo::UpdateInfo& _info);
@@ -96,12 +96,10 @@ public:
     double shootPeriodMS { 50 };
     // projectile
     sdf::Model projectileSdfModel;
-    unsigned int projectileId{0};
-    int currentTotalNum { 1000000 };
+    unsigned int projectileId{ 0 };
     int waitShootNum { 0 };
     std::mutex waitShootNumMutex;
-    std::mutex currentTotalNumMutex;
-    std::queue<ProjectileInfo> spawnedProjectiles;
+    std::list<ProjectileInfo> spawnedProjectiles;
     std::chrono::steady_clock::duration lastSpawnTime;
 };
 
@@ -143,9 +141,6 @@ void ProjectileShooter::Configure(const Entity& _entity,
     if (_sdf->HasElement("projectile_velocity")) {
         this->dataPtr->shootVel = _sdf->Get<double>("projectile_velocity");
     }
-    if (_sdf->HasElement("projectile_num")) {
-        this->dataPtr->currentTotalNum = _sdf->Get<double>("projectile_num");
-    }
     std::string projectile_uri;
     if (_sdf->HasElement("projectile_uri")) {
         projectile_uri = _sdf->Get<std::string>("projectile_uri");
@@ -172,16 +167,16 @@ void ProjectileShooter::Configure(const Entity& _entity,
         }
         return;
     }
-    if (projectileSdfRoot.ModelCount() == 0) {
+    if (projectileSdfRoot.Model() == nullptr) {
         ignerr << "Projectile Model not found" << std::endl;
         return;
     }
-    this->dataPtr->projectileSdfModel = *projectileSdfRoot.ModelByIndex(0);
+    this->dataPtr->projectileSdfModel = *projectileSdfRoot.Model();
     // Subscribe to commands
     std::string shootCmdTopic { this->dataPtr->modelName + "/" + this->dataPtr->shooterName + "/shoot" };
-    std::string supplyCmdTopic { this->dataPtr->modelName + "/" + this->dataPtr->shooterName + "/supply" };
+    std::string setVelTopic { this->dataPtr->modelName + "/" + this->dataPtr->shooterName + "/set_vel" };
     this->dataPtr->node.Subscribe(shootCmdTopic, &ProjectileShooterPrivate::OnCmd, this->dataPtr.get());
-    this->dataPtr->node.Subscribe(supplyCmdTopic, &ProjectileShooterPrivate::OnSupply, this->dataPtr.get());
+    this->dataPtr->node.Subscribe(setVelTopic, &ProjectileShooterPrivate::OnSetVel, this->dataPtr.get());
     // Publisher
     this->dataPtr->shootInfoPub = this->dataPtr->node.Advertise<msgs::StringMsg>(shootInfoTopic);
     this->dataPtr->attackInfoPub = this->dataPtr->node.Advertise<msgs::StringMsg>(attackInfoTopic);
@@ -193,9 +188,9 @@ void ProjectileShooter::Configure(const Entity& _entity,
     igndbg << "[" << this->dataPtr->modelName << " ProjectileShooter Info]:" << std::endl;
     igndbg << "Shooter name: " << this->dataPtr->shooterName << std::endl;
     igndbg << "Shooter offset: " << this->dataPtr->shooterOffset << std::endl;
-    igndbg << "Projectile name: " << projectileSdfRoot.ModelByIndex(0)->Name() << std::endl;
+    igndbg << "Projectile name: " << this->dataPtr->projectileSdfModel.Name() << std::endl;
     igndbg << "Shoot CMD Topic: " << shootCmdTopic << std::endl;
-    igndbg << "Supply CMD Topic: " << supplyCmdTopic << std::endl;
+    igndbg << "Set Vel Topic: " << setVelTopic << std::endl;
     igndbg << "Shoot Info Topic: " << shootInfoTopic << std::endl;
     igndbg << "Attack Info Topic: " << attackInfoTopic << std::endl;
 }
@@ -211,49 +206,50 @@ void ProjectileShooter::PreUpdate(const ignition::gazebo::UpdateInfo& _info,
 void ProjectileShooterPrivate::OnCmd(const ignition::msgs::Int32& _msg)
 {
     std::lock_guard<std::mutex> lock(this->waitShootNumMutex);
-    this->waitShootNum = _msg.data();
-    //ignmsg << "ProjectileShooter OnCmd msg: [" << _msg.data() << "]" << std::endl;
+    if (_msg.data() >=0) {
+        this->waitShootNum = _msg.data();
+    }
+    // ignmsg << "ProjectileShooter OnCmd msg: [" << _msg.data() << "]" << std::endl;
 }
 
 
-void ProjectileShooterPrivate::OnSupply(const ignition::msgs::Int32& _msg){
-    //TODO
-    std::lock_guard<std::mutex> lock(this->currentTotalNumMutex);
-    if((this->currentTotalNum+_msg.data())>=0){
-        this->currentTotalNum = this->currentTotalNum +  _msg.data();
+void ProjectileShooterPrivate::OnSetVel(const ignition::msgs::Int32& _msg)
+{
+    std::lock_guard<std::mutex> lock(this->waitShootNumMutex);
+    if (_msg.data() >0 && _msg.data() < 30) {
+        this->shootVel = _msg.data();
     }
-    //ignmsg << "ProjectileShooter OnSupply msg: [" << _msg.data() << "]" << std::endl;
+    // ignmsg << "ProjectileShooter OnSetVel msg: [" << _msg.data() << "]" << std::endl;
 }
 
 void ProjectileShooterPrivate::PreUpdate(const ignition::gazebo::UpdateInfo& _info, ignition::gazebo::EntityComponentManager& _ecm)
 {
-    //do nothing if it's paused or not initialized.
+    // do nothing if it's paused or not initialized.
     if (_info.paused || !this->initialized) {
         return;
     }
-    //Pose of shooter Link
+    // Pose of shooter Link
     if (!_ecm.Component<components::WorldPose>(this->shooterLink)) {
         _ecm.CreateComponent(this->shooterLink, components::WorldPose());
     }
-    // current state
-    const auto shooterPose = _ecm.Component<components::WorldPose>(this->shooterLink)->Data();
-    //lock
-    std::lock_guard<std::mutex> lock1(this->currentTotalNumMutex);
-    std::lock_guard<std::mutex> lock2(this->waitShootNumMutex);
+    // lock
+    std::lock_guard<std::mutex> lock(this->waitShootNumMutex);
     // spawnFlag CMD
     bool spawnFlag = false;
     double t = std::chrono::duration_cast<std::chrono::milliseconds>(_info.simTime - this->lastSpawnTime).count();
-    if (this->currentTotalNum > 0 && this->waitShootNum > 0 && t >this->shootPeriodMS) {
+    if (this->waitShootNum > 0 && t >this->shootPeriodMS) {
         if (this->spawnedProjectiles.empty() || this->spawnedProjectiles.back().isInit) {
             this->lastSpawnTime = _info.simTime;
             spawnFlag = true;
         }
     }    
-    //process projectile
+    // process projectile
     if (spawnFlag) {
         //spawn a projectile
         auto projectileName = this->modelName + "_" + this->shooterName + "_" + std::to_string(this->projectileId);
         this->projectileSdfModel.SetName(projectileName);
+            // current state
+        auto shooterPose = _ecm.Component<components::WorldPose>(this->shooterLink)->Data();
         this->projectileSdfModel.SetRawPose(shooterPose * this->shooterOffset);
         Entity projectileModel = this->creator->CreateEntities(&this->projectileSdfModel);
         this->creator->SetParent(projectileModel, this->world);
@@ -265,10 +261,9 @@ void ProjectileShooterPrivate::PreUpdate(const ignition::gazebo::UpdateInfo& _in
         _ecm.CreateComponent(projectileCollision, components::ContactSensorData());
         //update queue and counters
         ProjectileInfo pInfo(projectileModel, projectileName, _info.simTime);
-        this->spawnedProjectiles.push(pInfo);
+        this->spawnedProjectiles.push_back(pInfo);
         this->projectileId++;
         this->waitShootNum--;
-        this->currentTotalNum--;
         //publish info
         this->publishShootInfo(_info);
     } else {
@@ -282,10 +277,13 @@ void ProjectileShooterPrivate::PreUpdate(const ignition::gazebo::UpdateInfo& _in
             }
         }
     }
-    //check cantact and time to delete projectiles
+    // check
     if (!this->spawnedProjectiles.empty()) {
-        ProjectileInfo& pInfo = this->spawnedProjectiles.front();
-        if (pInfo.isInit) {
+        // check cantact and time to delete projectiles
+        for(auto & pInfo : this->spawnedProjectiles){
+            if (!pInfo.isInit) {
+                continue;
+            }
             Entity link = Model(pInfo.entity).Links(_ecm)[0];
             Entity collision = Link(link).Collisions(_ecm)[0];
             auto contacts = _ecm.Component<components::ContactSensorData>(collision)->Data();
@@ -299,33 +297,34 @@ void ProjectileShooterPrivate::PreUpdate(const ignition::gazebo::UpdateInfo& _in
             double t = std::chrono::duration_cast<std::chrono::milliseconds>(_info.simTime - pInfo.spawnTime).count();
             if (contacts.contact_size() > 0 || t > 4000) {
                 this->creator->RequestRemoveEntity(pInfo.entity);
-                this->spawnedProjectiles.pop();
+                pInfo.remove = true;
             }
         }
+        // remove from list
+        spawnedProjectiles.remove_if([](const ProjectileInfo& pInfo){ return pInfo.remove; });
     }
 }
 
 void ProjectileShooterPrivate::publishAttackInfo(const ignition::gazebo::UpdateInfo& _info,
              ignition::gazebo::EntityComponentManager& _ecm,Entity _targetCollision){
-    std::string result=this->modelName+"/"+this->shooterName+","+scopedName(_targetCollision, _ecm);
+    std::string target = scopedName(_targetCollision, _ecm, "/", false);
+    std::string result = this->modelName+"/" + this->shooterName+"," + target;
     // publish msg
     msgs::StringMsg msg;
     msg.mutable_header()->mutable_stamp()->CopyFrom(convert<msgs::Time>(_info.simTime));
     msg.set_data(result);
     this->attackInfoPub.Publish(msg);
-    //ignmsg << "ProjectileShooter AttackInfo : [" << result << "]" << std::endl;
+    // ignmsg << "ProjectileShooter AttackInfo : [" << result << "]" << std::endl;
 }
 
 void ProjectileShooterPrivate::publishShootInfo(const ignition::gazebo::UpdateInfo& _info){
     // publish msg
-    char info_str[32];
-    sprintf(info_str,"%d,%f",this->currentTotalNum,this->shootVel);
-    std::string result=this->modelName+"/"+this->shooterName+","+info_str;
+    std::string result = this->modelName+"/"+this->shooterName+","+ std::to_string(this->shootVel);
     msgs::StringMsg msg;
     msg.mutable_header()->mutable_stamp()->CopyFrom(convert<msgs::Time>(_info.simTime));
     msg.set_data(result);
     this->shootInfoPub.Publish(msg);
-    //ignmsg << "ProjectileShooter ShootInfo : [" << result << "]" << std::endl;
+    // ignmsg << "ProjectileShooter ShootInfo : [" << result << "]" << std::endl;
 }
 
 /******************register*************************************************/
