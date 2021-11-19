@@ -78,7 +78,7 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   //
   using namespace std::placeholders;
   referee_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::RefereeCmd>(
-    "/referee_system/cmd", 10, std::bind(&Rmua19RobotBaseNode::referee_cmd_cb, this, _1));
+    "/referee_system/referee_cmd", 10, std::bind(&Rmua19RobotBaseNode::referee_cmd_cb, this, _1));
   std::string robot_status_topic = "/referee_system/" + robot_name + "/robot_status";
   robot_status_sub_ = node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
     robot_status_topic, 10, std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
