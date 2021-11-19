@@ -49,16 +49,15 @@ include_directories(include)
 
 # generate rmoss_ign_base lib
 add_library(${PROJECT_NAME} SHARED
-  src/controller/chassis_controller.cpp
-  src/controller/gimbal_controller.cpp
-  src/controller/shooter_controller.cpp
-  src/publisher/gimbal_state_publisher.cpp
-  src/publisher/odometry_publisher.cpp
-  src/ign_chassis_cmd.cpp
-  src/ign_gimbal_cmd.cpp
-  src/ign_imu.cpp
-  src/ign_joint_encoder.cpp
+  src/ign_module/ign_chassis_cmd.cpp
+  src/ign_module/ign_gimbal_cmd.cpp
+  src/ign_module/ign_imu.cpp
+  src/ign_module/ign_joint_encoder.cpp
   src/pid.cpp
+  src/chassis_controller.cpp
+  src/gimbal_controller.cpp
+  src/shooter_controller.cpp
+  src/odometry_publisher.cpp
   src/rmua19_robot_base_node.cpp
 )
 

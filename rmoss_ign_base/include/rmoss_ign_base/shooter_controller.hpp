@@ -32,9 +32,14 @@ public:
   ShooterController(
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_cmd_topic,
-    const std::string & shooter_name = "");
+    const std::string & robot_name,
+    const std::string & shooter_name,
+    bool use_shooter_name = false);
   ~ShooterController() {}
+
+public:
+  void enable(bool enable) {enable_ = enable;}
+  void updata_remain_num(int num) {remain_num_ = num;}
 
 private:
   void shoot_cb(const rmoss_interfaces::msg::ShootCmd::SharedPtr msg);
@@ -46,6 +51,10 @@ private:
   rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr ros_shoot_cmd_sub_;
   // ign pub and sub
   std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_set_vel_pub_;
+  double projectile_vel_{0};
+  bool enable_{true};
+  int remain_num_{200};
 };
 }  // namespace rmoss_ign_base
 #endif  // RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_

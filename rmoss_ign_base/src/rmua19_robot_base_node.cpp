@@ -36,14 +36,12 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   node_->get_parameter("use_odometry", use_odometry);
   // ign topic string
   std::string ign_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
-  std::string ign_pitch_cmd_topic = "/model/" + robot_name +
-    "/joint/gimbal_pitch_joint/cmd_vel";
+  std::string ign_pitch_cmd_topic = "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
   std::string ign_yaw_cmd_topic = "/model/" + robot_name + "/joint/gimbal_yaw_joint/cmd_vel";
   std::string ign_joint_state_topic = "/world/" + world_name + "/model/" + robot_name +
     "/joint_state";
   std::string ign_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
-  std::string ign_shooter_cmd_topic = "/" + robot_name + "/small_shooter/shoot";
   // pid parameters
   rmoss_ign_base::PidParam picth_pid_param, yaw_pid_param, chassis_pid_param;
   rmoss_ign_base::declare_pid_parameter(node_, "gimbal_pitch_pid");
@@ -64,11 +62,9 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   chassis_controller_ = std::make_shared<rmoss_ign_base::ChassisController>(
     node_, ign_chassis_cmd_, ign_gimbal_encoder_);
   gimbal_controller_ = std::make_shared<rmoss_ign_base::GimbalController>(
-    node_, ign_gimbal_cmd_, ign_gimbal_encoder_, ign_gimbal_imu_);
+    node_, ign_gimbal_cmd_, ign_gimbal_encoder_, ign_gimbal_imu_, "", 100, 50);
   shooter_controller_ = std::make_shared<rmoss_ign_base::ShooterController>(
-    node_, ign_node_, ign_shooter_cmd_topic);
-  gimbal_publisher_ = std::make_shared<rmoss_ign_base::GimbalStatePublisher>(
-    node_, ign_gimbal_imu_, 50);
+    node_, ign_node_, robot_name, "small_shooter");
   if (use_odometry) {
     odometry_publisher_ = std::make_shared<rmoss_ign_base::OdometryPublisher>(
       node_, ign_node_, "/" + robot_name + "/odometry");
@@ -79,6 +75,56 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   chassis_controller_->set_chassis_pid(chassis_pid_param);
   gimbal_controller_->set_pitch_pid(picth_pid_param);
   gimbal_controller_->set_yaw_pid(yaw_pid_param);
+  //
+  using namespace std::placeholders;
+  referee_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::RefereeCmd>(
+    "/referee_system/cmd", 10, std::bind(&Rmua19RobotBaseNode::referee_cmd_cb, this, _1));
+  std::string robot_status_topic = "/referee_system/" + robot_name + "/robot_status";
+  robot_status_sub_ = node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
+    robot_status_topic, 10, std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
+  std::string set_power_topic = "/referee_system/" + robot_name + "/set_power";
+  set_power_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
+    set_power_topic, 10, std::bind(&Rmua19RobotBaseNode::set_power_cb, this, _1));
+}
+
+void Rmua19RobotBaseNode::referee_cmd_cb(const rmoss_interfaces::msg::RefereeCmd::SharedPtr msg)
+{
+  if (msg->cmd == msg->SELF_CHECKING || msg->cmd == msg->STOP_GAME) {
+    // disable
+    chassis_controller_->enable(false);
+    gimbal_controller_->enable(false);
+    shooter_controller_->enable(false);
+  } else if (msg->cmd == msg->PREPARATION || msg->cmd == msg->START_GAME) {
+    // enable control
+    chassis_controller_->enable(true);
+    gimbal_controller_->enable(true);
+    shooter_controller_->enable(true);
+  }
+}
+
+void Rmua19RobotBaseNode::robot_status_cb(
+  const rmoss_interfaces::msg::RobotStatus::SharedPtr msg)
+{
+  int remain_num = msg->total_projectiles - msg->used_projectiles;
+  if (remain_num < 0) {
+    remain_num = 0;
+  }
+  shooter_controller_->updata_remain_num(remain_num);
+}
+
+void Rmua19RobotBaseNode::set_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
+{
+  if (msg->data) {
+    // enable power
+    chassis_controller_->enable(true);
+    gimbal_controller_->enable(true);
+    shooter_controller_->enable(true);
+  } else {
+    // disable power
+    chassis_controller_->enable(false);
+    gimbal_controller_->enable(false);
+    shooter_controller_->enable(false);
+  }
 }
 
 }  // namespace rmoss_ign_base

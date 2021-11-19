@@ -39,24 +39,31 @@ public:
     std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd,
     std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder,
     std::shared_ptr<IgnImu> ign_gimbal_imu,
-    const std::string & gimbal_name = "");
+    const std::string & gimbal_name = "",
+    int pid_rate = 100,
+    int publish_rate = 50);
   ~GimbalController() {}
 
 public:
+  void enable(bool enable) {enable_ = enable;}
   void set_yaw_pid(struct PidParam pid_param);
   void set_pitch_pid(struct PidParam pid_param);
   // set gimbal's motor limit (TODO)
-  void set_yaw_motor_limit(double min, double max) {}
-  void set_pitch_motor_limit(double min, double max) {}
+  // void set_yaw_motor_limit(double min, double max) {}
+  // void set_pitch_motor_limit(double min, double max) {}
 
 private:
   void gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg);
   void update();
+  void gimbal_state_timer_cb();
 
 private:
   rclcpp::Node::SharedPtr node_;
+  // ros pub and sub
   rclcpp::Subscription<rmoss_interfaces::msg::GimbalCmd>::SharedPtr ros_gimbal_cmd_sub_;
+  rclcpp::Publisher<rmoss_interfaces::msg::Gimbal>::SharedPtr ros_gimbal_state_pub_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
+  rclcpp::TimerBase::SharedPtr gimbal_state_timer_;
   // ignition tool
   std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd_;
   std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder_;
@@ -67,8 +74,10 @@ private:
   // pid and pid parameter
   ignition::math::PID picth_pid_;
   ignition::math::PID yaw_pid_;
+  std::chrono::nanoseconds pid_period_;
   // flag
   bool update_pid_flag_{false};
+  bool enable_{true};
 };
 
 }  // namespace rmoss_ign_base

@@ -58,6 +58,9 @@ void ChassisController::update()
 
 void ChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
 {
+  if (!enable_) {
+    return;
+  }
   if (msg->type == msg->VELOCITY) {
     target_vx_ = msg->twist.linear.x;
     target_vy_ = msg->twist.linear.y;
@@ -77,6 +80,9 @@ void ChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::Shar
 
 void ChassisController::cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
+  if (!enable_) {
+    return;
+  }
   target_vx_ = msg->linear.x;
   target_vy_ = msg->linear.y;
   target_w_ = msg->angular.z;
