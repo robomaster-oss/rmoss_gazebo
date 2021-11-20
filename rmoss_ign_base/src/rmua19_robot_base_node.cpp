@@ -77,30 +77,18 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   gimbal_controller_->set_yaw_pid(yaw_pid_param);
   //
   using namespace std::placeholders;
-  referee_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::RefereeCmd>(
-    "/referee_system/referee_cmd", 10, std::bind(&Rmua19RobotBaseNode::referee_cmd_cb, this, _1));
+
   std::string robot_status_topic = "/referee_system/" + robot_name + "/robot_status";
   robot_status_sub_ = node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
     robot_status_topic, 10, std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
-  std::string set_power_topic = "/referee_system/" + robot_name + "/set_power";
-  set_power_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
-    set_power_topic, 10, std::bind(&Rmua19RobotBaseNode::set_power_cb, this, _1));
+  std::string enable_power_topic = "/referee_system/" + robot_name + "/enable_power";
+  enable_power_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
+    enable_power_topic, 10, std::bind(&Rmua19RobotBaseNode::enable_power_cb, this, _1));
+  std::string enable_control_topic = "/referee_system/" + robot_name + "/enable_control";
+  enable_control_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
+    enable_control_topic, 10, std::bind(&Rmua19RobotBaseNode::enable_control_cb, this, _1));
 }
 
-void Rmua19RobotBaseNode::referee_cmd_cb(const rmoss_interfaces::msg::RefereeCmd::SharedPtr msg)
-{
-  if (msg->cmd == msg->SELF_CHECKING || msg->cmd == msg->STOP_GAME) {
-    // disable
-    chassis_controller_->enable(false);
-    gimbal_controller_->enable(false);
-    shooter_controller_->enable(false);
-  } else if (msg->cmd == msg->PREPARATION || msg->cmd == msg->START_GAME) {
-    // enable control
-    chassis_controller_->enable(true);
-    gimbal_controller_->enable(true);
-    shooter_controller_->enable(true);
-  }
-}
 
 void Rmua19RobotBaseNode::robot_status_cb(
   const rmoss_interfaces::msg::RobotStatus::SharedPtr msg)
@@ -112,7 +100,7 @@ void Rmua19RobotBaseNode::robot_status_cb(
   shooter_controller_->updata_remain_num(remain_num);
 }
 
-void Rmua19RobotBaseNode::set_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
+void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
 {
   if (msg->data) {
     // enable power
@@ -121,6 +109,21 @@ void Rmua19RobotBaseNode::set_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
     shooter_controller_->enable(true);
   } else {
     // disable power
+    chassis_controller_->enable(false);
+    gimbal_controller_->enable(false);
+    shooter_controller_->enable(false);
+  }
+}
+
+void Rmua19RobotBaseNode::enable_control_cb(const std_msgs::msg::Bool::SharedPtr msg)
+{
+  if (msg->data) {
+    // enable control
+    chassis_controller_->enable(true);
+    gimbal_controller_->enable(true);
+    shooter_controller_->enable(true);
+  } else {
+    // disable control
     chassis_controller_->enable(false);
     gimbal_controller_->enable(false);
     shooter_controller_->enable(false);

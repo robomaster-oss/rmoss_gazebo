@@ -24,7 +24,6 @@
 #include "rmoss_ign_base/shooter_controller.hpp"
 #include "rmoss_ign_base/odometry_publisher.hpp"
 #include "rmoss_ign_base/pid.hpp"
-#include "rmoss_interfaces/msg/referee_cmd.hpp"
 #include "rmoss_interfaces/msg/robot_status.hpp"
 #include "std_msgs/msg/bool.hpp"
 
@@ -42,17 +41,17 @@ public:
     return node_->get_node_base_interface();
   }
 
-  void referee_cmd_cb(const rmoss_interfaces::msg::RefereeCmd::SharedPtr msg);
   void robot_status_cb(const rmoss_interfaces::msg::RobotStatus::SharedPtr msg);
-  void set_power_cb(const std_msgs::msg::Bool::SharedPtr msg);
+  void enable_power_cb(const std_msgs::msg::Bool::SharedPtr msg);
+  void enable_control_cb(const std_msgs::msg::Bool::SharedPtr msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
   // ros sub
-  rclcpp::Subscription<rmoss_interfaces::msg::RefereeCmd>::SharedPtr referee_cmd_sub_;
   rclcpp::Subscription<rmoss_interfaces::msg::RobotStatus>::SharedPtr robot_status_sub_;
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr set_power_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_power_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
   // ign moudule
   std::shared_ptr<rmoss_ign_base::IgnJointEncoder> ign_gimbal_encoder_;
   std::shared_ptr<rmoss_ign_base::IgnImu> ign_gimbal_imu_;
