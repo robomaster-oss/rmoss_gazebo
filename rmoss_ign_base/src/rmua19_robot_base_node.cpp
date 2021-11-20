@@ -43,7 +43,7 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
     "/joint_state";
   std::string ign_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
-  std::string ign_light_bar_cmd_topic =  "/" + robot_name + "/color/set_state";
+  std::string ign_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
   // pid parameters
   rmoss_ign_base::PidParam picth_pid_param, yaw_pid_param, chassis_pid_param;
   rmoss_ign_base::declare_pid_parameter(node_, "gimbal_pitch_pid");
@@ -116,7 +116,6 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
     } else {
       ign_light_bar_cmd_->set_state(2);
     }
-    
   } else {
     // disable power
     chassis_controller_->enable(false);
