@@ -29,11 +29,12 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   std::string world_name, robot_name;
   bool use_odometry = false;
   node_->declare_parameter("world_name", "default");
-  node_->declare_parameter("robot_name", "standard_robot_red1");
+  node_->declare_parameter("robot_name", "red_standard_robot1");
   node_->declare_parameter("use_odometry", use_odometry);
   node_->get_parameter("robot_name", robot_name);
   node_->get_parameter("world_name", world_name);
   node_->get_parameter("use_odometry", use_odometry);
+  is_red_ = (robot_name.find("blue") == std::string::npos);
   // ign topic string
   std::string ign_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
   std::string ign_pitch_cmd_topic = "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
@@ -42,6 +43,7 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
     "/joint_state";
   std::string ign_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
+  std::string ign_light_bar_cmd_topic =  "/" + robot_name + "/color/set_state";
   // pid parameters
   rmoss_ign_base::PidParam picth_pid_param, yaw_pid_param, chassis_pid_param;
   rmoss_ign_base::declare_pid_parameter(node_, "gimbal_pitch_pid");
@@ -58,6 +60,8 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
     ign_node_, ign_chassis_cmd_topic);
   ign_gimbal_cmd_ = std::make_shared<rmoss_ign_base::IgnGimbalCmd>(
     ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
+  ign_light_bar_cmd_ = std::make_shared<rmoss_ign_base::IgnLightBarCmd>(
+    ign_node_, ign_light_bar_cmd_topic);
   // create ros controller and publisher
   chassis_controller_ = std::make_shared<rmoss_ign_base::ChassisController>(
     node_, ign_chassis_cmd_, ign_gimbal_encoder_);
@@ -107,11 +111,18 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
     chassis_controller_->enable(true);
     gimbal_controller_->enable(true);
     shooter_controller_->enable(true);
+    if (is_red_) {
+      ign_light_bar_cmd_->set_state(1);
+    } else {
+      ign_light_bar_cmd_->set_state(2);
+    }
+    
   } else {
     // disable power
     chassis_controller_->enable(false);
     gimbal_controller_->enable(false);
     shooter_controller_->enable(false);
+    ign_light_bar_cmd_->set_state(0);
   }
 }
 

@@ -53,6 +53,7 @@ add_library(${PROJECT_NAME} SHARED
   src/ign_module/ign_gimbal_cmd.cpp
   src/ign_module/ign_imu.cpp
   src/ign_module/ign_joint_encoder.cpp
+  src/ign_module/ign_light_bar_cmd.cpp
   src/pid.cpp
   src/chassis_controller.cpp
   src/gimbal_controller.cpp

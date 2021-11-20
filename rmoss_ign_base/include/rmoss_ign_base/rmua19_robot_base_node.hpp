@@ -19,6 +19,7 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 
+#include "rmoss_ign_base/ign_light_bar_cmd.hpp"
 #include "rmoss_ign_base/chassis_controller.hpp"
 #include "rmoss_ign_base/gimbal_controller.hpp"
 #include "rmoss_ign_base/shooter_controller.hpp"
@@ -57,11 +58,14 @@ private:
   std::shared_ptr<rmoss_ign_base::IgnImu> ign_gimbal_imu_;
   std::shared_ptr<rmoss_ign_base::IgnChassisCmd> ign_chassis_cmd_;
   std::shared_ptr<rmoss_ign_base::IgnGimbalCmd> ign_gimbal_cmd_;
+  std::shared_ptr<rmoss_ign_base::IgnLightBarCmd> ign_light_bar_cmd_;
   // ros controller/publisher wrapper
   std::shared_ptr<rmoss_ign_base::ChassisController> chassis_controller_;
   std::shared_ptr<rmoss_ign_base::GimbalController> gimbal_controller_;
   std::shared_ptr<rmoss_ign_base::ShooterController> shooter_controller_;
   std::shared_ptr<rmoss_ign_base::OdometryPublisher> odometry_publisher_;
+  //
+  bool is_red_;
 };
 
 }  // namespace rmoss_ign_base
