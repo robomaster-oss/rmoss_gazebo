@@ -40,7 +40,9 @@ public:
 
 public:
   void set_chassis_pid(struct PidParam pid_param);
-  void enable(bool enable) {enable_ = enable;}
+  void reset();
+  void enable_control(bool enable) {enable_ = enable;}
+  void enable_power(bool enable) {update_pid_flag_ = enable_ = enable;}
 
 private:
   void chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
@@ -62,7 +64,7 @@ private:
   // pid and pid parameter
   ignition::math::PID chassis_pid_;
   // flag
-  bool update_pid_flag_{false};
+  bool update_pid_flag_{true};
   bool follow_mode_flag_{true};
   bool enable_{true};
 };

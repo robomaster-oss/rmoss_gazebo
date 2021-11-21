@@ -34,6 +34,7 @@ public:
 public:
   double get_pitch();
   double get_yaw(bool is_continuous = true);
+  void reset_yaw(double yaw = 0) {continuous_yaw_angle_ = yaw;}
 
 private:
   void ign_imu_cb(const ignition::msgs::IMU & msg);

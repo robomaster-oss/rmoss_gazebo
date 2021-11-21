@@ -108,8 +108,10 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
 {
   if (msg->data) {
     // enable power
-    chassis_controller_->enable(true);
-    gimbal_controller_->enable(true);
+    chassis_controller_->reset();
+    gimbal_controller_->reset();
+    chassis_controller_->enable_power(true);
+    gimbal_controller_->enable_power(true);
     shooter_controller_->enable(true);
     if (is_red_) {
       ign_light_bar_cmd_->set_state(1);
@@ -118,8 +120,8 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
     }
   } else {
     // disable power
-    chassis_controller_->enable(false);
-    gimbal_controller_->enable(false);
+    chassis_controller_->enable_power(false);
+    gimbal_controller_->enable_power(false);
     shooter_controller_->enable(false);
     ign_light_bar_cmd_->set_state(0);
   }
@@ -129,13 +131,13 @@ void Rmua19RobotBaseNode::enable_control_cb(const std_msgs::msg::Bool::SharedPtr
 {
   if (msg->data) {
     // enable control
-    chassis_controller_->enable(true);
-    gimbal_controller_->enable(true);
+    chassis_controller_->enable_control(true);
+    gimbal_controller_->enable_control(true);
     shooter_controller_->enable(true);
   } else {
     // disable control
-    chassis_controller_->enable(false);
-    gimbal_controller_->enable(false);
+    chassis_controller_->enable_control(false);
+    gimbal_controller_->enable_control(false);
     shooter_controller_->enable(false);
   }
 }

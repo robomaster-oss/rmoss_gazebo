@@ -59,6 +59,9 @@ GimbalController::GimbalController(
 
 void GimbalController::update()
 {
+  if (!update_pid_flag_) {
+    return;
+  }
   // pid for pitch
   double pitch_err = ign_gimbal_imu_->get_pitch() - target_pitch_;
   double pitch_cmd = picth_pid_.Update(pitch_err, pid_period_);
@@ -116,6 +119,13 @@ void GimbalController::set_pitch_pid(struct PidParam pid_param)
   picth_pid_.Init(
     pid_param.p, pid_param.i, pid_param.d, pid_param.imax,
     pid_param.imin, pid_param.cmdmax, pid_param.cmdmin, pid_param.offset);
+}
+
+void GimbalController::reset()
+{
+  ign_gimbal_imu_->reset_yaw(ign_gimbal_encoder_->get_yaw());
+  target_pitch_ = 0;
+  target_yaw_ = 0;
 }
 
 }  // namespace rmoss_ign_base

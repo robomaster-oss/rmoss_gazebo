@@ -42,6 +42,9 @@ ChassisController::ChassisController(
 
 void ChassisController::update()
 {
+  if (!update_pid_flag_) {
+    return;
+  }
   auto dt = std::chrono::milliseconds(10);
   double w_cmd = 0;
   if (follow_mode_flag_) {
@@ -94,6 +97,14 @@ void ChassisController::set_chassis_pid(struct PidParam pid_param)
   chassis_pid_.Init(
     pid_param.p, pid_param.i, pid_param.d, pid_param.imax,
     pid_param.imin, pid_param.cmdmax, pid_param.cmdmin, pid_param.offset);
+}
+
+void ChassisController::reset()
+{
+  target_vx_ = 0;
+  target_vy_ = 0;
+  target_w_ = 0;
+  chassis_pid_.Reset();
 }
 
 }  // namespace rmoss_ign_base

@@ -45,12 +45,14 @@ public:
   ~GimbalController() {}
 
 public:
-  void enable(bool enable) {enable_ = enable;}
   void set_yaw_pid(struct PidParam pid_param);
   void set_pitch_pid(struct PidParam pid_param);
   // set gimbal's motor limit (TODO)
   // void set_yaw_motor_limit(double min, double max) {}
   // void set_pitch_motor_limit(double min, double max) {}
+  void reset();
+  void enable_control(bool enable) {enable_ = enable;}
+  void enable_power(bool enable) {update_pid_flag_ = enable_ = enable;}
 
 private:
   void gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg);
@@ -76,7 +78,7 @@ private:
   ignition::math::PID yaw_pid_;
   std::chrono::nanoseconds pid_period_;
   // flag
-  bool update_pid_flag_{false};
+  bool update_pid_flag_{true};
   bool enable_{true};
 };
 
