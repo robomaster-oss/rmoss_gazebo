@@ -1,0 +1,5 @@
+#python
+*.pyc
+# vscode file
+.vscode/
+
