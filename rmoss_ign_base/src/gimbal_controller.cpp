@@ -23,35 +23,39 @@ namespace rmoss_ign_base
 
 GimbalController::GimbalController(
   rclcpp::Node::SharedPtr node,
-  std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd,
-  std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder,
-  std::shared_ptr<IgnImu> ign_gimbal_imu,
-  const std::string & gimbal_name,
-  int pid_rate,
-  int publish_rate)
+  Actuator<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_vel_actuator,
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_pos_sensor,
+  const std::string & controller_name)
+: node_(node), gimbal_vel_actuator_(gimbal_vel_actuator), gimbal_pos_sensor_(gimbal_pos_sensor)
 {
-  // set handler
-  node_ = node;
-  ign_gimbal_cmd_ = ign_gimbal_cmd;
-  ign_gimbal_encoder_ = ign_gimbal_encoder;
-  ign_gimbal_imu_ = ign_gimbal_imu;
+  // parameter
+  declare_pid_parameter(node_, controller_name + ".pitch_pid");
+  declare_pid_parameter(node_, controller_name + ".yaw_pid");
+  get_pid_parameter(node_, controller_name + ".pitch_pid", picth_pid_param_);
+  get_pid_parameter(node_, controller_name + ".yaw_pid", yaw_pid_param_);
+  set_pitch_pid(picth_pid_param_);
+  set_yaw_pid(yaw_pid_param_);
+  // sensor callback
+  gimbal_pos_sensor->add_callback(
+    [this](const rmoss_interfaces::msg::Gimbal & data, const rclcpp::Time & /*stamp*/) {
+      cur_yaw_ = data.yaw;
+      cur_pitch_ = data.pitch;
+    });
   // ros pub and sub
   using namespace std::placeholders;
-  std::string ros_gimbal_cmd_topic = "robot_base/gimbal_cmd";
-  std::string ros_gimbal_state_topic = "robot_base/gimbal_state";
-  if (gimbal_name != "") {
-    ros_gimbal_cmd_topic = "robot_base/" + gimbal_name + "/gimbal_cmd";
-    ros_gimbal_state_topic = "robot_base/" + gimbal_name + "/gimbal_state";
-  }
+  auto ros_gimbal_cmd_topic = "robot_base/gimbal_cmd";
+  auto ros_gimbal_state_topic = "robot_base/gimbal_state";
   ros_gimbal_state_pub_ = node_->create_publisher<rmoss_interfaces::msg::Gimbal>(
     ros_gimbal_state_topic, 10);
   ros_gimbal_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::GimbalCmd>(
     ros_gimbal_cmd_topic, 10, std::bind(&GimbalController::gimbal_cb, this, _1));
-  // timer and set_parameters callback
+  // timer
+  int pid_rate = 100;
   pid_period_ = std::chrono::milliseconds(1000 / pid_rate);
   controller_timer_ = node_->create_wall_timer(
     pid_period_,
     std::bind(&GimbalController::update, this));
+  int publish_rate = 10;
   gimbal_state_timer_ = node_->create_wall_timer(
     std::chrono::milliseconds(1000 / publish_rate),
     std::bind(&GimbalController::gimbal_state_timer_cb, this));
@@ -59,41 +63,34 @@ GimbalController::GimbalController(
 
 void GimbalController::update()
 {
-  if (!update_pid_flag_) {
-    return;
-  }
+  rmoss_interfaces::msg::Gimbal cmd;
   // pid for pitch
-  double pitch_err = ign_gimbal_imu_->get_pitch() - target_pitch_;
-  double pitch_cmd = picth_pid_.Update(pitch_err, pid_period_);
+  double pitch_err = cur_pitch_ - target_pitch_;
+  cmd.pitch = picth_pid_.Update(pitch_err, pid_period_);
   // pid for yaw
-  double yaw_err = ign_gimbal_imu_->get_yaw() - target_yaw_;
-  double yaw_cmd = yaw_pid_.Update(yaw_err, pid_period_);
-  // printf("imu:%lf,%lf\n",ign_gimbal_imu_->get_yaw() ,ign_gimbal_imu_->get_pitch());
-  // printf("imu:%lf,%lf\n",ign_gimbal_imu_->get_yaw() ,target_yaw_);
-  // publish CMD
-  ign_gimbal_cmd_->publish(pitch_cmd, yaw_cmd);
+  double yaw_err = cur_yaw_ - target_yaw_;
+  cmd.yaw = yaw_pid_.Update(yaw_err, pid_period_);
+  // set CMD
+  gimbal_vel_actuator_->set(cmd);
 }
 
 void GimbalController::gimbal_state_timer_cb()
 {
-  rmoss_interfaces::msg::Gimbal gimbal_state;
-  gimbal_state.pitch = ign_gimbal_imu_->get_pitch();
-  gimbal_state.yaw = ign_gimbal_imu_->get_yaw();
-  ros_gimbal_state_pub_->publish(gimbal_state);
+  rmoss_interfaces::msg::Gimbal gimbal_pos;
+  gimbal_pos.pitch = cur_pitch_;
+  gimbal_pos.yaw = cur_yaw_;
+  ros_gimbal_state_pub_->publish(gimbal_pos);
 }
 
 void GimbalController::gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg)
 {
-  if (!enable_) {
-    return;
-  }
   // for pitch
   if (msg->pitch_type == msg->ABSOLUTE_ANGLE) {
     target_pitch_ = msg->position.pitch;
   } else if (msg->pitch_type == msg->RELATIVE_ANGLE) {
-    target_pitch_ = ign_gimbal_imu_->get_pitch() + msg->position.pitch;
+    target_pitch_ = cur_pitch_ + msg->position.pitch;
   } else {
-    RCLCPP_WARN(node_->get_logger(), "pitch type[%d] isn't supported!", msg->pitch_type);
+    RCLCPP_WARN(node_->get_logger(), "pitch cmd type[%d] isn't supported!", msg->pitch_type);
   }
   // limitation for pitch
   target_pitch_ = std::min(target_pitch_, 1.0);
@@ -102,9 +99,9 @@ void GimbalController::gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedP
   if (msg->yaw_type == msg->ABSOLUTE_ANGLE) {
     target_yaw_ = msg->position.yaw;
   } else if (msg->yaw_type == msg->RELATIVE_ANGLE) {
-    target_yaw_ = ign_gimbal_imu_->get_yaw() + msg->position.yaw;
+    target_yaw_ = cur_yaw_ + msg->position.yaw;
   } else {
-    RCLCPP_WARN(node_->get_logger(), "yaw type[%d] isn't supported!", msg->yaw_type);
+    RCLCPP_WARN(node_->get_logger(), "yaw cmd type[%d] isn't supported!", msg->yaw_type);
   }
 }
 
@@ -123,7 +120,6 @@ void GimbalController::set_pitch_pid(struct PidParam pid_param)
 
 void GimbalController::reset()
 {
-  ign_gimbal_imu_->reset_yaw(ign_gimbal_encoder_->get_yaw());
   target_pitch_ = 0;
   target_yaw_ = 0;
 }

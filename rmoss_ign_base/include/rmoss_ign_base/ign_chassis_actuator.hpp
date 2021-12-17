@@ -12,35 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__IGN_GIMBAL_CMD_HPP_
-#define RMOSS_IGN_BASE__IGN_GIMBAL_CMD_HPP_
+#ifndef RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_
+#define RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_
 
 #include <memory>
 #include <string>
 
+#include "geometry_msgs/msg/twist.hpp"
 #include "ignition/transport/Node.hh"
+#include "hardware_interface.hpp"
 
 namespace rmoss_ign_base
 {
 
-class IgnGimbalCmd
+class IgnChassisActuator : public Actuator<geometry_msgs::msg::Twist>
 {
 public:
-  IgnGimbalCmd(
+  IgnChassisActuator(
+    rclcpp::Node::SharedPtr node,
     const std::shared_ptr<ignition::transport::Node> & ign_node,
-    const std::string & ign_pitch_cmd_topic,
-    const std::string & ign_yaw_cmd_topic);
-  ~IgnGimbalCmd() {}
+    const std::string & ign_chassis_cmd_topic);
+  ~IgnChassisActuator() {}
 
-public:
-  void publish(double pitch, double yaw);
+  void set(const geometry_msgs::msg::Twist & data) override;
+  void enable(bool enable) {enable_ = enable;}
 
 private:
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_pitch_cmd_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
+  bool enable_{false};
 };
 
 }  // namespace rmoss_ign_base
 
-#endif  // RMOSS_IGN_BASE__IGN_GIMBAL_CMD_HPP_
+#endif  // RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_

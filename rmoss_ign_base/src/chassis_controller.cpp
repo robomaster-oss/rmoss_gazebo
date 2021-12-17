@@ -20,14 +20,22 @@
 namespace rmoss_ign_base
 {
 ChassisController::ChassisController(
-  const rclcpp::Node::SharedPtr & node,
-  std::shared_ptr<IgnChassisCmd> & ign_chassis_cmd,
-  std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder)
+  rclcpp::Node::SharedPtr node,
+  Actuator<geometry_msgs::msg::Twist>::SharedPtr chassis_actuator,
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_encoder,
+  const std::string & controller_name)
+: node_(node), chassis_actuator_(chassis_actuator), gimbal_encoder_(gimbal_encoder)
 {
-  // set handler
-  node_ = node;
-  ign_chassis_cmd_ = ign_chassis_cmd;
-  ign_gimbal_encoder_ = ign_gimbal_encoder;
+  node_->declare_parameter(controller_name + ".follow_yaw", follow_mode_flag_);
+  node_->get_parameter(controller_name + ".follow_yaw", follow_mode_flag_);
+  declare_pid_parameter(node_, controller_name + ".follow_yaw_pid");
+  get_pid_parameter(node_, controller_name + ".follow_yaw_pid", chassis_pid_param_);
+  set_chassis_pid(chassis_pid_param_);
+  // sensor data
+  gimbal_encoder_->add_callback(
+    [this](const rmoss_interfaces::msg::Gimbal & data, const rclcpp::Time & /*stamp*/) {
+      cur_yaw_ = data.yaw;
+    });
   // ros sub
   using namespace std::placeholders;
   ros_chassis_cmd_sub_ = node_->create_subscription<rmoss_interfaces::msg::ChassisCmd>(
@@ -42,36 +50,23 @@ ChassisController::ChassisController(
 
 void ChassisController::update()
 {
-  if (!update_pid_flag_) {
-    return;
-  }
   auto dt = std::chrono::milliseconds(10);
-  double w_cmd = 0;
   if (follow_mode_flag_) {
     // follow mode
-    double w_err = -ign_gimbal_encoder_->get_yaw();
-    w_cmd = chassis_pid_.Update(w_err, dt);
-  } else {
-    // independent mode
-    w_cmd = target_w_;
+    target_vel_.angular.z = chassis_pid_.Update(0 - cur_yaw_, dt);
   }
   // publish CMD
-  ign_chassis_cmd_->publish(target_vx_, target_vy_, w_cmd);
+  chassis_actuator_->set(target_vel_);
 }
 
 void ChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg)
 {
-  if (!enable_) {
-    return;
-  }
   if (msg->type == msg->VELOCITY) {
-    target_vx_ = msg->twist.linear.x;
-    target_vy_ = msg->twist.linear.y;
-    target_w_ = msg->twist.angular.z;
+    target_vel_ = msg->twist;
     follow_mode_flag_ = false;
   } else if (msg->type == msg->FOLLOW_GIMBAL) {
-    target_vx_ = msg->twist.linear.x;
-    target_vy_ = msg->twist.linear.y;
+    target_vel_.linear.x = msg->twist.linear.x;
+    target_vel_.linear.y = msg->twist.linear.y;
     if (!follow_mode_flag_) {
       follow_mode_flag_ = true;
       chassis_pid_.Reset();
@@ -83,16 +78,11 @@ void ChassisController::chassis_cb(const rmoss_interfaces::msg::ChassisCmd::Shar
 
 void ChassisController::cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-  if (!enable_) {
-    return;
-  }
-  target_vx_ = msg->linear.x;
-  target_vy_ = msg->linear.y;
-  target_w_ = msg->angular.z;
+  target_vel_ = *msg;
   follow_mode_flag_ = false;
 }
 
-void ChassisController::set_chassis_pid(struct PidParam pid_param)
+void ChassisController::set_chassis_pid(PidParam pid_param)
 {
   chassis_pid_.Init(
     pid_param.p, pid_param.i, pid_param.d, pid_param.imax,
@@ -101,9 +91,9 @@ void ChassisController::set_chassis_pid(struct PidParam pid_param)
 
 void ChassisController::reset()
 {
-  target_vx_ = 0;
-  target_vy_ = 0;
-  target_w_ = 0;
+  target_vel_.linear.x = 0;
+  target_vel_.linear.y = 0;
+  target_vel_.angular.z = 0;
   chassis_pid_.Reset();
 }
 

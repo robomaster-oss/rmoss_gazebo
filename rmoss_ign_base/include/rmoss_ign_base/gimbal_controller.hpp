@@ -21,12 +21,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rmoss_interfaces/msg/gimbal_cmd.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
-
-
-#include "rmoss_ign_base/ign_gimbal_cmd.hpp"
-#include "rmoss_ign_base/ign_joint_encoder.hpp"
-#include "rmoss_ign_base/ign_imu.hpp"
-#include "rmoss_ign_base/pid.hpp"
+#include "pid.hpp"
+#include "hardware_interface.hpp"
 
 namespace rmoss_ign_base
 {
@@ -36,12 +32,9 @@ class GimbalController
 public:
   GimbalController(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd,
-    std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder,
-    std::shared_ptr<IgnImu> ign_gimbal_imu,
-    const std::string & gimbal_name = "",
-    int pid_rate = 100,
-    int publish_rate = 50);
+    Actuator<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_vel_actuator,
+    Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_pos_sensor,
+    const std::string & controller_name = "gimbal_controller");
   ~GimbalController() {}
 
 public:
@@ -51,8 +44,6 @@ public:
   // void set_yaw_motor_limit(double min, double max) {}
   // void set_pitch_motor_limit(double min, double max) {}
   void reset();
-  void enable_control(bool enable) {enable_ = enable;}
-  void enable_power(bool enable) {update_pid_flag_ = enable_ = enable;}
 
 private:
   void gimbal_cb(const rmoss_interfaces::msg::GimbalCmd::SharedPtr msg);
@@ -66,20 +57,22 @@ private:
   rclcpp::Publisher<rmoss_interfaces::msg::Gimbal>::SharedPtr ros_gimbal_state_pub_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
   rclcpp::TimerBase::SharedPtr gimbal_state_timer_;
-  // ignition tool
-  std::shared_ptr<IgnGimbalCmd> ign_gimbal_cmd_;
-  std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder_;
-  std::shared_ptr<IgnImu> ign_gimbal_imu_;
+  // control interface
+  Actuator<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_vel_actuator_;
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_pos_sensor_;
   // target data
   double target_pitch_{0};
   double target_yaw_{0};
+  double cur_pitch_{0};
+  double cur_yaw_{0};
   // pid and pid parameter
+  PidParam picth_pid_param_;
+  PidParam yaw_pid_param_;
   ignition::math::PID picth_pid_;
   ignition::math::PID yaw_pid_;
   std::chrono::nanoseconds pid_period_;
   // flag
   bool update_pid_flag_{true};
-  bool enable_{true};
 };
 
 }  // namespace rmoss_ign_base

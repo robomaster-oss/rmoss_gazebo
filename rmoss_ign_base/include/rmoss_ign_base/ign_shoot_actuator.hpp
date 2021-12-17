@@ -12,38 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
+#ifndef RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_
+#define RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_
 
 #include <memory>
 #include <string>
-#include <mutex>
 
 #include "ignition/transport/Node.hh"
-#include "rclcpp/rclcpp.hpp"
 #include "rmoss_interfaces/msg/shoot_cmd.hpp"
 #include "hardware_interface.hpp"
 
 namespace rmoss_ign_base
 {
 
-class ShooterController
+class IgnShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd>
 {
 public:
-  ShooterController(
+  IgnShootActuator(
     rclcpp::Node::SharedPtr node,
-    Actuator<rmoss_interfaces::msg::ShootCmd>::SharedPtr shoot_actuator,
-    const std::string & controller_name = "chassis_controller");
-  ~ShooterController() {}
+    std::shared_ptr<ignition::transport::Node> ign_node,
+    const std::string & robot_name,
+    const std::string & shooter_name);
+  ~IgnShootActuator() {}
 
-private:
-  void shoot_cb(const rmoss_interfaces::msg::ShootCmd::SharedPtr msg);
+  void set(const rmoss_interfaces::msg::ShootCmd & data) override;
+  void enable(bool enable) {enable_ = enable;}
+  void update_remain_num(int num) {remain_num_ = num;}
 
 private:
   rclcpp::Node::SharedPtr node_;
-  // ros pub and sub
-  rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr ros_shoot_cmd_sub_;
-  Actuator<rmoss_interfaces::msg::ShootCmd>::SharedPtr shoot_actuator_;
+  std::shared_ptr<ignition::transport::Node> ign_node_;
+  // ign pub and sub
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_set_vel_pub_;
+  // data
+  double projectile_vel_{0};
+  int remain_num_{200};
+  bool enable_{false};
 };
+
 }  // namespace rmoss_ign_base
-#endif  // RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
+
+#endif  // RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_

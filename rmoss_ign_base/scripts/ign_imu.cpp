@@ -42,11 +42,14 @@ double toYaw(const double & x, const double & y, const double & z, const double 
 }
 
 IgnImu::IgnImu(
+  rclcpp::Node::SharedPtr node,
   const std::shared_ptr<ignition::transport::Node> & ign_node,
   const std::string & ign_gimbal_imu_topic)
 {
   ign_node_ = ign_node;
   ign_node_->Subscribe(ign_gimbal_imu_topic, &IgnImu::ign_imu_cb, this);
+  pitch_sensor_ = std::make_shared<DataSensor<double>>();
+  yaw_sensor_ = std::make_shared<DataSensor<double>>();
 }
 
 void IgnImu::ign_imu_cb(const ignition::msgs::IMU & msg)
@@ -66,22 +69,41 @@ void IgnImu::ign_imu_cb(const ignition::msgs::IMU & msg)
   }
   continuous_yaw_angle_ = continuous_yaw_angle_ + dyaw;
   last_yaw_angle_ = yaw_angle_;
+  // update
+  pitch_sensor_->update(pitch_angle_, node_->get_clock()->now());
+  yaw_sensor_->update(continuous_yaw_angle_, node_->get_clock()->now());
 }
 
-double IgnImu::get_pitch()
+
+IgnGimbalImu::IgnGimbalImu(
+  rclcpp::Node::SharedPtr node,
+  std::shared_ptr<ignition::transport::Node> ign_node,
+  const std::string & ign_gimbal_imu_topic)
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
-  return pitch_angle_;
+  ign_node_ = ign_node;
+  ign_node_->Subscribe(ign_gimbal_imu_topic, &IgnGimbalImu::ign_imu_cb, this);
+  position_sensor_ = std::make_shared<DataSensor<rmoss_interfaces::msg::Gimbal>>();
 }
 
-double IgnImu::get_yaw(bool is_continuous)
+void IgnGimbalImu::ign_imu_cb(const ignition::msgs::IMU & msg)
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
-  if (is_continuous) {
-    return continuous_yaw_angle_;
-  } else {
-    return yaw_angle_;
+  auto & q = msg.orientation();
+  double pitch_angle = toPitch(q.x(), q.y(), q.z(), q.w());
+  double yaw_angle = toYaw(q.x(), q.y(), q.z(), q.w());
+  // continuous yaw
+  double dyaw = yaw_angle - last_yaw_angle_;
+  if (dyaw > 3) {
+    dyaw = dyaw - 3.1415926535 * 2;
   }
+  if (dyaw < -3) {
+    dyaw = dyaw + 3.1415926535 * 2;
+  }
+  continuous_yaw_angle_ = continuous_yaw_angle_ + dyaw;
+  last_yaw_angle_ = yaw_angle;
+  // update
+  cur_position_.yaw = continuous_yaw_angle_;
+  cur_position_.pitch = pitch_angle;
+  position_sensor_->update(cur_position_, node_->get_clock()->now());
 }
 
 }  // namespace rmoss_ign_base

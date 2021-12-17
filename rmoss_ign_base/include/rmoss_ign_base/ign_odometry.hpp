@@ -11,47 +11,43 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef RMOSS_IGN_BASE__IGN_IMU_HPP_
-#define RMOSS_IGN_BASE__IGN_IMU_HPP_
+#ifndef RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_
+#define RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_
 
 #include <memory>
 #include <string>
 #include <mutex>
 
 #include "ignition/transport/Node.hh"
+#include "hardware_interface.hpp"
+#include "rclcpp/clock.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 namespace rmoss_ign_base
 {
 
-class IgnImu
+class IgnOdometry
 {
 public:
-  IgnImu(
-    const std::shared_ptr<ignition::transport::Node> & ign_node,
-    const std::string & ign_gimbal_imu_topic);
-  ~IgnImu() {}
+  IgnOdometry(
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<ignition::transport::Node> ign_node,
+    const std::string & ign_odom_topic);
+  ~IgnOdometry() {}
 
-public:
-  double get_pitch();
-  double get_yaw(bool is_continuous = true);
-  void reset_yaw(double yaw = 0) {continuous_yaw_angle_ = yaw;}
-
-private:
-  void ign_imu_cb(const ignition::msgs::IMU & msg);
+  void enable(bool enable) {enable_ = enable;}
+  Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor() {return odometry_sensor_;}
 
 private:
+  void ign_odometry_cb(const ignition::msgs::Odometry & msg);
+
+private:
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  // tmp data
-  double last_yaw_{0};
-  std::mutex msg_mut_;
-  // sensor data
-  ignition::msgs::IMU imu_msg_;
-  double pitch_angle_{0};
-  double yaw_angle_{0};
-  double last_yaw_angle_{0};
-  double continuous_yaw_angle_{0};
+  bool enable_{false};
+  std::shared_ptr<DataSensor<nav_msgs::msg::Odometry>> odometry_sensor_;
 };
 
 }  // namespace rmoss_ign_base
 
-#endif  // RMOSS_IGN_BASE__IGN_IMU_HPP_
+#endif  // RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_

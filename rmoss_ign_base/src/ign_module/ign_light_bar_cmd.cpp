@@ -21,10 +21,10 @@ namespace rmoss_ign_base
 
 
 IgnLightBarCmd::IgnLightBarCmd(
-  const std::shared_ptr<ignition::transport::Node> & ign_node,
+  std::shared_ptr<ignition::transport::Node> ign_node,
   const std::string & ign_cmd_topic)
+: ign_node_(ign_node)
 {
-  ign_node_ = ign_node;
   ign_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
     ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));
 }

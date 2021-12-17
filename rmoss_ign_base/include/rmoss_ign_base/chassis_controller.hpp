@@ -19,12 +19,11 @@
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "rmoss_ign_base/ign_chassis_cmd.hpp"
-#include "rmoss_ign_base/ign_joint_encoder.hpp"
-#include "rmoss_ign_base/ign_imu.hpp"
 #include "rmoss_ign_base/pid.hpp"
 #include "rmoss_interfaces/msg/chassis_cmd.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "rmoss_interfaces/msg/gimbal.hpp"
+#include "hardware_interface.hpp"
 
 namespace rmoss_ign_base
 {
@@ -33,16 +32,15 @@ class ChassisController
 {
 public:
   ChassisController(
-    const rclcpp::Node::SharedPtr & node,
-    std::shared_ptr<IgnChassisCmd> & ign_chassis_cmd,
-    std::shared_ptr<IgnJointEncoder> & ign_gimbal_encoder);
+    rclcpp::Node::SharedPtr node,
+    Actuator<geometry_msgs::msg::Twist>::SharedPtr chassis_actuator,
+    Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_encoder,
+    const std::string & controller_name = "chassis_controller");
   ~ChassisController() {}
 
 public:
   void set_chassis_pid(struct PidParam pid_param);
   void reset();
-  void enable_control(bool enable) {enable_ = enable;}
-  void enable_power(bool enable) {update_pid_flag_ = enable_ = enable;}
 
 private:
   void chassis_cb(const rmoss_interfaces::msg::ChassisCmd::SharedPtr msg);
@@ -54,19 +52,21 @@ private:
   rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr ros_chassis_cmd_sub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr ros_cmd_vel_sub_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
-  // ignition tool
-  std::shared_ptr<IgnChassisCmd> ign_chassis_cmd_;
-  std::shared_ptr<IgnJointEncoder> ign_gimbal_encoder_;
+  // actuator and sensor
+  Actuator<geometry_msgs::msg::Twist>::SharedPtr chassis_actuator_;
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr gimbal_encoder_;
   // target data
   double target_vx_{0};
   double target_vy_{0};
   double target_w_{0};
+  geometry_msgs::msg::Twist target_vel_;
   // pid and pid parameter
+  double cur_yaw_{0};
+  PidParam chassis_pid_param_;
   ignition::math::PID chassis_pid_;
   // flag
   bool update_pid_flag_{true};
   bool follow_mode_flag_{true};
-  bool enable_{true};
 };
 
 

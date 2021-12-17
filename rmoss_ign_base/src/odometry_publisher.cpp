@@ -21,76 +21,45 @@ namespace rmoss_ign_base
 {
 
 OdometryPublisher::OdometryPublisher(
-  rclcpp::Node::SharedPtr ros_node,
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_odom_topic,
-  int update_rate,
-  bool publish_tf,
-  const std::string & odometry_name)
-: ros_node_(ros_node), ign_node_(ign_node), publish_tf_(publish_tf)
+  rclcpp::Node::SharedPtr node,
+  Sensor<nav_msgs::msg::Odometry>::SharedPtr odometry_sensor,
+  const std::string & publisher_name)
+: node_(node), odometry_sensor_(odometry_sensor)
 {
+  // parameters
+  int rate = 30;
+  std::string param_ns = publisher_name + ".";
+  node_->declare_parameter(param_ns + "rate", rate);
+  node_->declare_parameter(param_ns + "frame_id", frame_id_);
+  node_->declare_parameter(param_ns + "child_frame_id", child_frame_id_);
+  node_->declare_parameter(param_ns + "publish_tf", publish_tf_);
+  node_->declare_parameter(param_ns + "use_footprint", use_footprint_);
+  node_->get_parameter(param_ns + "rate", rate);
+  node_->get_parameter(param_ns + "frame_id", frame_id_);
+  node_->get_parameter(param_ns + "child_frame_id", child_frame_id_);
+  node_->get_parameter(param_ns + "publish_tf", publish_tf_);
+  node_->get_parameter(param_ns + "use_footprint", use_footprint_);
   // create ros pub and timer
-  std::string ros_odom_topic = "robot_base/odom";
-  if (odometry_name != "") {
-    ros_odom_topic = "robot_base/" + odometry_name + "/odom";
-  }
-  odom_pub_ = ros_node_->create_publisher<nav_msgs::msg::Odometry>(ros_odom_topic, 10);
-  ign_node_->Subscribe(ign_odom_topic, &OdometryPublisher::ign_odometry_cb, this);
-  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(ros_node_);
-  auto period = std::chrono::microseconds(1000000 / update_rate);
-  timer_ = ros_node_->create_wall_timer(
+  std::string odom_topic = "robot_base/odom";
+  odom_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic, 10);
+  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
+  auto period = std::chrono::microseconds(1000000 / rate);
+  timer_ = node_->create_wall_timer(
     period, std::bind(&OdometryPublisher::timer_callback, this));
-}
-
-void OdometryPublisher::ign_odometry_cb(const ignition::msgs::Odometry & msg)
-{
-  std::lock_guard<std::mutex> lock(msg_mut_);
-  if (frame_id_.empty() || child_frame_id_.empty()) {
-    for (auto i = 0; i < msg.header().data_size(); ++i) {
-      auto aPair = msg.header().data(i);
-      if (aPair.key() == "frame_id" && aPair.value_size() > 0 && frame_id_.empty()) {
-        frame_id_ = aPair.value(0);
-      }
-      if (aPair.key() == "child_frame_id" && aPair.value_size() > 0 &&
-        child_frame_id_.empty())
-      {
-        child_frame_id_ = aPair.value(0);
-      }
-    }
-  }
-  odom_msg_ = msg;
-}
-
-void OdometryPublisher::set_frame_id(const std::string & frame_id)
-{
-  frame_id_ = frame_id;
-}
-
-void OdometryPublisher::set_child_frame_id(const std::string & child_frame_id)
-{
-  child_frame_id_ = child_frame_id;
 }
 
 void OdometryPublisher::timer_callback()
 {
-  std::lock_guard<std::mutex> lock(msg_mut_);
-  auto time = ros_node_->get_clock()->now();
   // odom
   nav_msgs::msg::Odometry odom_msg;
   odom_msg.header.frame_id = frame_id_;
-  odom_msg.header.stamp = time;
   odom_msg.child_frame_id = child_frame_id_;
-  auto & pose = odom_msg_.pose();
-  odom_msg.pose.pose.position.x = pose.position().x();
-  odom_msg.pose.pose.position.y = pose.position().y();
-  odom_msg.pose.pose.position.z = pose.position().z();
-  odom_msg.pose.pose.orientation.x = pose.orientation().x();
-  odom_msg.pose.pose.orientation.y = pose.orientation().y();
-  odom_msg.pose.pose.orientation.z = pose.orientation().z();
-  odom_msg.pose.pose.orientation.w = pose.orientation().w();
-  odom_msg.twist.twist.linear.x = odom_msg_.twist().linear().x();
-  odom_msg.twist.twist.linear.y = odom_msg_.twist().linear().y();
-  odom_msg.twist.twist.angular.z = odom_msg_.twist().angular().z();
+  {
+    std::lock_guard<std::mutex> lock(msg_mut_);
+    odom_msg.header.stamp = sensor_msg_.header.stamp;
+    odom_msg.pose = sensor_msg_.pose;
+    odom_msg.twist = sensor_msg_.twist;
+  }
   if (use_footprint_) {
     odom_msg.pose.pose.position.z = 0;
   }
@@ -98,9 +67,9 @@ void OdometryPublisher::timer_callback()
   // tf
   if (publish_tf_) {
     geometry_msgs::msg::TransformStamped tf_msg;
-    tf_msg.header.frame_id = frame_id_;
-    tf_msg.header.stamp = time;
-    tf_msg.child_frame_id = child_frame_id_;
+    tf_msg.header.frame_id = odom_msg.header.frame_id;
+    tf_msg.header.stamp = odom_msg.header.stamp;
+    tf_msg.child_frame_id = odom_msg.child_frame_id;
     tf_msg.transform.translation.x = odom_msg.pose.pose.position.x;
     tf_msg.transform.translation.y = odom_msg.pose.pose.position.y;
     tf_msg.transform.translation.z = odom_msg.pose.pose.position.z;

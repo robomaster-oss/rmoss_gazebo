@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_chassis_cmd.hpp"
+#include "rmoss_ign_base/ign_chassis_actuator.hpp"
 
 #include <memory>
 #include <string>
@@ -20,21 +20,25 @@ namespace rmoss_ign_base
 {
 
 
-IgnChassisCmd::IgnChassisCmd(
+IgnChassisActuator::IgnChassisActuator(
+  rclcpp::Node::SharedPtr node,
   const std::shared_ptr<ignition::transport::Node> & ign_node,
   const std::string & ign_chassis_cmd_topic)
+: node_(node), ign_node_(ign_node)
 {
-  ign_node_ = ign_node;
   ign_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
     ign_node_->Advertise<ignition::msgs::Twist>(ign_chassis_cmd_topic));
 }
 
-void IgnChassisCmd::publish(double v_x, double v_y, double v_w)
+void IgnChassisActuator::set(const geometry_msgs::msg::Twist & data)
 {
+  if (!enable_) {
+    return;
+  }
   ignition::msgs::Twist ign_msg;
-  ign_msg.mutable_linear()->set_x(v_x);
-  ign_msg.mutable_linear()->set_y(v_y);
-  ign_msg.mutable_angular()->set_z(v_w);
+  ign_msg.mutable_linear()->set_x(data.linear.x);
+  ign_msg.mutable_linear()->set_y(data.linear.y);
+  ign_msg.mutable_angular()->set_z(data.angular.z);
   ign_chassis_cmd_pub_->Publish(ign_msg);
 }
 

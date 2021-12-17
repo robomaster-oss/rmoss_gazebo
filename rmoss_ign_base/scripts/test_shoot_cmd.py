@@ -20,7 +20,7 @@ def main():
             num = int(input("num: "))
         except:
             break
-        info=getShootCmdMsg(num,20)
+        info=getShootCmdMsg(num,0.0)
         pub.publish(info)
         print("send--------------------------------\n")
 

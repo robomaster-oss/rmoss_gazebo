@@ -44,55 +44,53 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   std::string ign_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
   std::string ign_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
-  // pid parameters
-  rmoss_ign_base::PidParam picth_pid_param, yaw_pid_param, chassis_pid_param;
-  rmoss_ign_base::declare_pid_parameter(node_, "gimbal_pitch_pid");
-  rmoss_ign_base::declare_pid_parameter(node_, "gimbal_yaw_pid");
-  rmoss_ign_base::declare_pid_parameter(node_, "chassis_follow_pid");
-  rmoss_ign_base::get_pid_parameter(node_, "gimbal_pitch_pid", picth_pid_param);
-  rmoss_ign_base::get_pid_parameter(node_, "gimbal_yaw_pid", yaw_pid_param);
-  rmoss_ign_base::get_pid_parameter(node_, "chassis_follow_pid", chassis_pid_param);
-  // create ign moudule
-  ign_gimbal_encoder_ = std::make_shared<rmoss_ign_base::IgnJointEncoder>(
-    ign_node_, ign_joint_state_topic);
-  ign_gimbal_imu_ = std::make_shared<rmoss_ign_base::IgnImu>(ign_node_, ign_gimbal_imu_topic);
-  ign_chassis_cmd_ = std::make_shared<rmoss_ign_base::IgnChassisCmd>(
-    ign_node_, ign_chassis_cmd_topic);
-  ign_gimbal_cmd_ = std::make_shared<rmoss_ign_base::IgnGimbalCmd>(
-    ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
+  // create hardware moudule
+  // Actuator
+  chassis_actuator_ = std::make_shared<rmoss_ign_base::IgnChassisActuator>(
+    node_, ign_node_, ign_chassis_cmd_topic);
+  gimbal_vel_actuator_ = std::make_shared<rmoss_ign_base::IgnGimbalActuator>(
+    node_, ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
+  shoot_actuator_ = std::make_shared<rmoss_ign_base::IgnShootActuator>(
+    node_, ign_node_, robot_name, "small_shooter");
   ign_light_bar_cmd_ = std::make_shared<rmoss_ign_base::IgnLightBarCmd>(
     ign_node_, ign_light_bar_cmd_topic);
-  // create ros controller and publisher
+  // sensor wrapper
+  ign_gimbal_encoder_ = std::make_shared<rmoss_ign_base::IgnGimbalEncoder>(
+    node_, ign_node_, ign_joint_state_topic);
+  ign_gimbal_imu_ = std::make_shared<rmoss_ign_base::IgnGimbalImu>(
+    node_, ign_node_, ign_gimbal_imu_topic);
+  // create controller and publisher
   chassis_controller_ = std::make_shared<rmoss_ign_base::ChassisController>(
-    node_, ign_chassis_cmd_, ign_gimbal_encoder_);
+    node_, chassis_actuator_, ign_gimbal_encoder_->get_position_sensor());
   gimbal_controller_ = std::make_shared<rmoss_ign_base::GimbalController>(
-    node_, ign_gimbal_cmd_, ign_gimbal_encoder_, ign_gimbal_imu_, "", 100, 50);
+    node_, gimbal_vel_actuator_, ign_gimbal_imu_->get_position_sensor());
   shooter_controller_ = std::make_shared<rmoss_ign_base::ShooterController>(
-    node_, ign_node_, robot_name, "small_shooter");
+    node_, shoot_actuator_, "small_shooter_controller");
+  // odometry
   if (use_odometry) {
-    odometry_publisher_ = std::make_shared<rmoss_ign_base::OdometryPublisher>(
+    ign_chassis_odometry_ = std::make_shared<rmoss_ign_base::IgnOdometry>(
       node_, ign_node_, "/" + robot_name + "/odometry");
-    odometry_publisher_->set_child_frame_id(robot_name + "/footprint");
-    odometry_publisher_->set_footprint(true);
+    odometry_publisher_ = std::make_shared<rmoss_ign_base::OdometryPublisher>(
+      node_, ign_chassis_odometry_->get_odometry_sensor());
   }
-  // set pid
-  chassis_controller_->set_chassis_pid(chassis_pid_param);
-  gimbal_controller_->set_pitch_pid(picth_pid_param);
-  gimbal_controller_->set_yaw_pid(yaw_pid_param);
   //
   using namespace std::placeholders;
-
   std::string robot_status_topic = "/referee_system/" + robot_name + "/robot_status";
   robot_status_sub_ = node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
     robot_status_topic, 10, std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
   std::string enable_power_topic = "/referee_system/" + robot_name + "/enable_power";
   enable_power_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
     enable_power_topic, 10, std::bind(&Rmua19RobotBaseNode::enable_power_cb, this, _1));
-  std::string enable_control_topic = "/referee_system/" + robot_name + "/enable_control";
-  enable_control_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
-    enable_control_topic, 10, std::bind(&Rmua19RobotBaseNode::enable_control_cb, this, _1));
+  // enable actuator and sensor
+  chassis_actuator_->enable(true);
+  gimbal_vel_actuator_->enable(true);
+  shoot_actuator_->enable(true);
+  ign_gimbal_encoder_->enable(true);
+  ign_gimbal_imu_->enable(true);
+  if (use_odometry) {
+    ign_chassis_odometry_->enable(true);
+  }
 }
-
 
 void Rmua19RobotBaseNode::robot_status_cb(
   const rmoss_interfaces::msg::RobotStatus::SharedPtr msg)
@@ -101,18 +99,16 @@ void Rmua19RobotBaseNode::robot_status_cb(
   if (remain_num < 0) {
     remain_num = 0;
   }
-  shooter_controller_->updata_remain_num(remain_num);
+  shoot_actuator_->update_remain_num(remain_num);
 }
 
 void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
 {
   if (msg->data) {
     // enable power
-    chassis_controller_->reset();
-    gimbal_controller_->reset();
-    chassis_controller_->enable_power(true);
-    gimbal_controller_->enable_power(true);
-    shooter_controller_->enable(true);
+    chassis_actuator_->enable(true);
+    gimbal_vel_actuator_->enable(true);
+    shoot_actuator_->enable(true);
     if (is_red_) {
       ign_light_bar_cmd_->set_state(1);
     } else {
@@ -120,25 +116,10 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
     }
   } else {
     // disable power
-    chassis_controller_->enable_power(false);
-    gimbal_controller_->enable_power(false);
-    shooter_controller_->enable(false);
+    chassis_actuator_->enable(false);
+    gimbal_vel_actuator_->enable(false);
+    shoot_actuator_->enable(false);
     ign_light_bar_cmd_->set_state(0);
-  }
-}
-
-void Rmua19RobotBaseNode::enable_control_cb(const std_msgs::msg::Bool::SharedPtr msg)
-{
-  if (msg->data) {
-    // enable control
-    chassis_controller_->enable_control(true);
-    gimbal_controller_->enable_control(true);
-    shooter_controller_->enable(true);
-  } else {
-    // disable control
-    chassis_controller_->enable_control(false);
-    gimbal_controller_->enable_control(false);
-    shooter_controller_->enable(false);
   }
 }
 
