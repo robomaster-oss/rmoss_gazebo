@@ -37,7 +37,7 @@ public:
 
 public:
   bool open() override;
-  void close() override;
+  bool close() override;
   bool is_open() override;
   bool grab_image(cv::Mat & image) override;
   bool set_parameter(rmoss_cam::CamParamType type, int value) override;

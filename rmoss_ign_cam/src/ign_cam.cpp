@@ -123,12 +123,13 @@ bool IgnCam::open()
   return true;
 }
 
-void IgnCam::close()
+bool IgnCam::close()
 {
   if (is_open_) {
     ign_node_->Unsubscribe(topic_name_);
     is_open_ = false;
   }
+  return true;
 }
 
 bool IgnCam::is_open()
