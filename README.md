@@ -29,9 +29,11 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 
 ## 使用说明
 
-* ROS2版本要求: `Galatic`.
-* Gazebo仿真器版本（新版）要求: ` Edifice`.
-* rmoss相关项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) , [rmoss_core](https://github.com/robomaster-oss/rmoss_core), [rmoss_ign_resources](https://github.com/robomaster-oss/rmoss_ign_resources.git).
+环境依赖
+
+* ROS2版本: `Galatic`.
+* Gazebo仿真器版本（新版）: ` Edifice`.
+* RMOSS项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) , [rmoss_core](https://github.com/robomaster-oss/rmoss_core), [rmoss_ign_resources](https://github.com/robomaster-oss/rmoss_ign_resources.git).
 
 > 经典Gazebo(数字版本) 与 新版Gazebo (字母版本，也叫Ignition，目前还在迁移过程中)  差别较大，该项目基于新版Gazebo，命名空间将会进行逐步调整。
 
