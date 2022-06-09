@@ -2,8 +2,8 @@ repositories:
   rmoss_interfaces:
     type: git
     url: https://github.com/robomaster-oss/rmoss_interfaces.git
-    version: main
+    version: galactic
   rmoss_core:
     type: git
     url: https://github.com/robomaster-oss/rmoss_core.git
-    version: main
+    version: galactic

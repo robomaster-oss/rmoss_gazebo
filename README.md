@@ -1,7 +1,7 @@
 # rmoss_gazebo
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build and Test (Galactic & Edifice)](https://github.com/robomaster-oss/rmoss_ign/actions/workflows/ci.yml/badge.svg)](https://github.com/robomaster-oss/rmoss_ign/actions/workflows/ci.yml)
+[![Build and Test](https://github.com/robomaster-oss/rmoss_gazebo/actions/workflows/ci.yml/badge.svg?branch=galactic)](https://github.com/robomaster-oss/rmoss_gazebo/actions/workflows/ci.yml)
 
 ![](rmoss_bg.png)
 RoboMasterOSS是一个面向RoboMaster的开源软件栈项目，目的是为RoboMaster机器人软件开发提供了一个快速的，灵活的开发工具，支持算法原型研究和robomaster比赛应用开发。
@@ -29,10 +29,11 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 
 ## 使用说明
 
-* ROS2版本要求: `Galatic` (目前处于开发期，基于ROS2最新版本)
-* Gazebo仿真器版本要求: ` Edifice` (目前处于开发期)
-* 其他包依赖：
-  *  [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) : ROS2 interfaces (.msg, .srv, .action) used in the RoboMaster OSS Projects
+环境依赖
+
+* ROS2版本: `Galatic`.
+* Gazebo仿真器版本（新版）: ` Edifice`.
+* RMOSS项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) , [rmoss_core](https://github.com/robomaster-oss/rmoss_core), [rmoss_ign_resources](https://github.com/robomaster-oss/rmoss_ign_resources.git).
 
 > 经典Gazebo(数字版本) 与 新版Gazebo (字母版本，也叫Ignition，目前还在迁移过程中)  差别较大，该项目基于新版Gazebo，命名空间将会进行逐步调整。
 
@@ -40,11 +41,12 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 
 ```bash
 # cd ros2 workspaces src
-git clone https://github.com/robomaster-oss/rmoss_interfaces.git
-git clone https://github.com/robomaster-oss/rmoss_core.git
-git clone https://github.com/robomaster-oss/rmoss_gazebo.git
-git clone https://github.com/robomaster-oss/rmoss_ign_resources.git --depth=1
+git clone https://github.com/robomaster-oss/rmoss_gazebo.git -b galactic
+git clone https://github.com/robomaster-oss/rmoss_interfaces.git -b galactic
+git clone https://github.com/robomaster-oss/rmoss_core.git -b galactic
+git clone https://github.com/robomaster-oss/rmoss_ign_resources.git -b galactic --depth=1
 # cd ros2 workspaces
+rosdep install -y -r -q --from-paths src --ignore-src --rosdistro galactic
 colcon build
 ```
 
