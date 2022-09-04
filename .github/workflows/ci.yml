@@ -16,10 +16,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Setup ROS 2
-        uses: ros-tooling/setup-ros@v0.2
-        with:
-          required-ros-distributions: galactic
       - name: Setup Ignition Gazebo
         run: sudo .github/workflows/setup_ignition.sh
       - name: Build rmoss_ign
