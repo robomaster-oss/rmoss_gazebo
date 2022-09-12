@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rmoss_ign_bridge)
+project(rmoss_gz_bridge)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -22,25 +22,14 @@ find_package(tf2_ros REQUIRED)
 find_package(ros_ign_bridge REQUIRED)
 
 # ignition package
-# Fortress
-if("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
-  find_package(ignition-transport11 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+find_package(ignition-transport11 REQUIRED)
+set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
 
-  find_package(ignition-msgs8 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+find_package(ignition-msgs8 REQUIRED)
+set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Fortress")
-# Default to Edifice
-else()
-  find_package(ignition-transport10 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport10_VERSION_MAJOR})
+message(STATUS "Compiling against Ignition Fortress")
 
-  find_package(ignition-msgs7 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Edifice")
-endif()
 
 # include
 include_directories(include)

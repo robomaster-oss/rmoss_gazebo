@@ -1,38 +1,38 @@
 name: Build and Test
 on:
   push:
-    branches: [ galactic ]
+    branches: [ humble ]
   pull_request:
-    branches: [ galactic ]
+    branches: [ humble ]
   schedule:
     - cron: '0 21 * * *'
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-desktop-latest
+      image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-desktop-latest
     steps:
       - name: Check out
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Setup Ignition Gazebo
-        run: sudo .github/workflows/setup_ignition.sh
-      - name: Build rmoss_ign
+      - name: Setup Gazebo
+        run: sudo .github/workflows/setup_gazebo.sh
+      - name: Build rmoss_gazebo
         uses: ros-tooling/action-ros-ci@v0.2
         env:
-          IGNITION_VERSION: edifice
+          GZ_VERSION: fortress
         with:
-          target-ros2-distro: galactic
+          target-ros2-distro: humble
           vcs-repo-file-url: "${{ github.workspace }}/tools/dependency.repos"
           skip-tests: true
-      - name: Test rmoss_ign_base
+      - name: Test rmoss_gz_base
         run: |
-          /usr/bin/bash .github/workflows/colcon_test.sh rmoss_ign_base
+          /usr/bin/bash .github/workflows/colcon_test.sh rmoss_gz_base
         env:
-          IGNITION_VERSION: edifice
-      - name: Test rmoss_ign_cam
+          GZ_VERSION: fortress
+      - name: Test rmoss_gz_cam
         run: |
-          /usr/bin/bash .github/workflows/colcon_test.sh rmoss_ign_cam
+          /usr/bin/bash .github/workflows/colcon_test.sh rmoss_gz_cam
         env:
           IGNITION_VERSION: edifice

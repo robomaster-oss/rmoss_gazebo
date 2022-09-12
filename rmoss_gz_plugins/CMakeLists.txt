@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rmoss_ign_plugins)
+project(rmoss_gz_plugins)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -10,12 +10,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 # find package
 find_package(ament_cmake REQUIRED)
-find_package(ignition-msgs7 REQUIRED)
-set(IGN_MSGS_VER 7)
-find_package(ignition-transport10 REQUIRED)
-set(IGN_TRANSPORT_VER 10)
-find_package(ignition-gazebo5 REQUIRED)
-set(IGN_GAZEBO_VER 5)
+find_package(ignition-msgs8 REQUIRED)
+set(IGN_MSGS_VER 8)
+find_package(ignition-transport11 REQUIRED)
+set(IGN_TRANSPORT_VER 11)
+find_package(ignition-gazebo6 REQUIRED)
+set(IGN_GAZEBO_VER 6)
 
 
 # for plugins MecanumDrive2

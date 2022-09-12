@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rmoss_ign_cam)
+project(rmoss_gz_cam)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -15,26 +15,15 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rmoss_cam REQUIRED)
 
-# ignition package
-# Fortress
-if("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
-  find_package(ignition-transport11 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+# Gazebo Fortress
+find_package(ignition-transport11 REQUIRED)
+set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
 
-  find_package(ignition-msgs8 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+find_package(ignition-msgs8 REQUIRED)
+set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Fortress")
-# Default to Edifice
-else()
-  find_package(ignition-transport10 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport10_VERSION_MAJOR})
+message(STATUS "Compiling against Ignition Fortress")
 
-  find_package(ignition-msgs7 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Edifice")
-endif()
 
 # Include
 include_directories(include)
@@ -62,7 +51,7 @@ add_executable(ign_cam src/ign_cam_main.cpp)
 target_link_libraries(ign_cam ${PROJECT_NAME})
 
 # register component nodes
-rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_ign_cam::IgnCamNode")
+rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_gz_cam::IgnCamNode")
 
 # Install include directories
 install(DIRECTORY include/

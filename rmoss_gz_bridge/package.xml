@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-    <name>rmoss_ign_base</name>
+    <name>rmoss_gz_bridge</name>
     <version>1.0.0</version>
-    <description>Robot Base for Ignition Gazebo Simulator</description>
+    <description>Ignition-ROS brdige for Ignition Gazebo Simulator</description>
     <maintainer email="zhenpeng.ge@qq.com">Zhenpeng Ge</maintainer>
     <license>Apache License 2.0</license>
     <buildtool_depend>ament_cmake</buildtool_depend>
@@ -13,8 +13,8 @@
     <depend>rmoss_interfaces</depend>
     <depend>ros_ign_gazebo</depend>
     <depend>ros_ign_bridge</depend>
-    <depend>rmoss_ign_resources</depend>
-    <depend>rmoss_ign_plugins</depend>
+    <depend>rmoss_gz_resources</depend>
+    <depend>rmoss_gz_plugins</depend>
     <!-- Fortress -->
     <depend condition="$IGNITION_VERSION == fortress">ignition-msgs8</depend>
     <depend condition="$IGNITION_VERSION == fortress">ignition-transport11</depend>

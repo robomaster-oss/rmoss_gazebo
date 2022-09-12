@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rmoss_ign_base)
+project(rmoss_gz_base)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -23,31 +23,21 @@ find_package(ros_ign_bridge REQUIRED)
 
 # ignition package
 # Fortress
-if("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
-  find_package(ignition-transport11 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+find_package(ignition-transport11 REQUIRED)
+set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
 
-  find_package(ignition-msgs8 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+find_package(ignition-msgs8 REQUIRED)
+set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Fortress")
-# Default to Edifice
-else()
-  find_package(ignition-transport10 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport10_VERSION_MAJOR})
+message(STATUS "Compiling against Ignition Fortress")
 
-  find_package(ignition-msgs7 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Edifice")
-endif()
 
 
 
 # include
 include_directories(include)
 
-# generate rmoss_ign_base lib
+# generate rmoss_gz_base lib
 add_library(${PROJECT_NAME} SHARED
   src/ign_module/ign_chassis_actuator.cpp
   src/ign_module/ign_gimbal_actuator.cpp
@@ -87,7 +77,7 @@ add_executable(rmua19_robot_base src/rmua19_robot_base_main.cpp)
 target_link_libraries(rmua19_robot_base ${PROJECT_NAME})
 
 # register component nodes
-rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_ign_base::Rmua19RobotBaseNode")
+rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_gz_base::Rmua19RobotBaseNode")
 
 # Install include directories
 install(DIRECTORY include/
