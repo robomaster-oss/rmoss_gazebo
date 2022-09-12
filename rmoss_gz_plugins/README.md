@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-rmoss_gz_plugins: 提供Ignition Plugins，为RoboMaster Ignition仿真提供插件支持。
+rmoss_gz_plugins: 提供Gazebo Plugins，为RoboMaster Gazebo仿真提供插件支持。
 
 * MecanumDrive: 麦克拉姆轮插件，实现底盘全向移动功能。
 * ProjectileShooter：子弹发射插件，实现射击功能。
