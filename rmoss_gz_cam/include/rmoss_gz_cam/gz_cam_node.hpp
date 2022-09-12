@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_
-#define RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_
+#ifndef RMOSS_GZ_CAM__GZ_CAM_NODE_HPP_
+#define RMOSS_GZ_CAM__GZ_CAM_NODE_HPP_
 
 #include <string>
 #include <memory>
@@ -44,4 +44,4 @@ private:
 
 }  // namespace rmoss_gz_cam
 
-#endif  // RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_
+#endif  // RMOSS_GZ_CAM__GZ_CAM_NODE_HPP_
