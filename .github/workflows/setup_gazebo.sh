@@ -5,3 +5,4 @@ echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-nightly `lsb_release -
 wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
 apt-get update -qq
 apt-get install -y libignition-msgs8-dev libignition-transport11-dev libignition-gazebo6-dev
+apt-get install -y ros-humble-ros-ign 
