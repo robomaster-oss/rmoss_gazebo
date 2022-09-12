@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/ign_gimbal_encoder.hpp"
+#include "rmoss_gz_base/gz_gimbal_encoder.hpp"
 
 #include <memory>
 #include <string>
 #include <cmath>
 
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 IgnGimbalEncoder::IgnGimbalEncoder(
@@ -54,4 +54,4 @@ void IgnGimbalEncoder::ign_Joint_state_cb(const ignition::msgs::Model & msg)
 }
 
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

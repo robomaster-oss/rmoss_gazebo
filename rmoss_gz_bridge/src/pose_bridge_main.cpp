@@ -14,13 +14,13 @@
 
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
-#include "rmoss_ign_bridge/pose_bridge_node.hpp"
+#include "rmoss_gz_bridge/pose_bridge_node.hpp"
 
 int main(int argc, char * argv[])
 {
   // create ros2 node
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<rmoss_ign_bridge::PoseBridgeNode>();
+  auto node = std::make_shared<rmoss_gz_bridge::PoseBridgeNode>();
   rclcpp::spin(node->get_node_base_interface());
   rclcpp::shutdown();
   return 0;

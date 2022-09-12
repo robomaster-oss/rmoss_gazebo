@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/shooter_controller.hpp"
+#include "rmoss_gz_base/shooter_controller.hpp"
 
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 ShooterController::ShooterController(
@@ -39,4 +39,4 @@ void ShooterController::shoot_cb(const rmoss_interfaces::msg::ShootCmd::SharedPt
   shoot_actuator_->set(*msg);
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

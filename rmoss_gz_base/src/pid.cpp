@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/pid.hpp"
+#include "rmoss_gz_base/pid.hpp"
 
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 void declare_pid_parameter(
@@ -61,4 +61,4 @@ void get_pid_parameter(
   node->get_parameter(name + ".offset", pid_param.offset);
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

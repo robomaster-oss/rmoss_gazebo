@@ -11,13 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/chassis_controller.hpp"
+#include "rmoss_gz_base/chassis_controller.hpp"
 
 #include <memory>
 #include <string>
 
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 ChassisController::ChassisController(
   rclcpp::Node::SharedPtr node,
@@ -97,4 +97,4 @@ void ChassisController::reset()
   chassis_pid_.Reset();
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

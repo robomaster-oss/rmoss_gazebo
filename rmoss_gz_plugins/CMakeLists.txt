@@ -45,7 +45,7 @@ install(TARGETS MecanumDrive2 ProjectileShooter LightBarController
 )
 
 #environment
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/ignition.dsv.in")
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/gazebo.dsv.in")
 
 if(BUILD_TESTING)
   # no lint test

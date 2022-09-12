@@ -12,45 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_
-#define RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_
+#ifndef RMOSS_GZ_BASE__GZ_CHASSIS_ACTUATOR_HPP_
+#define RMOSS_GZ_BASE__GZ_CHASSIS_ACTUATOR_HPP_
 
 #include <memory>
 #include <string>
 
+#include "geometry_msgs/msg/twist.hpp"
 #include "ignition/transport/Node.hh"
-#include "rmoss_interfaces/msg/shoot_cmd.hpp"
 #include "hardware_interface.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd>
+class IgnChassisActuator : public Actuator<geometry_msgs::msg::Twist>
 {
 public:
-  IgnShootActuator(
+  IgnChassisActuator(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & robot_name,
-    const std::string & shooter_name);
-  ~IgnShootActuator() {}
+    const std::shared_ptr<ignition::transport::Node> & ign_node,
+    const std::string & ign_chassis_cmd_topic);
+  ~IgnChassisActuator() {}
 
-  void set(const rmoss_interfaces::msg::ShootCmd & data) override;
+  void set(const geometry_msgs::msg::Twist & data) override;
   void enable(bool enable) {enable_ = enable;}
-  void update_remain_num(int num) {remain_num_ = num;}
 
 private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  // ign pub and sub
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_set_vel_pub_;
-  // data
-  double projectile_vel_{0};
-  int remain_num_{200};
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
   bool enable_{false};
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__IGN_SHOOT_ACTUATOR_HPP_
+#endif  // RMOSS_GZ_BASE__GZ_CHASSIS_ACTUATOR_HPP_

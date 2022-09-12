@@ -30,8 +30,8 @@ include_directories(include)
 
 # Create rmoss_cam lib
 add_library(${PROJECT_NAME} SHARED
-  src/ign_cam.cpp
-  src/ign_cam_node.cpp
+  src/gz_cam.cpp
+  src/gz_cam_node.cpp
 )
 
 set(dependencies
@@ -47,11 +47,11 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Create executable nodes
-add_executable(ign_cam src/ign_cam_main.cpp)
-target_link_libraries(ign_cam ${PROJECT_NAME})
+add_executable(gz_cam src/gz_cam_main.cpp)
+target_link_libraries(gz_cam ${PROJECT_NAME})
 
 # register component nodes
-rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_gz_cam::IgnCamNode")
+rclcpp_components_register_nodes(${PROJECT_NAME} "rmoss_gz_cam::GzCamNode")
 
 # Install include directories
 install(DIRECTORY include/
@@ -67,7 +67,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 # Install executable nodes
-install(TARGETS ign_cam
+install(TARGETS gz_cam
   DESTINATION lib/${PROJECT_NAME}
 )
 

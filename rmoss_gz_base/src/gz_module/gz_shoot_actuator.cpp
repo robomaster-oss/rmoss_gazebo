@@ -11,12 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_shoot_actuator.hpp"
+#include "rmoss_gz_base/gz_shoot_actuator.hpp"
 
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 IgnShootActuator::IgnShootActuator(
@@ -60,4 +60,4 @@ void IgnShootActuator::set(const rmoss_interfaces::msg::ShootCmd & data)
   ign_shoot_cmd_pub_->Publish(ign_msg);
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

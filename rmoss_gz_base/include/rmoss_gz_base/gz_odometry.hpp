@@ -11,39 +11,43 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-#ifndef RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_
-#define RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_
+#ifndef RMOSS_GZ_BASE__GZ_ODOMETRY_HPP_
+#define RMOSS_GZ_BASE__GZ_ODOMETRY_HPP_
 
 #include <memory>
 #include <string>
+#include <mutex>
 
-#include "geometry_msgs/msg/twist.hpp"
 #include "ignition/transport/Node.hh"
 #include "hardware_interface.hpp"
+#include "rclcpp/clock.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnChassisActuator : public Actuator<geometry_msgs::msg::Twist>
+class IgnOdometry
 {
 public:
-  IgnChassisActuator(
+  IgnOdometry(
     rclcpp::Node::SharedPtr node,
-    const std::shared_ptr<ignition::transport::Node> & ign_node,
-    const std::string & ign_chassis_cmd_topic);
-  ~IgnChassisActuator() {}
+    std::shared_ptr<ignition::transport::Node> ign_node,
+    const std::string & ign_odom_topic);
+  ~IgnOdometry() {}
 
-  void set(const geometry_msgs::msg::Twist & data) override;
   void enable(bool enable) {enable_ = enable;}
+  Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor() {return odometry_sensor_;}
+
+private:
+  void ign_odometry_cb(const ignition::msgs::Odometry & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
   bool enable_{false};
+  std::shared_ptr<DataSensor<nav_msgs::msg::Odometry>> odometry_sensor_;
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__IGN_CHASSIS_ACTUATOR_HPP_
+#endif  // RMOSS_GZ_BASE__GZ_ODOMETRY_HPP_

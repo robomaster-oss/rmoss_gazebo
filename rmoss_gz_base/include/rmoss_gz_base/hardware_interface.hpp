@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__HARDWARE_INTERFACE_HPP_
-#define RMOSS_IGN_BASE__HARDWARE_INTERFACE_HPP_
+#ifndef RMOSS_GZ_BASE__HARDWARE_INTERFACE_HPP_
+#define RMOSS_GZ_BASE__HARDWARE_INTERFACE_HPP_
 
 #include <memory>
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 template<class DataT>
@@ -62,6 +62,6 @@ public:
   std::vector<SensorCallback<DataT>> callbacks_;
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__HARDWARE_INTERFACE_HPP_
+#endif  // RMOSS_GZ_BASE__HARDWARE_INTERFACE_HPP_

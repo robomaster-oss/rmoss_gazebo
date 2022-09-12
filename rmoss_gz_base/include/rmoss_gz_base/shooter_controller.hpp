@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
+#ifndef RMOSS_GZ_BASE__SHOOTER_CONTROLLER_HPP_
+#define RMOSS_GZ_BASE__SHOOTER_CONTROLLER_HPP_
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@
 #include "rmoss_interfaces/msg/shoot_cmd.hpp"
 #include "hardware_interface.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 class ShooterController
@@ -45,5 +45,5 @@ private:
   rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr ros_shoot_cmd_sub_;
   Actuator<rmoss_interfaces::msg::ShootCmd>::SharedPtr shoot_actuator_;
 };
-}  // namespace rmoss_ign_base
-#endif  // RMOSS_IGN_BASE__SHOOTER_CONTROLLER_HPP_
+}  // namespace rmoss_gz_base
+#endif  // RMOSS_GZ_BASE__SHOOTER_CONTROLLER_HPP_

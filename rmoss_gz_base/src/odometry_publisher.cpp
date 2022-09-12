@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/odometry_publisher.hpp"
+#include "rmoss_gz_base/odometry_publisher.hpp"
 
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 OdometryPublisher::OdometryPublisher(
@@ -78,4 +78,4 @@ void OdometryPublisher::timer_callback()
   }
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_
+#ifndef RMOSS_GZ_BASE__CHASSIS_CONTROLLER_HPP_
+#define RMOSS_GZ_BASE__CHASSIS_CONTROLLER_HPP_
 
 #include <memory>
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "rmoss_ign_base/pid.hpp"
+#include "rmoss_gz_base/pid.hpp"
 #include "rmoss_interfaces/msg/chassis_cmd.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
 #include "hardware_interface.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 class ChassisController
@@ -70,6 +70,6 @@ private:
 };
 
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__CHASSIS_CONTROLLER_HPP_
+#endif  // RMOSS_GZ_BASE__CHASSIS_CONTROLLER_HPP_

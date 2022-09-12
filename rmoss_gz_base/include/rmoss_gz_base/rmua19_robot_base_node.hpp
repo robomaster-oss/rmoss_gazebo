@@ -12,30 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
-#define RMOSS_IGN_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
+#ifndef RMOSS_GZ_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
+#define RMOSS_GZ_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
 
 #include <thread>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 
-#include "rmoss_ign_base/ign_chassis_actuator.hpp"
-#include "rmoss_ign_base/ign_gimbal_actuator.hpp"
-#include "rmoss_ign_base/ign_shoot_actuator.hpp"
-#include "rmoss_ign_base/ign_gimbal_imu.hpp"
-#include "rmoss_ign_base/ign_gimbal_encoder.hpp"
-#include "rmoss_ign_base/ign_odometry.hpp"
-#include "rmoss_ign_base/ign_light_bar_cmd.hpp"
+#include "rmoss_gz_base/gz_chassis_actuator.hpp"
+#include "rmoss_gz_base/gz_gimbal_actuator.hpp"
+#include "rmoss_gz_base/gz_shoot_actuator.hpp"
+#include "rmoss_gz_base/gz_gimbal_imu.hpp"
+#include "rmoss_gz_base/gz_gimbal_encoder.hpp"
+#include "rmoss_gz_base/gz_odometry.hpp"
+#include "rmoss_gz_base/gz_light_bar_cmd.hpp"
 
-#include "rmoss_ign_base/chassis_controller.hpp"
-#include "rmoss_ign_base/gimbal_controller.hpp"
-#include "rmoss_ign_base/shooter_controller.hpp"
-#include "rmoss_ign_base/odometry_publisher.hpp"
+#include "rmoss_gz_base/chassis_controller.hpp"
+#include "rmoss_gz_base/gimbal_controller.hpp"
+#include "rmoss_gz_base/shooter_controller.hpp"
+#include "rmoss_gz_base/odometry_publisher.hpp"
 #include "rmoss_interfaces/msg/robot_status.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "rmoss_ign_base/pid.hpp"
+#include "rmoss_gz_base/pid.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 // Node wrapper for Rmua19RobotBaseNode
 class Rmua19RobotBaseNode
@@ -61,23 +61,23 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_power_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
   // ign actuator moudule
-  std::shared_ptr<rmoss_ign_base::IgnChassisActuator> chassis_actuator_;
-  std::shared_ptr<rmoss_ign_base::IgnGimbalActuator> gimbal_vel_actuator_;
-  std::shared_ptr<rmoss_ign_base::IgnShootActuator> shoot_actuator_;
-  std::shared_ptr<rmoss_ign_base::IgnLightBarCmd> ign_light_bar_cmd_;
+  std::shared_ptr<rmoss_gz_base::IgnChassisActuator> chassis_actuator_;
+  std::shared_ptr<rmoss_gz_base::IgnGimbalActuator> gimbal_vel_actuator_;
+  std::shared_ptr<rmoss_gz_base::IgnShootActuator> shoot_actuator_;
+  std::shared_ptr<rmoss_gz_base::IgnLightBarCmd> ign_light_bar_cmd_;
   // ign sensor moudule
-  std::shared_ptr<rmoss_ign_base::IgnGimbalEncoder> ign_gimbal_encoder_;
-  std::shared_ptr<rmoss_ign_base::IgnGimbalImu> ign_gimbal_imu_;
-  std::shared_ptr<rmoss_ign_base::IgnOdometry> ign_chassis_odometry_;
+  std::shared_ptr<rmoss_gz_base::IgnGimbalEncoder> ign_gimbal_encoder_;
+  std::shared_ptr<rmoss_gz_base::IgnGimbalImu> ign_gimbal_imu_;
+  std::shared_ptr<rmoss_gz_base::IgnOdometry> ign_chassis_odometry_;
   // ros controller/publisher wrapper
-  std::shared_ptr<rmoss_ign_base::ChassisController> chassis_controller_;
-  std::shared_ptr<rmoss_ign_base::GimbalController> gimbal_controller_;
-  std::shared_ptr<rmoss_ign_base::ShooterController> shooter_controller_;
-  std::shared_ptr<rmoss_ign_base::OdometryPublisher> odometry_publisher_;
+  std::shared_ptr<rmoss_gz_base::ChassisController> chassis_controller_;
+  std::shared_ptr<rmoss_gz_base::GimbalController> gimbal_controller_;
+  std::shared_ptr<rmoss_gz_base::ShooterController> shooter_controller_;
+  std::shared_ptr<rmoss_gz_base::OdometryPublisher> odometry_publisher_;
   //
   bool is_red_;
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
+#endif  // RMOSS_GZ_BASE__RMUA19_ROBOT_BASE_NODE_HPP_

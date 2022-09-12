@@ -12,33 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__IGN_LIGHT_BAR_CMD_HPP_
-#define RMOSS_IGN_BASE__IGN_LIGHT_BAR_CMD_HPP_
+#ifndef RMOSS_GZ_BASE__GZ_GIMBAL_ACTUATOR_HPP_
+#define RMOSS_GZ_BASE__GZ_GIMBAL_ACTUATOR_HPP_
 
 #include <memory>
 #include <string>
 
 #include "ignition/transport/Node.hh"
+#include "hardware_interface.hpp"
+#include "rmoss_interfaces/msg/gimbal.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnLightBarCmd
+class IgnGimbalActuator : public Actuator<rmoss_interfaces::msg::Gimbal>
 {
 public:
-  IgnLightBarCmd(
+  IgnGimbalActuator(
+    rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_cmd_topic);
-  ~IgnLightBarCmd() {}
+    const std::string & ign_pitch_topic,
+    const std::string & ign_yaw_topic);
 
-public:
-  void set_state(int state);
+  void set(const rmoss_interfaces::msg::Gimbal & data) override;
+  void enable(bool enable) {enable_ = enable;}
 
 private:
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_pitch_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_pub_;
+  bool enable_{false};
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__IGN_LIGHT_BAR_CMD_HPP_
+#endif  // RMOSS_GZ_BASE__GZ_GIMBAL_ACTUATOR_HPP_

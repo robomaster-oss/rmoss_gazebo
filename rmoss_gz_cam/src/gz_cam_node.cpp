@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_cam/ign_cam_node.hpp"
+#include "rmoss_gz_cam/gz_cam_node.hpp"
 
 #include <memory>
 #include <vector>
 #include <string>
 #include <future>
 
-namespace rmoss_ign_cam
+namespace rmoss_gz_cam
 {
-IgnCamNode::IgnCamNode(const rclcpp::NodeOptions & options)
+GzCamNode::GzCamNode(const rclcpp::NodeOptions & options)
 {
   node_ = std::make_shared<rclcpp::Node>("ign_cam", options);
   ign_node_ = std::make_shared<ignition::transport::Node>();
@@ -59,15 +59,15 @@ IgnCamNode::IgnCamNode(const rclcpp::NodeOptions & options)
     node_->declare_parameter("camera_d", camera_d_);
   }
   // create camera device
-  cam_dev_ = std::make_shared<IgnCam>(ign_node_, ign_camera_image_topic, height, width);
+  cam_dev_ = std::make_shared<GzCam>(ign_node_, ign_camera_image_topic, height, width);
   cam_server_ = std::make_shared<rmoss_cam::CamServer>(node_, cam_dev_);
 }
 
-}  // namespace rmoss_ign_cam
+}  // namespace rmoss_gz_cam
 
 #include "rclcpp_components/register_node_macro.hpp"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
-RCLCPP_COMPONENTS_REGISTER_NODE(rmoss_ign_cam::IgnCamNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(rmoss_gz_cam::GzCamNode)

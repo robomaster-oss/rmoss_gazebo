@@ -11,13 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_odometry.hpp"
+#include "rmoss_gz_base/gz_odometry.hpp"
 
 #include <cmath>
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 
@@ -51,4 +51,4 @@ void IgnOdometry::ign_odometry_cb(const ignition::msgs::Odometry & msg)
   odometry_sensor_->update(odom_msg, node_->get_clock()->now());
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_
-#define RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_
+#ifndef RMOSS_GZ_BASE__GIMBAL_CONTROLLER_HPP_
+#define RMOSS_GZ_BASE__GIMBAL_CONTROLLER_HPP_
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@
 #include "pid.hpp"
 #include "hardware_interface.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 class GimbalController
@@ -75,6 +75,6 @@ private:
   bool update_pid_flag_{true};
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__GIMBAL_CONTROLLER_HPP_
+#endif  // RMOSS_GZ_BASE__GIMBAL_CONTROLLER_HPP_

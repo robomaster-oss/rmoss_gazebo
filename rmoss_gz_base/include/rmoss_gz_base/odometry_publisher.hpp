@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
-#define RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
+#ifndef RMOSS_GZ_BASE__ODOMETRY_PUBLISHER_HPP_
+#define RMOSS_GZ_BASE__ODOMETRY_PUBLISHER_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "hardware_interface.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 class OdometryPublisher
@@ -53,5 +53,5 @@ private:
   bool use_footprint_{false};
   bool publish_tf_{true};
 };
-}  // namespace rmoss_ign_base
-#endif  // RMOSS_IGN_BASE__ODOMETRY_PUBLISHER_HPP_
+}  // namespace rmoss_gz_base
+#endif  // RMOSS_GZ_BASE__ODOMETRY_PUBLISHER_HPP_

@@ -11,43 +11,49 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_
-#define RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_
+
+#ifndef RMOSS_GZ_BASE__GZ_GIMBAL_ENCODER_HPP_
+#define RMOSS_GZ_BASE__GZ_GIMBAL_ENCODER_HPP_
 
 #include <memory>
 #include <string>
 #include <mutex>
+#include <map>
+#include <vector>
 
 #include "ignition/transport/Node.hh"
 #include "hardware_interface.hpp"
-#include "rclcpp/clock.hpp"
-#include "nav_msgs/msg/odometry.hpp"
+#include "rmoss_interfaces/msg/gimbal.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnOdometry
+class IgnGimbalEncoder
 {
 public:
-  IgnOdometry(
+  IgnGimbalEncoder(
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_odom_topic);
-  ~IgnOdometry() {}
+    const std::string & ign_joint_state_topic);
+  ~IgnGimbalEncoder() {}
 
+public:
   void enable(bool enable) {enable_ = enable;}
-  Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor() {return odometry_sensor_;}
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor() {return position_sensor_;}
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_velocity_sensor() {return velocity_sensor_;}
 
 private:
-  void ign_odometry_cb(const ignition::msgs::Odometry & msg);
+  void ign_Joint_state_cb(const ignition::msgs::Model & msg);
 
-private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
   bool enable_{false};
-  std::shared_ptr<DataSensor<nav_msgs::msg::Odometry>> odometry_sensor_;
+  // info
+  std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> position_sensor_;
+  std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> velocity_sensor_;
 };
 
-}  // namespace rmoss_ign_base
 
-#endif  // RMOSS_IGN_BASE__IGN_ODOMETRY_HPP_
+}  // namespace rmoss_gz_base
+
+#endif  // RMOSS_GZ_BASE__GZ_GIMBAL_ENCODER_HPP_

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_cam/ign_cam.hpp"
+#include "rmoss_gz_cam/gz_cam.hpp"
 
 #include <string>
 #include <memory>
@@ -86,10 +86,10 @@ convert_ign_to_ros(
     ros_msg.data.begin());
 }
 
-namespace rmoss_ign_cam
+namespace rmoss_gz_cam
 {
 
-IgnCam::IgnCam(
+GzCam::GzCam(
   const std::shared_ptr<ignition::transport::Node> & ign_node,
   const std::string & topic_name,
   int height,
@@ -101,19 +101,19 @@ IgnCam::IgnCam(
   params_[rmoss_cam::CamParamType::Height] = height;
 }
 
-IgnCam::~IgnCam()
+GzCam::~GzCam()
 {
   if (is_open_) {
     close();
   }
 }
 
-bool IgnCam::open()
+bool GzCam::open()
 {
   if (is_open_) {
     return true;
   }
-  auto ret = ign_node_->Subscribe(topic_name_, &IgnCam::ign_image_cb, this);
+  auto ret = ign_node_->Subscribe(topic_name_, &GzCam::gz_image_cb, this);
   if (!ret) {
     error_message_ = "failed to create ignition subscriber";
     return false;
@@ -123,7 +123,7 @@ bool IgnCam::open()
   return true;
 }
 
-bool IgnCam::close()
+bool GzCam::close()
 {
   if (is_open_) {
     ign_node_->Unsubscribe(topic_name_);
@@ -132,19 +132,19 @@ bool IgnCam::close()
   return true;
 }
 
-bool IgnCam::is_open()
+bool GzCam::is_open()
 {
   return is_open_;
 }
 
-void IgnCam::ign_image_cb(const ignition::msgs::Image & msg)
+void GzCam::gz_image_cb(const ignition::msgs::Image & msg)
 {
   std::lock_guard<std::mutex> lock(msg_mut_);
   ign_msg_ = msg;
   grap_ok_ = true;
 }
 
-bool IgnCam::grab_image(cv::Mat & image)
+bool GzCam::grab_image(cv::Mat & image)
 {
   if (!is_open_) {
     error_message_ = "camera is not open";
@@ -174,7 +174,7 @@ bool IgnCam::grab_image(cv::Mat & image)
 }
 
 // set and get parameter
-bool IgnCam::set_parameter(rmoss_cam::CamParamType type, int value)
+bool GzCam::set_parameter(rmoss_cam::CamParamType type, int value)
 {
   if (type == rmoss_cam::CamParamType::Fps) {
     params_[type] = value;
@@ -183,7 +183,7 @@ bool IgnCam::set_parameter(rmoss_cam::CamParamType type, int value)
   error_message_ = "only support Fps";
   return false;
 }
-bool IgnCam::get_parameter(rmoss_cam::CamParamType type, int & value)
+bool GzCam::get_parameter(rmoss_cam::CamParamType type, int & value)
 {
   if (params_.find(type) != params_.end()) {
     value = params_[type];
@@ -194,4 +194,4 @@ bool IgnCam::get_parameter(rmoss_cam::CamParamType type, int & value)
   }
 }
 
-}  // namespace rmoss_ign_cam
+}  // namespace rmoss_gz_cam

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/rmua19_robot_base_node.hpp"
+#include "rmoss_gz_base/rmua19_robot_base_node.hpp"
 
 #include <thread>
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
@@ -46,31 +46,31 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   std::string ign_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
   // create hardware moudule
   // Actuator
-  chassis_actuator_ = std::make_shared<rmoss_ign_base::IgnChassisActuator>(
+  chassis_actuator_ = std::make_shared<rmoss_gz_base::IgnChassisActuator>(
     node_, ign_node_, ign_chassis_cmd_topic);
-  gimbal_vel_actuator_ = std::make_shared<rmoss_ign_base::IgnGimbalActuator>(
+  gimbal_vel_actuator_ = std::make_shared<rmoss_gz_base::IgnGimbalActuator>(
     node_, ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
-  shoot_actuator_ = std::make_shared<rmoss_ign_base::IgnShootActuator>(
+  shoot_actuator_ = std::make_shared<rmoss_gz_base::IgnShootActuator>(
     node_, ign_node_, robot_name, "small_shooter");
-  ign_light_bar_cmd_ = std::make_shared<rmoss_ign_base::IgnLightBarCmd>(
+  ign_light_bar_cmd_ = std::make_shared<rmoss_gz_base::IgnLightBarCmd>(
     ign_node_, ign_light_bar_cmd_topic);
   // sensor wrapper
-  ign_gimbal_encoder_ = std::make_shared<rmoss_ign_base::IgnGimbalEncoder>(
+  ign_gimbal_encoder_ = std::make_shared<rmoss_gz_base::IgnGimbalEncoder>(
     node_, ign_node_, ign_joint_state_topic);
-  ign_gimbal_imu_ = std::make_shared<rmoss_ign_base::IgnGimbalImu>(
+  ign_gimbal_imu_ = std::make_shared<rmoss_gz_base::IgnGimbalImu>(
     node_, ign_node_, ign_gimbal_imu_topic);
   // create controller and publisher
-  chassis_controller_ = std::make_shared<rmoss_ign_base::ChassisController>(
+  chassis_controller_ = std::make_shared<rmoss_gz_base::ChassisController>(
     node_, chassis_actuator_, ign_gimbal_encoder_->get_position_sensor());
-  gimbal_controller_ = std::make_shared<rmoss_ign_base::GimbalController>(
+  gimbal_controller_ = std::make_shared<rmoss_gz_base::GimbalController>(
     node_, gimbal_vel_actuator_, ign_gimbal_imu_->get_position_sensor());
-  shooter_controller_ = std::make_shared<rmoss_ign_base::ShooterController>(
+  shooter_controller_ = std::make_shared<rmoss_gz_base::ShooterController>(
     node_, shoot_actuator_, "small_shooter_controller");
   // odometry
   if (use_odometry) {
-    ign_chassis_odometry_ = std::make_shared<rmoss_ign_base::IgnOdometry>(
+    ign_chassis_odometry_ = std::make_shared<rmoss_gz_base::IgnOdometry>(
       node_, ign_node_, "/" + robot_name + "/odometry");
-    odometry_publisher_ = std::make_shared<rmoss_ign_base::OdometryPublisher>(
+    odometry_publisher_ = std::make_shared<rmoss_gz_base::OdometryPublisher>(
       node_, ign_chassis_odometry_->get_odometry_sensor());
   }
   //
@@ -123,11 +123,11 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
   }
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
 #include "rclcpp_components/register_node_macro.hpp"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
-RCLCPP_COMPONENTS_REGISTER_NODE(rmoss_ign_base::Rmua19RobotBaseNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(rmoss_gz_base::Rmua19RobotBaseNode)

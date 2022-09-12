@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_base/gimbal_controller.hpp"
+#include "rmoss_gz_base/gimbal_controller.hpp"
 
 #include <memory>
 #include <string>
 #include <algorithm>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 GimbalController::GimbalController(
@@ -124,4 +124,4 @@ void GimbalController::reset()
   target_yaw_ = 0;
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

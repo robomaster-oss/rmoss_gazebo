@@ -32,20 +32,18 @@ set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
 message(STATUS "Compiling against Ignition Fortress")
 
 
-
-
 # include
 include_directories(include)
 
 # generate rmoss_gz_base lib
 add_library(${PROJECT_NAME} SHARED
-  src/ign_module/ign_chassis_actuator.cpp
-  src/ign_module/ign_gimbal_actuator.cpp
-  src/ign_module/ign_shoot_actuator.cpp
-  src/ign_module/ign_gimbal_imu.cpp
-  src/ign_module/ign_gimbal_encoder.cpp
-  src/ign_module/ign_odometry.cpp
-  src/ign_module/ign_light_bar_cmd.cpp
+  src/gz_module/gz_chassis_actuator.cpp
+  src/gz_module/gz_gimbal_actuator.cpp
+  src/gz_module/gz_shoot_actuator.cpp
+  src/gz_module/gz_gimbal_imu.cpp
+  src/gz_module/gz_gimbal_encoder.cpp
+  src/gz_module/gz_odometry.cpp
+  src/gz_module/gz_light_bar_cmd.cpp
   src/pid.cpp
   src/chassis_controller.cpp
   src/gimbal_controller.cpp

@@ -11,40 +11,47 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-#ifndef RMOSS_IGN_BASE__IGN_GIMBAL_ACTUATOR_HPP_
-#define RMOSS_IGN_BASE__IGN_GIMBAL_ACTUATOR_HPP_
+#ifndef RMOSS_GZ_BASE__GZ_GIMBAL_IMU_HPP_
+#define RMOSS_GZ_BASE__GZ_GIMBAL_IMU_HPP_
 
 #include <memory>
 #include <string>
+#include <mutex>
 
 #include "ignition/transport/Node.hh"
 #include "hardware_interface.hpp"
+#include "rclcpp/clock.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnGimbalActuator : public Actuator<rmoss_interfaces::msg::Gimbal>
+class IgnGimbalImu
 {
 public:
-  IgnGimbalActuator(
+  IgnGimbalImu(
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_pitch_topic,
-    const std::string & ign_yaw_topic);
+    const std::string & ign_gimbal_imu_topic);
+  ~IgnGimbalImu() {}
 
-  void set(const rmoss_interfaces::msg::Gimbal & data) override;
   void enable(bool enable) {enable_ = enable;}
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor() {return position_sensor_;}
+
+private:
+  void ign_imu_cb(const ignition::msgs::IMU & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_pitch_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_pub_;
   bool enable_{false};
+  // sensor data
+  double last_yaw_angle_{0};
+  double continuous_yaw_angle_{0};
+  rmoss_interfaces::msg::Gimbal cur_position_;
+  std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> position_sensor_;
 };
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__IGN_GIMBAL_ACTUATOR_HPP_
+#endif  // RMOSS_GZ_BASE__GZ_GIMBAL_IMU_HPP_

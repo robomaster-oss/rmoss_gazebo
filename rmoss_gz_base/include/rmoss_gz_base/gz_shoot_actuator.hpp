@@ -12,48 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__IGN_GIMBAL_ENCODER_HPP_
-#define RMOSS_IGN_BASE__IGN_GIMBAL_ENCODER_HPP_
+#ifndef RMOSS_GZ_BASE__GZ_SHOOT_ACTUATOR_HPP_
+#define RMOSS_GZ_BASE__GZ_SHOOT_ACTUATOR_HPP_
 
 #include <memory>
 #include <string>
-#include <mutex>
-#include <map>
-#include <vector>
 
 #include "ignition/transport/Node.hh"
+#include "rmoss_interfaces/msg/shoot_cmd.hpp"
 #include "hardware_interface.hpp"
-#include "rmoss_interfaces/msg/gimbal.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
-class IgnGimbalEncoder
+class IgnShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd>
 {
 public:
-  IgnGimbalEncoder(
+  IgnShootActuator(
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_joint_state_topic);
-  ~IgnGimbalEncoder() {}
+    const std::string & robot_name,
+    const std::string & shooter_name);
+  ~IgnShootActuator() {}
 
-public:
+  void set(const rmoss_interfaces::msg::ShootCmd & data) override;
   void enable(bool enable) {enable_ = enable;}
-  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor() {return position_sensor_;}
-  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_velocity_sensor() {return velocity_sensor_;}
+  void update_remain_num(int num) {remain_num_ = num;}
 
 private:
-  void ign_Joint_state_cb(const ignition::msgs::Model & msg);
-
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
+  // ign pub and sub
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_set_vel_pub_;
+  // data
+  double projectile_vel_{0};
+  int remain_num_{200};
   bool enable_{false};
-  // info
-  std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> position_sensor_;
-  std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> velocity_sensor_;
 };
 
+}  // namespace rmoss_gz_base
 
-}  // namespace rmoss_ign_base
-
-#endif  // RMOSS_IGN_BASE__IGN_GIMBAL_ENCODER_HPP_
+#endif  // RMOSS_GZ_BASE__GZ_SHOOT_ACTUATOR_HPP_

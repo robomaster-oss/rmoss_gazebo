@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BASE__PID_HPP_
-#define RMOSS_IGN_BASE__PID_HPP_
+#ifndef RMOSS_GZ_BASE__PID_HPP_
+#define RMOSS_GZ_BASE__PID_HPP_
 
 #include <string>
 
 #include "ignition/math/PID.hh"
 #include "rclcpp/rclcpp.hpp"
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 struct PidParam
@@ -47,6 +47,6 @@ void get_pid_parameter(
   rclcpp::Node::SharedPtr node,
   const std::string & name, PidParam & pid_param);
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base
 
-#endif  // RMOSS_IGN_BASE__PID_HPP_
+#endif  // RMOSS_GZ_BASE__PID_HPP_

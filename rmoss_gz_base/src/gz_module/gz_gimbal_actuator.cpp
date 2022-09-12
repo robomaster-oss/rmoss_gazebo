@@ -11,12 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_gimbal_actuator.hpp"
+#include "rmoss_gz_base/gz_gimbal_actuator.hpp"
 
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 IgnGimbalActuator::IgnGimbalActuator(
@@ -45,4 +45,4 @@ void IgnGimbalActuator::set(const rmoss_interfaces::msg::Gimbal & data)
 }
 
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

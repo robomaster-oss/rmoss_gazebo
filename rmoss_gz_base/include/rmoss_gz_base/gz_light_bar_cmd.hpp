@@ -11,29 +11,34 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_light_bar_cmd.hpp"
+
+#ifndef RMOSS_GZ_BASE__GZ_LIGHT_BAR_CMD_HPP_
+#define RMOSS_GZ_BASE__GZ_LIGHT_BAR_CMD_HPP_
 
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+#include "ignition/transport/Node.hh"
+
+namespace rmoss_gz_base
 {
 
-
-IgnLightBarCmd::IgnLightBarCmd(
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_cmd_topic)
-: ign_node_(ign_node)
+class IgnLightBarCmd
 {
-  ign_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));
-}
+public:
+  IgnLightBarCmd(
+    std::shared_ptr<ignition::transport::Node> ign_node,
+    const std::string & ign_cmd_topic);
+  ~IgnLightBarCmd() {}
 
-void IgnLightBarCmd::set_state(int state)
-{
-  ignition::msgs::Int32 ign_msg;
-  ign_msg.set_data(state);
-  ign_cmd_pub_->Publish(ign_msg);
-}
+public:
+  void set_state(int state);
 
-}  // namespace rmoss_ign_base
+private:
+  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::unique_ptr<ignition::transport::Node::Publisher> ign_cmd_pub_;
+};
+
+}  // namespace rmoss_gz_base
+
+#endif  // RMOSS_GZ_BASE__GZ_LIGHT_BAR_CMD_HPP_

@@ -11,13 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "rmoss_ign_base/ign_gimbal_imu.hpp"
+#include "rmoss_gz_base/gz_gimbal_imu.hpp"
 
 #include <cmath>
 #include <memory>
 #include <string>
 
-namespace rmoss_ign_base
+namespace rmoss_gz_base
 {
 
 
@@ -75,4 +75,4 @@ void IgnGimbalImu::ign_imu_cb(const ignition::msgs::IMU & msg)
   position_sensor_->update(cur_position_, node_->get_clock()->now());
 }
 
-}  // namespace rmoss_ign_base
+}  // namespace rmoss_gz_base

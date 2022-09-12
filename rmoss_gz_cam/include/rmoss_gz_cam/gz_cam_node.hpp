@@ -12,46 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMOSS_IGN_BRIDGE__POSE_BRIDGE_NODE_HPP_
-#define RMOSS_IGN_BRIDGE__POSE_BRIDGE_NODE_HPP_
+#ifndef RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_
+#define RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_
 
-#include <thread>
-#include <memory>
 #include <string>
+#include <memory>
 
 #include "ignition/transport/Node.hh"
 #include "rclcpp/rclcpp.hpp"
-#include "tf2_msgs/msg/tf_message.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rmoss_cam/cam_server.hpp"
+#include "rmoss_gz_cam/gz_cam.hpp"
 
-namespace rmoss_ign_bridge
+namespace rmoss_gz_cam
 {
-// Node wrapper for Rmua19RobotBaseNode
-class PoseBridgeNode
+// Node wrapper for IgnCam.
+class GzCamNode
 {
 public:
-  explicit PoseBridgeNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
-
-public:
+  explicit GzCamNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface()
   {
     return node_->get_node_base_interface();
   }
 
-  void set_pose_cb(const geometry_msgs::msg::TransformStamped::SharedPtr msg);
-  void ign_pose_cb(const ignition::msgs::Pose_V & msg);
-
 private:
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<ignition::transport::Node> ign_node_;
-  // ros sub
-  rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr set_pose_sub_;
-  rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr pose_pub_;
-  // rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
-  std::string ign_service_name_;
-  bool robot_filter_;
+  std::shared_ptr<rmoss_cam::CamInterface> cam_dev_;
+  std::shared_ptr<rmoss_cam::CamServer> cam_server_;
 };
 
-}  // namespace rmoss_ign_bridge
+}  // namespace rmoss_gz_cam
 
-#endif  // RMOSS_IGN_BRIDGE__POSE_BRIDGE_NODE_HPP_
+#endif  // RMOSS_IGN_CAM__IGN_CAM_NODE_HPP_

@@ -11,17 +11,29 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "rmoss_gz_base/gz_light_bar_cmd.hpp"
 
 #include <memory>
-#include "rclcpp/rclcpp.hpp"
-#include "rmoss_gz_base/rmua19_robot_base_node.hpp"
+#include <string>
 
-int main(int argc, char * argv[])
+namespace rmoss_gz_base
 {
-  // create ros2 node
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<rmoss_gz_base::Rmua19RobotBaseNode>();
-  rclcpp::spin(node->get_node_base_interface());
-  rclcpp::shutdown();
-  return 0;
+
+
+IgnLightBarCmd::IgnLightBarCmd(
+  std::shared_ptr<ignition::transport::Node> ign_node,
+  const std::string & ign_cmd_topic)
+: ign_node_(ign_node)
+{
+  ign_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));
 }
+
+void IgnLightBarCmd::set_state(int state)
+{
+  ignition::msgs::Int32 ign_msg;
+  ign_msg.set_data(state);
+  ign_cmd_pub_->Publish(ign_msg);
+}
+
+}  // namespace rmoss_gz_base

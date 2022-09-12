@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmoss_ign_bridge/pose_bridge_node.hpp"
+#include "rmoss_gz_bridge/pose_bridge_node.hpp"
 
 #include <thread>
 #include <memory>
@@ -20,7 +20,7 @@
 
 #include "ros_ign_bridge/convert.hpp"
 
-namespace rmoss_ign_bridge
+namespace rmoss_gz_bridge
 {
 
 PoseBridgeNode::PoseBridgeNode(const rclcpp::NodeOptions & options)
@@ -85,4 +85,4 @@ void PoseBridgeNode::set_pose_cb(const geometry_msgs::msg::TransformStamped::Sha
 }
 
 
-}  // namespace rmoss_ign_bridge
+}  // namespace rmoss_gz_bridge

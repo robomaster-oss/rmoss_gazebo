@@ -23,17 +23,17 @@
 #include "rmoss_cam/cam_interface.hpp"
 #include "ignition/transport/Node.hh"
 
-namespace rmoss_ign_cam
+namespace rmoss_gz_cam
 {
-class IgnCam : public rmoss_cam::CamInterface
+class GzCam : public rmoss_cam::CamInterface
 {
 public:
-  IgnCam(
+  GzCam(
     const std::shared_ptr<ignition::transport::Node> & ign_node,
     const std::string & topic_name,
     int height,
     int width);
-  ~IgnCam();
+  ~GzCam();
 
 public:
   bool open() override;
@@ -45,7 +45,7 @@ public:
   std::string error_message() override {return error_message_;}
 
 private:
-  void ign_image_cb(const ignition::msgs::Image & msg);
+  void gz_image_cb(const ignition::msgs::Image & msg);
 
 private:
   std::shared_ptr<ignition::transport::Node> ign_node_;
@@ -60,6 +60,6 @@ private:
   bool is_open_{false};
 };
 
-}  // namespace rmoss_ign_cam
+}  // namespace rmoss_gz_cam
 
 #endif  // RMOSS_IGN_CAM__IGN_CAM_HPP_
