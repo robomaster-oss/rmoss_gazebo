@@ -19,14 +19,14 @@ from launch_ros.actions import Node
 def generate_launch_description():
     camera_name = '/world/default/model/standard_robot_red1' + \
         '/link/front_industrial_camera/sensor/front_industrial_camera'
-    ign_camera_image_topic = camera_name + '/image'
-    ign_camera_info_topic = camera_name + '/camera_info'
+    gz_camera_image_topic = camera_name + '/image'
+    gz_camera_info_topic = camera_name + '/camera_info'
     return LaunchDescription([
-        Node(package='rmoss_ign_cam',
-             executable='ign_cam',
+        Node(package='rmoss_gz_cam',
+             executable='gz_cam',
              parameters=[
-                {'ign_camera_image_topic': ign_camera_image_topic,
-                 'ign_camera_info_topic': ign_camera_info_topic,
+                {'gz_camera_image_topic': gz_camera_image_topic,
+                 'gz_camera_info_topic': gz_camera_info_topic,
                  'camera_name': 'front_camera',
                  'fps': 30}],
              output='screen')

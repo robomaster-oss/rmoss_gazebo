@@ -30,7 +30,7 @@ Gazebo模块如下：
 ```c++
 // 射击控制器
 auto shooter_controller = std::make_shared<rmoss_gz_base::ShooterController>(
-    ros_node, ign_node, "robot_base/shoot_cmd", gz_shooter_cmd_topic);
+    ros_node, gz_node, "robot_base/shoot_cmd", gz_shooter_cmd_topic);
 ```
 
 底盘控制器，使用ign模块，可实现多种组合。

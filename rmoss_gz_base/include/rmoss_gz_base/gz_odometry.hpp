@@ -31,19 +31,19 @@ class IgnOdometry
 public:
   IgnOdometry(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_odom_topic);
+    std::shared_ptr<ignition::transport::Node> gz_node,
+    const std::string & gz_odom_topic);
   ~IgnOdometry() {}
 
   void enable(bool enable) {enable_ = enable;}
   Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor() {return odometry_sensor_;}
 
 private:
-  void ign_odometry_cb(const ignition::msgs::Odometry & msg);
+  void gz_odometry_cb(const ignition::msgs::Odometry & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   bool enable_{false};
   std::shared_ptr<DataSensor<nav_msgs::msg::Odometry>> odometry_sensor_;
 };

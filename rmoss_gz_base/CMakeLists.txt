@@ -19,7 +19,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rmoss_interfaces REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(ros_ign_bridge REQUIRED)
+find_package(ros_gz_bridge REQUIRED)
 
 # ignition package
 # Fortress

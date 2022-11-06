@@ -30,18 +30,18 @@ class IgnGimbalActuator : public Actuator<rmoss_interfaces::msg::Gimbal>
 public:
   IgnGimbalActuator(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_pitch_topic,
-    const std::string & ign_yaw_topic);
+    std::shared_ptr<ignition::transport::Node> gz_node,
+    const std::string & gz_pitch_topic,
+    const std::string & gz_yaw_topic);
 
   void set(const rmoss_interfaces::msg::Gimbal & data) override;
   void enable(bool enable) {enable_ = enable;}
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_pitch_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_yaw_pub_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_pitch_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_yaw_pub_;
   bool enable_{false};
 };
 

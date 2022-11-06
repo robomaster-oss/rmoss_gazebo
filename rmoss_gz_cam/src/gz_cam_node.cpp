@@ -23,17 +23,17 @@ namespace rmoss_gz_cam
 {
 GzCamNode::GzCamNode(const rclcpp::NodeOptions & options)
 {
-  node_ = std::make_shared<rclcpp::Node>("ign_cam", options);
-  ign_node_ = std::make_shared<ignition::transport::Node>();
+  node_ = std::make_shared<rclcpp::Node>("gz_cam", options);
+  gz_node_ = std::make_shared<ignition::transport::Node>();
   // declare parameters
-  node_->declare_parameter("ign_camera_image_topic", "");
-  node_->declare_parameter("ign_camera_info_topic", "");
+  node_->declare_parameter("gz_camera_image_topic", "");
+  node_->declare_parameter("gz_camera_info_topic", "");
   // get parameters
-  auto ign_camera_image_topic = node_->get_parameter("ign_camera_image_topic").as_string();
-  auto ign_camera_info_topic = node_->get_parameter("ign_camera_info_topic").as_string();
+  auto gz_camera_image_topic = node_->get_parameter("gz_camera_image_topic").as_string();
+  auto gz_camera_info_topic = node_->get_parameter("gz_camera_info_topic").as_string();
   int height = 640;
   int width = 480;
-  if (ign_camera_info_topic != "") {
+  if (gz_camera_info_topic != "") {
     // get camera info automatically
     std::vector<double> camera_k_{0, 0, 0, 0, 0, 0, 0, 0, 0};  // 3*3=9
     std::vector<double> camera_d_{0, 0, 0, 0, 0};
@@ -49,17 +49,17 @@ GzCamNode::GzCamNode(const rclcpp::NodeOptions & options)
         }
         prom.set_value(true);
       };
-    ign_node_->Subscribe(ign_camera_info_topic, camera_info_cb);
+    gz_node_->Subscribe(gz_camera_info_topic, camera_info_cb);
     if (future_result.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
       std::cout << "failed to get camera info" << std::endl;
       return;
     }
-    ign_node_->Unsubscribe(ign_camera_info_topic);
+    gz_node_->Unsubscribe(gz_camera_info_topic);
     node_->declare_parameter("camera_k", camera_k_);
     node_->declare_parameter("camera_d", camera_d_);
   }
   // create camera device
-  cam_dev_ = std::make_shared<GzCam>(ign_node_, ign_camera_image_topic, height, width);
+  cam_dev_ = std::make_shared<GzCam>(gz_node_, gz_camera_image_topic, height, width);
   cam_server_ = std::make_shared<rmoss_cam::CamServer>(node_, cam_dev_);
 }
 

@@ -59,5 +59,5 @@ colcon build
 
 Maintainer : Zhenpeng Ge,  zhenpeng.ge@qq.com
 
-rmoss_ign is provided under Apache License 2.0.
+rmoss_gazebo is provided under Apache License 2.0.
 

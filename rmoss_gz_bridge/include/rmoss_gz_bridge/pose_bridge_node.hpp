@@ -39,16 +39,16 @@ public:
   }
 
   void set_pose_cb(const geometry_msgs::msg::TransformStamped::SharedPtr msg);
-  void ign_pose_cb(const ignition::msgs::Pose_V & msg);
+  void gz_pose_cb(const ignition::msgs::Pose_V & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   // ros sub
   rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr set_pose_sub_;
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr pose_pub_;
   // rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
-  std::string ign_service_name_;
+  std::string gz_service_name_;
   bool robot_filter_;
 };
 

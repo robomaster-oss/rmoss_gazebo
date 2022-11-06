@@ -21,19 +21,19 @@ namespace rmoss_gz_base
 
 
 IgnLightBarCmd::IgnLightBarCmd(
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_cmd_topic)
-: ign_node_(ign_node)
+  std::shared_ptr<ignition::transport::Node> gz_node,
+  const std::string & gz_cmd_topic)
+: gz_node_(gz_node)
 {
-  ign_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Int32>(ign_cmd_topic));
+  gz_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Int32>(gz_cmd_topic));
 }
 
 void IgnLightBarCmd::set_state(int state)
 {
-  ignition::msgs::Int32 ign_msg;
-  ign_msg.set_data(state);
-  ign_cmd_pub_->Publish(ign_msg);
+  ignition::msgs::Int32 gz_msg;
+  gz_msg.set_data(state);
+  gz_cmd_pub_->Publish(gz_msg);
 }
 
 }  // namespace rmoss_gz_base

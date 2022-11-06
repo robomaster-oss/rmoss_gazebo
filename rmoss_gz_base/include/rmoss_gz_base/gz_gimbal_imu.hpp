@@ -31,19 +31,19 @@ class IgnGimbalImu
 public:
   IgnGimbalImu(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_gimbal_imu_topic);
+    std::shared_ptr<ignition::transport::Node> gz_node,
+    const std::string & gz_gimbal_imu_topic);
   ~IgnGimbalImu() {}
 
   void enable(bool enable) {enable_ = enable;}
   Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor() {return position_sensor_;}
 
 private:
-  void ign_imu_cb(const ignition::msgs::IMU & msg);
+  void gz_imu_cb(const ignition::msgs::IMU & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   bool enable_{false};
   // sensor data
   double last_yaw_angle_{0};

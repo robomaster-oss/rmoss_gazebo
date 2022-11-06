@@ -33,8 +33,8 @@ class IgnGimbalEncoder
 public:
   IgnGimbalEncoder(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_joint_state_topic);
+    std::shared_ptr<ignition::transport::Node> gz_node,
+    const std::string & gz_joint_state_topic);
   ~IgnGimbalEncoder() {}
 
 public:
@@ -43,10 +43,10 @@ public:
   Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_velocity_sensor() {return velocity_sensor_;}
 
 private:
-  void ign_Joint_state_cb(const ignition::msgs::Model & msg);
+  void gz_Joint_state_cb(const ignition::msgs::Model & msg);
 
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   bool enable_{false};
   // info
   std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> position_sensor_;

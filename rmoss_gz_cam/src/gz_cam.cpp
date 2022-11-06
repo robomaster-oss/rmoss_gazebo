@@ -22,56 +22,56 @@
 
 using namespace std::chrono_literals;
 
-// copy from https://github.com/ignitionrobotics/ros_ign/blob/ros2/ros_ign_bridge/src/convert.cpp
+// copy from https://github.com/ignitionrobotics/ros_ign/blob/ros2/ros_gz_bridge/src/convert.cpp
 void
-convert_ign_to_ros(
-  const ignition::msgs::Image & ign_msg,
+convert_gz_to_ros(
+  const ignition::msgs::Image & gz_msg,
   sensor_msgs::msg::Image & ros_msg)
 {
-  ros_msg.height = ign_msg.height();
-  ros_msg.width = ign_msg.width();
+  ros_msg.height = gz_msg.height();
+  ros_msg.width = gz_msg.width();
 
   unsigned int num_channels;
   unsigned int octets_per_channel;
 
-  if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::L_INT8) {
+  if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::L_INT8) {
     ros_msg.encoding = "mono8";
     num_channels = 1;
     octets_per_channel = 1u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::L_INT16) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::L_INT16) {
     ros_msg.encoding = "mono16";
     num_channels = 1;
     octets_per_channel = 2u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGB_INT8) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGB_INT8) {
     ros_msg.encoding = "rgb8";
     num_channels = 3;
     octets_per_channel = 1u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGBA_INT8) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGBA_INT8) {
     ros_msg.encoding = "rgba8";
     num_channels = 4;
     octets_per_channel = 1u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGRA_INT8) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGRA_INT8) {
     ros_msg.encoding = "bgra8";
     num_channels = 4;
     octets_per_channel = 1u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGB_INT16) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::RGB_INT16) {
     ros_msg.encoding = "rgb16";
     num_channels = 3;
     octets_per_channel = 2u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGR_INT8) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGR_INT8) {
     ros_msg.encoding = "bgr8";
     num_channels = 3;
     octets_per_channel = 1u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGR_INT16) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::BGR_INT16) {
     ros_msg.encoding = "bgr16";
     num_channels = 3;
     octets_per_channel = 2u;
-  } else if (ign_msg.pixel_format_type() == ignition::msgs::PixelFormatType::R_FLOAT32) {
+  } else if (gz_msg.pixel_format_type() == ignition::msgs::PixelFormatType::R_FLOAT32) {
     ros_msg.encoding = "32FC1";
     num_channels = 1;
     octets_per_channel = 4u;
   } else {
-    std::cerr << "Unsupported pixel format [" << ign_msg.pixel_format_type() << "]" << std::endl;
+    std::cerr << "Unsupported pixel format [" << gz_msg.pixel_format_type() << "]" << std::endl;
     return;
   }
 
@@ -81,8 +81,8 @@ convert_ign_to_ros(
   auto count = ros_msg.step * ros_msg.height;
   ros_msg.data.resize(ros_msg.step * ros_msg.height);
   std::copy(
-    ign_msg.data().begin(),
-    ign_msg.data().begin() + count,
+    gz_msg.data().begin(),
+    gz_msg.data().begin() + count,
     ros_msg.data.begin());
 }
 
@@ -90,11 +90,11 @@ namespace rmoss_gz_cam
 {
 
 GzCam::GzCam(
-  const std::shared_ptr<ignition::transport::Node> & ign_node,
+  const std::shared_ptr<ignition::transport::Node> & gz_node,
   const std::string & topic_name,
   int height,
   int width)
-: ign_node_(ign_node), topic_name_(topic_name)
+: gz_node_(gz_node), topic_name_(topic_name)
 {
   params_[rmoss_cam::CamParamType::Fps] = 30;
   params_[rmoss_cam::CamParamType::Width] = width;
@@ -113,7 +113,7 @@ bool GzCam::open()
   if (is_open_) {
     return true;
   }
-  auto ret = ign_node_->Subscribe(topic_name_, &GzCam::gz_image_cb, this);
+  auto ret = gz_node_->Subscribe(topic_name_, &GzCam::gz_image_cb, this);
   if (!ret) {
     error_message_ = "failed to create ignition subscriber";
     return false;
@@ -126,7 +126,7 @@ bool GzCam::open()
 bool GzCam::close()
 {
   if (is_open_) {
-    ign_node_->Unsubscribe(topic_name_);
+    gz_node_->Unsubscribe(topic_name_);
     is_open_ = false;
   }
   return true;
@@ -140,7 +140,7 @@ bool GzCam::is_open()
 void GzCam::gz_image_cb(const ignition::msgs::Image & msg)
 {
   std::lock_guard<std::mutex> lock(msg_mut_);
-  ign_msg_ = msg;
+  gz_msg_ = msg;
   grap_ok_ = true;
 }
 
@@ -166,7 +166,7 @@ bool GzCam::grab_image(cv::Mat & image)
   sensor_msgs::msg::Image ros_msg;
   {
     std::lock_guard<std::mutex> lock(msg_mut_);
-    convert_ign_to_ros(ign_msg_, ros_msg);
+    convert_gz_to_ros(gz_msg_, ros_msg);
   }
   image = cv_bridge::toCvCopy(ros_msg, "bgr8")->image.clone();
   grap_ok_ = false;

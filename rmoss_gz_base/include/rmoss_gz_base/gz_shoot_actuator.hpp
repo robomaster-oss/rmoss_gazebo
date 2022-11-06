@@ -30,7 +30,7 @@ class IgnShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd>
 public:
   IgnShootActuator(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> ign_node,
+    std::shared_ptr<ignition::transport::Node> gz_node,
     const std::string & robot_name,
     const std::string & shooter_name);
   ~IgnShootActuator() {}
@@ -41,10 +41,10 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   // ign pub and sub
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_shoot_cmd_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_set_vel_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_shoot_cmd_pub_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_set_vel_pub_;
   // data
   double projectile_vel_{0};
   int remain_num_{200};

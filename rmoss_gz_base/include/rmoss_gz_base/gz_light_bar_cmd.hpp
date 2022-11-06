@@ -27,16 +27,16 @@ class IgnLightBarCmd
 {
 public:
   IgnLightBarCmd(
-    std::shared_ptr<ignition::transport::Node> ign_node,
-    const std::string & ign_cmd_topic);
+    std::shared_ptr<ignition::transport::Node> gz_node,
+    const std::string & gz_cmd_topic);
   ~IgnLightBarCmd() {}
 
 public:
   void set_state(int state);
 
 private:
-  std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_cmd_pub_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_cmd_pub_;
 };
 
 }  // namespace rmoss_gz_base

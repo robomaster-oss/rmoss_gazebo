@@ -43,15 +43,15 @@ double toYaw(const double & x, const double & y, const double & z, const double 
 
 IgnGimbalImu::IgnGimbalImu(
   rclcpp::Node::SharedPtr node,
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_gimbal_imu_topic)
-: node_(node), ign_node_(ign_node)
+  std::shared_ptr<ignition::transport::Node> gz_node,
+  const std::string & gz_gimbal_imu_topic)
+: node_(node), gz_node_(gz_node)
 {
-  ign_node_->Subscribe(ign_gimbal_imu_topic, &IgnGimbalImu::ign_imu_cb, this);
+  gz_node_->Subscribe(gz_gimbal_imu_topic, &IgnGimbalImu::gz_imu_cb, this);
   position_sensor_ = std::make_shared<DataSensor<rmoss_interfaces::msg::Gimbal>>();
 }
 
-void IgnGimbalImu::ign_imu_cb(const ignition::msgs::IMU & msg)
+void IgnGimbalImu::gz_imu_cb(const ignition::msgs::IMU & msg)
 {
   if (!enable_) {
     return;
