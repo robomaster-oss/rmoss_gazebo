@@ -55,7 +55,7 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   // ros sub
   rclcpp::Subscription<rmoss_interfaces::msg::RobotStatus>::SharedPtr robot_status_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_power_sub_;
@@ -64,11 +64,11 @@ private:
   std::shared_ptr<rmoss_gz_base::IgnChassisActuator> chassis_actuator_;
   std::shared_ptr<rmoss_gz_base::IgnGimbalActuator> gimbal_vel_actuator_;
   std::shared_ptr<rmoss_gz_base::IgnShootActuator> shoot_actuator_;
-  std::shared_ptr<rmoss_gz_base::IgnLightBarCmd> ign_light_bar_cmd_;
+  std::shared_ptr<rmoss_gz_base::IgnLightBarCmd> gz_light_bar_cmd_;
   // ign sensor moudule
-  std::shared_ptr<rmoss_gz_base::IgnGimbalEncoder> ign_gimbal_encoder_;
-  std::shared_ptr<rmoss_gz_base::IgnGimbalImu> ign_gimbal_imu_;
-  std::shared_ptr<rmoss_gz_base::IgnOdometry> ign_chassis_odometry_;
+  std::shared_ptr<rmoss_gz_base::IgnGimbalEncoder> gz_gimbal_encoder_;
+  std::shared_ptr<rmoss_gz_base::IgnGimbalImu> gz_gimbal_imu_;
+  std::shared_ptr<rmoss_gz_base::IgnOdometry> gz_chassis_odometry_;
   // ros controller/publisher wrapper
   std::shared_ptr<rmoss_gz_base::ChassisController> chassis_controller_;
   std::shared_ptr<rmoss_gz_base::GimbalController> gimbal_controller_;

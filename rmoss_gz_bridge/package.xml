@@ -11,18 +11,9 @@
     <depend>std_msgs</depend>
     <depend>geometry_msgs</depend>
     <depend>rmoss_interfaces</depend>
-    <depend>ros_ign_gazebo</depend>
-    <depend>ros_ign_bridge</depend>
+    <depend>ros_gz_bridge</depend>
     <depend>rmoss_gz_resources</depend>
     <depend>rmoss_gz_plugins</depend>
-    <!-- Fortress -->
-    <depend condition="$IGNITION_VERSION == fortress">ignition-msgs8</depend>
-    <depend condition="$IGNITION_VERSION == fortress">ignition-transport11</depend>
-    <!-- Edifice (default) -->
-    <depend condition="$IGNITION_VERSION == edifice">ignition-msgs7</depend>
-    <depend condition="$IGNITION_VERSION == edifice">ignition-transport10</depend>
-    <depend condition="$IGNITION_VERSION == ''">ignition-msgs7</depend>
-    <depend condition="$IGNITION_VERSION == ''">ignition-transport10</depend>
 
     <test_depend>ament_lint_auto</test_depend>
     <test_depend>ament_lint_common</test_depend>

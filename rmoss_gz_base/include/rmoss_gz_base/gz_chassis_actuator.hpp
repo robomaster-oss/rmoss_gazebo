@@ -30,8 +30,8 @@ class IgnChassisActuator : public Actuator<geometry_msgs::msg::Twist>
 public:
   IgnChassisActuator(
     rclcpp::Node::SharedPtr node,
-    const std::shared_ptr<ignition::transport::Node> & ign_node,
-    const std::string & ign_chassis_cmd_topic);
+    const std::shared_ptr<ignition::transport::Node> & gz_node,
+    const std::string & gz_chassis_cmd_topic);
   ~IgnChassisActuator() {}
 
   void set(const geometry_msgs::msg::Twist & data) override;
@@ -39,8 +39,8 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> ign_chassis_cmd_pub_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::unique_ptr<ignition::transport::Node::Publisher> gz_chassis_cmd_pub_;
   bool enable_{false};
 };
 

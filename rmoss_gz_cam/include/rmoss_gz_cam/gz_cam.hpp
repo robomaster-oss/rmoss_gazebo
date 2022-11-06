@@ -29,7 +29,7 @@ class GzCam : public rmoss_cam::CamInterface
 {
 public:
   GzCam(
-    const std::shared_ptr<ignition::transport::Node> & ign_node,
+    const std::shared_ptr<ignition::transport::Node> & gz_node,
     const std::string & topic_name,
     int height,
     int width);
@@ -48,9 +48,9 @@ private:
   void gz_image_cb(const ignition::msgs::Image & msg);
 
 private:
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   std::string topic_name_;
-  ignition::msgs::Image ign_msg_;
+  ignition::msgs::Image gz_msg_;
   bool grap_ok_{false};
   std::mutex msg_mut_;
   // camera parameters

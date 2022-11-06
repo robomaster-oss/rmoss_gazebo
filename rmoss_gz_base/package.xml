@@ -11,8 +11,7 @@
     <depend>std_msgs</depend>
     <depend>geometry_msgs</depend>
     <depend>rmoss_interfaces</depend>
-    <depend>ros_ign_gazebo</depend>
-    <depend>ros_ign_bridge</depend>
+    <depend>ros_gz_bridge</depend>
     <depend>rmoss_gz_resources</depend>
     <depend>rmoss_gz_plugins</depend>
     <!-- Gazebo Fortress  (default) -->

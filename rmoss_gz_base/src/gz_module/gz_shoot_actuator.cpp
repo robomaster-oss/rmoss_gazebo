@@ -21,18 +21,18 @@ namespace rmoss_gz_base
 
 IgnShootActuator::IgnShootActuator(
   rclcpp::Node::SharedPtr node,
-  std::shared_ptr<ignition::transport::Node> ign_node,
+  std::shared_ptr<ignition::transport::Node> gz_node,
   const std::string & robot_name,
   const std::string & shooter_name)
-: node_(node), ign_node_(ign_node)
+: node_(node), gz_node_(gz_node)
 {
   // create ignition pub
-  std::string ign_shoot_cmd_topic = "/" + robot_name + "/" + shooter_name + "/shoot";
-  ign_shoot_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Int32>(ign_shoot_cmd_topic));
-  std::string ign_set_vel_topic = "/" + robot_name + "/" + shooter_name + "/set_vel";
-  ign_set_vel_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Double>(ign_set_vel_topic));
+  std::string gz_shoot_cmd_topic = "/" + robot_name + "/" + shooter_name + "/shoot";
+  gz_shoot_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Int32>(gz_shoot_cmd_topic));
+  std::string gz_set_vel_topic = "/" + robot_name + "/" + shooter_name + "/set_vel";
+  gz_set_vel_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Double>(gz_set_vel_topic));
 }
 
 void IgnShootActuator::set(const rmoss_interfaces::msg::ShootCmd & data)
@@ -46,18 +46,18 @@ void IgnShootActuator::set(const rmoss_interfaces::msg::ShootCmd & data)
   // set velocity
   if (std::fabs(data.projectile_velocity - projectile_vel_) < 0.001) {
     projectile_vel_ = data.projectile_velocity;
-    ignition::msgs::Double ign_msg;
-    ign_msg.set_data(projectile_vel_);
-    ign_set_vel_pub_->Publish(ign_msg);
+    ignition::msgs::Double gz_msg;
+    gz_msg.set_data(projectile_vel_);
+    gz_set_vel_pub_->Publish(gz_msg);
   }
   // publish shoot msg
-  ignition::msgs::Int32 ign_msg;
+  ignition::msgs::Int32 gz_msg;
   if (data.projectile_num > remain_num_) {
-    ign_msg.set_data(remain_num_);
+    gz_msg.set_data(remain_num_);
   } else {
-    ign_msg.set_data(data.projectile_num);
+    gz_msg.set_data(data.projectile_num);
   }
-  ign_shoot_cmd_pub_->Publish(ign_msg);
+  gz_shoot_cmd_pub_->Publish(gz_msg);
 }
 
 }  // namespace rmoss_gz_base

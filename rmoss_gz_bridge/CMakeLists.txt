@@ -19,7 +19,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rmoss_interfaces REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(ros_ign_bridge REQUIRED)
+find_package(ros_gz_bridge REQUIRED)
 
 # ignition package
 find_package(ignition-transport11 REQUIRED)
@@ -52,7 +52,7 @@ target_link_libraries(pose_bridge
     ignition-transport${IGN_TRANSPORT_VER}::core
 )
 ament_target_dependencies(pose_bridge ${dependencies})
-ament_target_dependencies(pose_bridge ros_ign_bridge)
+ament_target_dependencies(pose_bridge ros_gz_bridge)
 
 # Install include directories
 install(DIRECTORY include/

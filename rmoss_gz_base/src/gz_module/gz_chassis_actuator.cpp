@@ -22,12 +22,12 @@ namespace rmoss_gz_base
 
 IgnChassisActuator::IgnChassisActuator(
   rclcpp::Node::SharedPtr node,
-  const std::shared_ptr<ignition::transport::Node> & ign_node,
-  const std::string & ign_chassis_cmd_topic)
-: node_(node), ign_node_(ign_node)
+  const std::shared_ptr<ignition::transport::Node> & gz_node,
+  const std::string & gz_chassis_cmd_topic)
+: node_(node), gz_node_(gz_node)
 {
-  ign_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Twist>(ign_chassis_cmd_topic));
+  gz_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Twist>(gz_chassis_cmd_topic));
 }
 
 void IgnChassisActuator::set(const geometry_msgs::msg::Twist & data)
@@ -35,11 +35,11 @@ void IgnChassisActuator::set(const geometry_msgs::msg::Twist & data)
   if (!enable_) {
     return;
   }
-  ignition::msgs::Twist ign_msg;
-  ign_msg.mutable_linear()->set_x(data.linear.x);
-  ign_msg.mutable_linear()->set_y(data.linear.y);
-  ign_msg.mutable_angular()->set_z(data.angular.z);
-  ign_chassis_cmd_pub_->Publish(ign_msg);
+  ignition::msgs::Twist gz_msg;
+  gz_msg.mutable_linear()->set_x(data.linear.x);
+  gz_msg.mutable_linear()->set_y(data.linear.y);
+  gz_msg.mutable_angular()->set_z(data.angular.z);
+  gz_chassis_cmd_pub_->Publish(gz_msg);
 }
 
 }  // namespace rmoss_gz_base

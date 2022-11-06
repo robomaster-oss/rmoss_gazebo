@@ -23,15 +23,15 @@ namespace rmoss_gz_base
 
 IgnOdometry::IgnOdometry(
   rclcpp::Node::SharedPtr node,
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_odom_topic)
-: node_(node), ign_node_(ign_node)
+  std::shared_ptr<ignition::transport::Node> gz_node,
+  const std::string & gz_odom_topic)
+: node_(node), gz_node_(gz_node)
 {
-  ign_node_->Subscribe(ign_odom_topic, &IgnOdometry::ign_odometry_cb, this);
+  gz_node_->Subscribe(gz_odom_topic, &IgnOdometry::gz_odometry_cb, this);
   odometry_sensor_ = std::make_shared<DataSensor<nav_msgs::msg::Odometry>>();
 }
 
-void IgnOdometry::ign_odometry_cb(const ignition::msgs::Odometry & msg)
+void IgnOdometry::gz_odometry_cb(const ignition::msgs::Odometry & msg)
 {
   if (!enable_) {
     return;

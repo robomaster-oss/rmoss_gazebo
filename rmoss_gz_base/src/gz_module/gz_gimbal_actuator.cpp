@@ -21,15 +21,15 @@ namespace rmoss_gz_base
 
 IgnGimbalActuator::IgnGimbalActuator(
   rclcpp::Node::SharedPtr node,
-  std::shared_ptr<ignition::transport::Node> ign_node,
-  const std::string & ign_pitch_topic,
-  const std::string & ign_yaw_topic)
-: node_(node), ign_node_(ign_node)
+  std::shared_ptr<ignition::transport::Node> gz_node,
+  const std::string & gz_pitch_topic,
+  const std::string & gz_yaw_topic)
+: node_(node), gz_node_(gz_node)
 {
-  ign_pitch_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Double>(ign_pitch_topic));
-  ign_yaw_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    ign_node_->Advertise<ignition::msgs::Double>(ign_yaw_topic));
+  gz_pitch_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Double>(gz_pitch_topic));
+  gz_yaw_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
+    gz_node_->Advertise<ignition::msgs::Double>(gz_yaw_topic));
 }
 
 void IgnGimbalActuator::set(const rmoss_interfaces::msg::Gimbal & data)
@@ -37,11 +37,11 @@ void IgnGimbalActuator::set(const rmoss_interfaces::msg::Gimbal & data)
   if (!enable_) {
     return;
   }
-  ignition::msgs::Double ign_msg;
-  ign_msg.set_data(data.pitch);
-  ign_pitch_pub_->Publish(ign_msg);
-  ign_msg.set_data(data.yaw);
-  ign_yaw_pub_->Publish(ign_msg);
+  ignition::msgs::Double gz_msg;
+  gz_msg.set_data(data.pitch);
+  gz_pitch_pub_->Publish(gz_msg);
+  gz_msg.set_data(data.yaw);
+  gz_yaw_pub_->Publish(gz_msg);
 }
 
 

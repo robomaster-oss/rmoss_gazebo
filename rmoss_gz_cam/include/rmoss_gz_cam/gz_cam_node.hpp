@@ -37,7 +37,7 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> ign_node_;
+  std::shared_ptr<ignition::transport::Node> gz_node_;
   std::shared_ptr<rmoss_cam::CamInterface> cam_dev_;
   std::shared_ptr<rmoss_cam::CamServer> cam_server_;
 };

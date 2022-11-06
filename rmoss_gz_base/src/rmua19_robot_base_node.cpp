@@ -24,7 +24,7 @@ namespace rmoss_gz_base
 Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
 {
   node_ = std::make_shared<rclcpp::Node>("robot_base", options);
-  ign_node_ = std::make_shared<ignition::transport::Node>();
+  gz_node_ = std::make_shared<ignition::transport::Node>();
   // parameters
   std::string world_name, robot_name;
   bool use_odometry = false;
@@ -36,42 +36,42 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   node_->get_parameter("use_odometry", use_odometry);
   is_red_ = (robot_name.find("blue") == std::string::npos);
   // ign topic string
-  std::string ign_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
-  std::string ign_pitch_cmd_topic = "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
-  std::string ign_yaw_cmd_topic = "/model/" + robot_name + "/joint/gimbal_yaw_joint/cmd_vel";
-  std::string ign_joint_state_topic = "/world/" + world_name + "/model/" + robot_name +
+  std::string gz_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
+  std::string gz_pitch_cmd_topic = "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
+  std::string gz_yaw_cmd_topic = "/model/" + robot_name + "/joint/gimbal_yaw_joint/cmd_vel";
+  std::string gz_joint_state_topic = "/world/" + world_name + "/model/" + robot_name +
     "/joint_state";
-  std::string ign_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
+  std::string gz_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
-  std::string ign_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
+  std::string gz_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
   // create hardware moudule
   // Actuator
   chassis_actuator_ = std::make_shared<rmoss_gz_base::IgnChassisActuator>(
-    node_, ign_node_, ign_chassis_cmd_topic);
+    node_, gz_node_, gz_chassis_cmd_topic);
   gimbal_vel_actuator_ = std::make_shared<rmoss_gz_base::IgnGimbalActuator>(
-    node_, ign_node_, ign_pitch_cmd_topic, ign_yaw_cmd_topic);
+    node_, gz_node_, gz_pitch_cmd_topic, gz_yaw_cmd_topic);
   shoot_actuator_ = std::make_shared<rmoss_gz_base::IgnShootActuator>(
-    node_, ign_node_, robot_name, "small_shooter");
-  ign_light_bar_cmd_ = std::make_shared<rmoss_gz_base::IgnLightBarCmd>(
-    ign_node_, ign_light_bar_cmd_topic);
+    node_, gz_node_, robot_name, "small_shooter");
+  gz_light_bar_cmd_ = std::make_shared<rmoss_gz_base::IgnLightBarCmd>(
+    gz_node_, gz_light_bar_cmd_topic);
   // sensor wrapper
-  ign_gimbal_encoder_ = std::make_shared<rmoss_gz_base::IgnGimbalEncoder>(
-    node_, ign_node_, ign_joint_state_topic);
-  ign_gimbal_imu_ = std::make_shared<rmoss_gz_base::IgnGimbalImu>(
-    node_, ign_node_, ign_gimbal_imu_topic);
+  gz_gimbal_encoder_ = std::make_shared<rmoss_gz_base::IgnGimbalEncoder>(
+    node_, gz_node_, gz_joint_state_topic);
+  gz_gimbal_imu_ = std::make_shared<rmoss_gz_base::IgnGimbalImu>(
+    node_, gz_node_, gz_gimbal_imu_topic);
   // create controller and publisher
   chassis_controller_ = std::make_shared<rmoss_gz_base::ChassisController>(
-    node_, chassis_actuator_, ign_gimbal_encoder_->get_position_sensor());
+    node_, chassis_actuator_, gz_gimbal_encoder_->get_position_sensor());
   gimbal_controller_ = std::make_shared<rmoss_gz_base::GimbalController>(
-    node_, gimbal_vel_actuator_, ign_gimbal_imu_->get_position_sensor());
+    node_, gimbal_vel_actuator_, gz_gimbal_imu_->get_position_sensor());
   shooter_controller_ = std::make_shared<rmoss_gz_base::ShooterController>(
     node_, shoot_actuator_, "small_shooter_controller");
   // odometry
   if (use_odometry) {
-    ign_chassis_odometry_ = std::make_shared<rmoss_gz_base::IgnOdometry>(
-      node_, ign_node_, "/" + robot_name + "/odometry");
+    gz_chassis_odometry_ = std::make_shared<rmoss_gz_base::IgnOdometry>(
+      node_, gz_node_, "/" + robot_name + "/odometry");
     odometry_publisher_ = std::make_shared<rmoss_gz_base::OdometryPublisher>(
-      node_, ign_chassis_odometry_->get_odometry_sensor());
+      node_, gz_chassis_odometry_->get_odometry_sensor());
   }
   //
   using namespace std::placeholders;
@@ -85,10 +85,10 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   chassis_actuator_->enable(true);
   gimbal_vel_actuator_->enable(true);
   shoot_actuator_->enable(true);
-  ign_gimbal_encoder_->enable(true);
-  ign_gimbal_imu_->enable(true);
+  gz_gimbal_encoder_->enable(true);
+  gz_gimbal_imu_->enable(true);
   if (use_odometry) {
-    ign_chassis_odometry_->enable(true);
+    gz_chassis_odometry_->enable(true);
   }
 }
 
@@ -110,16 +110,16 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
     gimbal_vel_actuator_->enable(true);
     shoot_actuator_->enable(true);
     if (is_red_) {
-      ign_light_bar_cmd_->set_state(1);
+      gz_light_bar_cmd_->set_state(1);
     } else {
-      ign_light_bar_cmd_->set_state(2);
+      gz_light_bar_cmd_->set_state(2);
     }
   } else {
     // disable power
     chassis_actuator_->enable(false);
     gimbal_vel_actuator_->enable(false);
     shoot_actuator_->enable(false);
-    ign_light_bar_cmd_->set_state(0);
+    gz_light_bar_cmd_->set_state(0);
   }
 }
 
