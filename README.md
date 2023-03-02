@@ -39,12 +39,15 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 环境配置
 
 ```bash
+# install gazebo dependencies
+sudo apt-get install ignition-fortress libignition-cmake2-dev ros-humble-ros-gz
 # cd ros2 workspaces src
 git clone https://github.com/robomaster-oss/rmoss_gazebo.git -b humble
 git clone https://github.com/robomaster-oss/rmoss_interfaces.git -b humble
 git clone https://github.com/robomaster-oss/rmoss_core.git -b humble
 git clone https://github.com/robomaster-oss/rmoss_gz_resources.git -b humble --depth=1
 # cd ros2 workspaces
+cd ..
 rosdep install -y -r -q --from-paths src --ignore-src --rosdistro humble
 colcon build
 ```
