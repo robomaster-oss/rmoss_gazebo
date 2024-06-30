@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(rmoss_gz_cam)
 
-# Default to C++14
+# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -13,7 +13,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(rmoss_cam REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(rmoss_interfaces REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(ros_gz_bridge REQUIRED)
 
 # Gazebo Fortress
 find_package(ignition-transport11 REQUIRED)
@@ -28,16 +31,18 @@ message(STATUS "Compiling against Ignition Fortress")
 # Include
 include_directories(include)
 
-# Create rmoss_cam lib
+# Create gz_cam lib
 add_library(${PROJECT_NAME} SHARED
-  src/gz_cam.cpp
   src/gz_cam_node.cpp
 )
 
 set(dependencies
   rclcpp
   rclcpp_components
-  rmoss_cam
+  sensor_msgs
+  rmoss_interfaces
+  image_transport
+  ros_gz_bridge
 )
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
 
@@ -76,7 +81,7 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
-#test
+# test
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
