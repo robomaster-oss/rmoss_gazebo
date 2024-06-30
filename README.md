@@ -32,7 +32,7 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 
 * ROS2版本: `Humble`.
 * Gazebo仿真器版本（新版）: ` Fortress`.
-* RMOSS项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) , [rmoss_core](https://github.com/robomaster-oss/rmoss_core), [rmoss_gz_resources](https://github.com/robomaster-oss/rmoss_gz_resources.git).
+* RMOSS项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) ,[rmoss_gz_resources](https://github.com/robomaster-oss/rmoss_gz_resources.git).
 
 > 经典Gazebo(数字版本) 与 新版Gazebo (字母版本，也叫Ignition，目前还在迁移过程中)  差别较大，该项目基于新版Gazebo，命名空间将会进行逐步调整。
 
@@ -44,7 +44,6 @@ sudo apt-get install ignition-fortress libignition-cmake2-dev ros-humble-ros-gz
 # cd ros2 workspaces src
 git clone https://github.com/robomaster-oss/rmoss_gazebo.git -b humble
 git clone https://github.com/robomaster-oss/rmoss_interfaces.git -b humble
-git clone https://github.com/robomaster-oss/rmoss_core.git -b humble
 git clone https://github.com/robomaster-oss/rmoss_gz_resources.git -b humble --depth=1
 # cd ros2 workspaces
 cd ..
@@ -56,7 +55,7 @@ colcon build
 
 ## RMOSS Gazebo设计
 
-* 详见[RMOSS Gazebo设计模式](https://robomaster-oss.github.io/rmoss_tutorials/#/design/rmoss_gz_design)
+* 详见[RMOSS Gazebo设计模式](https://robomaster-oss.github.io/rmoss_tutorials/#/design/rmoss_ign_design)
 
 ## 维护者及开源许可证
 
