@@ -15,44 +15,47 @@
 #ifndef RMOSS_GZ_CAM__GZ_CAM_NODE_HPP_
 #define RMOSS_GZ_CAM__GZ_CAM_NODE_HPP_
 
-#include <thread>
-#include <string>
 #include <memory>
+#include <string>
+#include <thread>
 #include <vector>
 
-#include "ignition/transport/Node.hh"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
-#include "sensor_msgs/msg/camera_info.hpp"
+#include "gz/msgs/image.pb.h"
+#include "gz/transport/Node.hh"
 #include "image_transport/image_transport.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "rmoss_interfaces/srv/get_camera_info.hpp"
+#include "sensor_msgs/msg/camera_info.hpp"
+#include "sensor_msgs/msg/image.hpp"
 
 namespace rmoss_gz_cam
 {
-// Node wrapper for IgnCam.
-class GzCamNode
-{
+// Node wrapper for GzCam.
+class GzCamNode {
 public:
-  explicit GzCamNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface()
+  explicit GzCamNode(
+    const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
+  get_node_base_interface()
   {
     return node_->get_node_base_interface();
   }
 
 private:
-  void gz_image_cb(const ignition::msgs::Image & msg);
+  void gz_image_cb(const gz::msgs::Image & msg);
   void get_camera_info_cb(
     const rmoss_interfaces::srv::GetCameraInfo::Request::SharedPtr request,
     rmoss_interfaces::srv::GetCameraInfo::Response::SharedPtr response);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   // default image transport
   std::shared_ptr<image_transport::Publisher> img_pub_;
   // image_transporter for camera publisher
   std::shared_ptr<image_transport::CameraPublisher> cam_pub_;
-  rclcpp::Service<rmoss_interfaces::srv::GetCameraInfo>::SharedPtr get_camera_info_srv_;
+  rclcpp::Service<rmoss_interfaces::srv::GetCameraInfo>::SharedPtr
+    get_camera_info_srv_;
   // params
   std::string camera_name_{"camera"};
   std::string camera_frame_id_{""};

@@ -4,7 +4,7 @@
   <name>rmoss_gz_cam</name>
   <version>0.9.0</version>
   <description>
-    RoboMaster Camera Package for Ignition Gazebo
+    RoboMaster Camera Package for Gz Sim
   </description>
   <maintainer email="zhenpeng.ge@qq.com">zhenpeng ge</maintainer>
   <license>Apache License 2.0</license>

@@ -1,38 +1,38 @@
 name: Build and Test
 on:
   push:
-    branches: [ humble ]
+    branches: [ jazzy ]
   pull_request:
-    branches: [ humble ]
+    branches: [ jazzy ]
   schedule:
     - cron: '0 21 * * *'
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-desktop-latest
+      image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-desktop-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup Gazebo
         run: sudo .github/workflows/setup_gazebo.sh
       - name: Build rmoss_gazebo
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.4
         env:
-          GZ_VERSION: fortress
+          GZ_VERSION: harmonic
         with:
-          target-ros2-distro: humble
+          target-ros2-distro: jazzy
           vcs-repo-file-url: "${{ github.workspace }}/tools/dependency.repos"
           skip-tests: true
       - name: Test rmoss_gz_base
         run: |
           /usr/bin/bash .github/workflows/colcon_test.sh rmoss_gz_base
         env:
-          GZ_VERSION: fortress
+          GZ_VERSION: harmonic
       - name: Test rmoss_gz_cam
         run: |
           /usr/bin/bash .github/workflows/colcon_test.sh rmoss_gz_cam
         env:
-          IGNITION_VERSION: edifice
+          GZ_VERSION: harmonic

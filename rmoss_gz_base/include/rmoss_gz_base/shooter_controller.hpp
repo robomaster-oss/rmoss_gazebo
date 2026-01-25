@@ -16,19 +16,18 @@
 #define RMOSS_GZ_BASE__SHOOTER_CONTROLLER_HPP_
 
 #include <memory>
-#include <string>
 #include <mutex>
+#include <string>
 
-#include "ignition/transport/Node.hh"
+#include "gz/transport/Node.hh"
+#include "hardware_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rmoss_interfaces/msg/shoot_cmd.hpp"
-#include "hardware_interface.hpp"
 
 namespace rmoss_gz_base
 {
 
-class ShooterController
-{
+class ShooterController {
 public:
   ShooterController(
     rclcpp::Node::SharedPtr node,
@@ -42,7 +41,8 @@ private:
 private:
   rclcpp::Node::SharedPtr node_;
   // ros pub and sub
-  rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr ros_shoot_cmd_sub_;
+  rclcpp::Subscription<rmoss_interfaces::msg::ShootCmd>::SharedPtr
+    ros_shoot_cmd_sub_;
   Actuator<rmoss_interfaces::msg::ShootCmd>::SharedPtr shoot_actuator_;
 };
 }  // namespace rmoss_gz_base

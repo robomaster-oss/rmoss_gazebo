@@ -12,42 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef GZ_SIM_SYSTEMS_PROJECTILE_SHOOTER_HH
+#define GZ_SIM_SYSTEMS_PROJECTILE_SHOOTER_HH
 
-#ifndef IGNITION_GAZEBO_SYSTEMS_PROJECTILE_SHOOTER_HH
-#define IGNITION_GAZEBO_SYSTEMS_PROJECTILE_SHOOTER_HH
-
+#include <gz/sim/System.hh>
 #include <memory>
-#include <ignition/gazebo/System.hh>
 
-namespace ignition
-{
-    namespace gazebo
-    {
-        namespace systems
-        {
-            class ProjectileShooterPrivate;
-            class IGNITION_GAZEBO_VISIBLE ProjectileShooter
-                : public ignition::gazebo::System,
-                  public ISystemConfigure,
-                  public ISystemPreUpdate
-            {
-            public:
-                ProjectileShooter();
-                ~ProjectileShooter() override = default;
+namespace gz {
+namespace sim {
+namespace systems {
+class ProjectileShooterPrivate;
+class GZ_SIM_VISIBLE ProjectileShooter : public gz::sim::System,
+                                         public ISystemConfigure,
+                                         public ISystemPreUpdate {
+public:
+  ProjectileShooter();
+  ~ProjectileShooter() override = default;
 
-            public:
-                void Configure(const Entity &_entity,
-                               const std::shared_ptr<const sdf::Element> &_sdf,
-                               EntityComponentManager &_ecm,
-                               EventManager &_eventMgr) override;
-                void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
-                               ignition::gazebo::EntityComponentManager &_ecm) override;
+public:
+  void Configure(const Entity &_entity,
+                 const std::shared_ptr<const sdf::Element> &_sdf,
+                 EntityComponentManager &_ecm,
+                 EventManager &_eventMgr) override;
+  void PreUpdate(const gz::sim::UpdateInfo &_info,
+                 gz::sim::EntityComponentManager &_ecm) override;
 
-            private:
-                std::unique_ptr<ProjectileShooterPrivate> dataPtr;
-            };
-        } // namespace systems
-    }     // namespace gazebo
-} // namespace ignition
+private:
+  std::unique_ptr<ProjectileShooterPrivate> dataPtr;
+};
+} // namespace systems
+} // namespace sim
+} // namespace gz
 
-#endif //IGNITION_GAZEBO_SYSTEMS_PROJECTILE_SHOOTER_HH
+#endif // GZ_SIM_SYSTEMS_PROJECTILE_SHOOTER_HH

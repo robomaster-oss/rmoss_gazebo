@@ -19,28 +19,27 @@
 #include <string>
 
 #include "geometry_msgs/msg/twist.hpp"
-#include "ignition/transport/Node.hh"
+#include "gz/transport/Node.hh"
 #include "hardware_interface.hpp"
 
 namespace rmoss_gz_base
 {
 
-class IgnChassisActuator : public Actuator<geometry_msgs::msg::Twist>
-{
+class GzChassisActuator : public Actuator<geometry_msgs::msg::Twist> {
 public:
-  IgnChassisActuator(
+  GzChassisActuator(
     rclcpp::Node::SharedPtr node,
-    const std::shared_ptr<ignition::transport::Node> & gz_node,
+    const std::shared_ptr<gz::transport::Node> & gz_node,
     const std::string & gz_chassis_cmd_topic);
-  ~IgnChassisActuator() {}
+  ~GzChassisActuator() {}
 
   void set(const geometry_msgs::msg::Twist & data) override;
   void enable(bool enable) {enable_ = enable;}
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_chassis_cmd_pub_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_chassis_cmd_pub_;
   bool enable_{false};
 };
 

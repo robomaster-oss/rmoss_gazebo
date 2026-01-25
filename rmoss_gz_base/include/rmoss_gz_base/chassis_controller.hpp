@@ -18,18 +18,17 @@
 #include <memory>
 #include <string>
 
+#include "geometry_msgs/msg/twist.hpp"
+#include "hardware_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rmoss_gz_base/pid.hpp"
 #include "rmoss_interfaces/msg/chassis_cmd.hpp"
-#include "geometry_msgs/msg/twist.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
-#include "hardware_interface.hpp"
 
 namespace rmoss_gz_base
 {
 
-class ChassisController
-{
+class ChassisController {
 public:
   ChassisController(
     rclcpp::Node::SharedPtr node,
@@ -49,7 +48,8 @@ private:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr ros_chassis_cmd_sub_;
+  rclcpp::Subscription<rmoss_interfaces::msg::ChassisCmd>::SharedPtr
+    ros_chassis_cmd_sub_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr ros_cmd_vel_sub_;
   rclcpp::TimerBase::SharedPtr controller_timer_;
   // actuator and sensor
@@ -63,12 +63,11 @@ private:
   // pid and pid parameter
   double cur_yaw_{0};
   PidParam chassis_pid_param_;
-  ignition::math::PID chassis_pid_;
+  gz::math::PID chassis_pid_;
   // flag
   bool update_pid_flag_{true};
   bool follow_mode_flag_{true};
 };
-
 
 }  // namespace rmoss_gz_base
 

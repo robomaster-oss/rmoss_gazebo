@@ -15,43 +15,44 @@
 #ifndef RMOSS_GZ_BRIDGE__POSE_BRIDGE_NODE_HPP_
 #define RMOSS_GZ_BRIDGE__POSE_BRIDGE_NODE_HPP_
 
-#include <thread>
 #include <memory>
 #include <string>
+#include <thread>
 
-#include "ignition/transport/Node.hh"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "gz/msgs/pose_v.pb.h"
+#include "gz/transport/Node.hh"
 #include "rclcpp/rclcpp.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
 
-namespace rmoss_gz_bridge
-{
+namespace rmoss_gz_bridge {
 // Node wrapper for Rmua19RobotBaseNode
-class PoseBridgeNode
-{
+class PoseBridgeNode {
 public:
-  explicit PoseBridgeNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit PoseBridgeNode(
+      const rclcpp::NodeOptions &options = rclcpp::NodeOptions());
 
 public:
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface()
-  {
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
+  get_node_base_interface() {
     return node_->get_node_base_interface();
   }
 
   void set_pose_cb(const geometry_msgs::msg::TransformStamped::SharedPtr msg);
-  void gz_pose_cb(const ignition::msgs::Pose_V & msg);
+  void gz_pose_cb(const gz::msgs::Pose_V &msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   // ros sub
-  rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr set_pose_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr
+      set_pose_sub_;
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr pose_pub_;
   // rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
   std::string gz_service_name_;
   bool robot_filter_;
 };
 
-}  // namespace rmoss_gz_bridge
+} // namespace rmoss_gz_bridge
 
-#endif  // RMOSS_GZ_BRIDGE__POSE_BRIDGE_NODE_HPP_
+#endif // RMOSS_GZ_BRIDGE__POSE_BRIDGE_NODE_HPP_

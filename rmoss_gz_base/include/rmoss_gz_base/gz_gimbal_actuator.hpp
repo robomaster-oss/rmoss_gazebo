@@ -18,19 +18,18 @@
 #include <memory>
 #include <string>
 
-#include "ignition/transport/Node.hh"
+#include "gz/transport/Node.hh"
 #include "hardware_interface.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
 
 namespace rmoss_gz_base
 {
 
-class IgnGimbalActuator : public Actuator<rmoss_interfaces::msg::Gimbal>
-{
+class GzGimbalActuator : public Actuator<rmoss_interfaces::msg::Gimbal> {
 public:
-  IgnGimbalActuator(
+  GzGimbalActuator(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> gz_node,
+    std::shared_ptr<gz::transport::Node> gz_node,
     const std::string & gz_pitch_topic,
     const std::string & gz_yaw_topic);
 
@@ -39,9 +38,9 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_pitch_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_yaw_pub_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_pitch_pub_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_yaw_pub_;
   bool enable_{false};
 };
 

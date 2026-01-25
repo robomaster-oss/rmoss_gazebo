@@ -18,25 +18,24 @@
 #include <memory>
 #include <string>
 
-#include "ignition/transport/Node.hh"
+#include "gz/transport/Node.hh"
 
 namespace rmoss_gz_base
 {
 
-class IgnLightBarCmd
-{
+class GzLightBarCmd {
 public:
-  IgnLightBarCmd(
-    std::shared_ptr<ignition::transport::Node> gz_node,
+  GzLightBarCmd(
+    std::shared_ptr<gz::transport::Node> gz_node,
     const std::string & gz_cmd_topic);
-  ~IgnLightBarCmd() {}
+  ~GzLightBarCmd() {}
 
 public:
   void set_state(int state);
 
 private:
-  std::shared_ptr<ignition::transport::Node> gz_node_;
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_cmd_pub_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_cmd_pub_;
 };
 
 }  // namespace rmoss_gz_base

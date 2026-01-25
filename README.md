@@ -30,24 +30,31 @@ rmoss_gazebo是RoboMaster OSS中的基础项目，为RoboMaster提供Gazebo仿�
 
 环境依赖
 
-* ROS2版本: `Humble`.
-* Gazebo仿真器版本（新版）: ` Fortress`.
+* ROS2版本: `Jazzy`.
+* Gazebo仿真器版本（新版）: ` Harmonic`.
 * RMOSS项目依赖（需要源码编译）: [rmoss_interfaces](https://github.com/robomaster-oss/rmoss_interfaces) ,[rmoss_gz_resources](https://github.com/robomaster-oss/rmoss_gz_resources.git).
 
-> 经典Gazebo(数字版本) 与 新版Gazebo (字母版本，也叫Ignition，目前还在迁移过程中)  差别较大，该项目基于新版Gazebo，命名空间将会进行逐步调整。
+> 经典Gazebo(数字版本)， 过渡版Gazebo (也叫Ignition，目前还在迁移过程中)  与新版Gazebo差别较大，该项目基于新版Gazebo Sim 8，命名空间已迁移修改。
+
 
 环境配置
 
 ```bash
 # install gazebo dependencies
-sudo apt-get install ignition-fortress libignition-cmake2-dev ros-humble-ros-gz
+sudo apt-get update
+sudo apt-get install curl lsb-release gnupg
+# install Gazebo Harmonic
+sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+sudo apt-get update
+sudo apt-get install gz-harmonic
 # cd ros2 workspaces src
-git clone https://github.com/robomaster-oss/rmoss_gazebo.git -b humble
-git clone https://github.com/robomaster-oss/rmoss_interfaces.git -b humble
-git clone https://github.com/robomaster-oss/rmoss_gz_resources.git -b humble --depth=1
+git clone https://github.com/robomaster-oss/rmoss_gazebo.git -b jazzy
+git clone https://github.com/robomaster-oss/rmoss_interfaces.git -b jazzy
+git clone https://github.com/robomaster-oss/rmoss_gz_resources.git -b jazzy --depth=1
 # cd ros2 workspaces
 cd ..
-rosdep install -y -r -q --from-paths src --ignore-src --rosdistro humble
+rosdep install -y -r -q --from-paths src --ignore-src --rosdistro jazzy
 colcon build
 ```
 

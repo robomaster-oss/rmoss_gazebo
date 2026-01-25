@@ -16,26 +16,27 @@
 #include <memory>
 #include <string>
 
+#include "gz/msgs/twist.pb.h"
+
 namespace rmoss_gz_base
 {
 
-
-IgnChassisActuator::IgnChassisActuator(
+GzChassisActuator::GzChassisActuator(
   rclcpp::Node::SharedPtr node,
-  const std::shared_ptr<ignition::transport::Node> & gz_node,
+  const std::shared_ptr<gz::transport::Node> & gz_node,
   const std::string & gz_chassis_cmd_topic)
 : node_(node), gz_node_(gz_node)
 {
-  gz_chassis_cmd_pub_ = std::make_unique<ignition::transport::Node::Publisher>(
-    gz_node_->Advertise<ignition::msgs::Twist>(gz_chassis_cmd_topic));
+  gz_chassis_cmd_pub_ = std::make_unique<gz::transport::Node::Publisher>(
+      gz_node_->Advertise<gz::msgs::Twist>(gz_chassis_cmd_topic));
 }
 
-void IgnChassisActuator::set(const geometry_msgs::msg::Twist & data)
+void GzChassisActuator::set(const geometry_msgs::msg::Twist & data)
 {
   if (!enable_) {
     return;
   }
-  ignition::msgs::Twist gz_msg;
+  gz::msgs::Twist gz_msg;
   gz_msg.mutable_linear()->set_x(data.linear.x);
   gz_msg.mutable_linear()->set_y(data.linear.y);
   gz_msg.mutable_angular()->set_z(data.angular.z);

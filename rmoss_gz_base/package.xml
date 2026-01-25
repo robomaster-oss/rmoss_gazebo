@@ -15,8 +15,8 @@
     <depend>rmoss_gz_resources</depend>
     <depend>rmoss_gz_plugins</depend>
     <!-- Gazebo Fortress  (default) -->
-    <depend>ignition-msgs8</depend>
-    <depend>ignition-transport11</depend>
+    <depend>gz-msgs10</depend>
+    <depend>gz-transport13</depend>
 
     <test_depend>ament_lint_auto</test_depend>
     <test_depend>ament_lint_common</test_depend>

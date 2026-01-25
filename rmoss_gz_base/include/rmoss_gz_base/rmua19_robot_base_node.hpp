@@ -15,36 +15,37 @@
 #ifndef RMOSS_GZ_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
 #define RMOSS_GZ_BASE__RMUA19_ROBOT_BASE_NODE_HPP_
 
-#include <thread>
 #include <memory>
+#include <thread>
+
 #include "rclcpp/rclcpp.hpp"
 
 #include "rmoss_gz_base/gz_chassis_actuator.hpp"
 #include "rmoss_gz_base/gz_gimbal_actuator.hpp"
-#include "rmoss_gz_base/gz_shoot_actuator.hpp"
-#include "rmoss_gz_base/gz_gimbal_imu.hpp"
 #include "rmoss_gz_base/gz_gimbal_encoder.hpp"
-#include "rmoss_gz_base/gz_odometry.hpp"
+#include "rmoss_gz_base/gz_gimbal_imu.hpp"
 #include "rmoss_gz_base/gz_light_bar_cmd.hpp"
-
+#include "rmoss_gz_base/gz_odometry.hpp"
+#include "rmoss_gz_base/gz_shoot_actuator.hpp"
 #include "rmoss_gz_base/chassis_controller.hpp"
 #include "rmoss_gz_base/gimbal_controller.hpp"
-#include "rmoss_gz_base/shooter_controller.hpp"
 #include "rmoss_gz_base/odometry_publisher.hpp"
+#include "rmoss_gz_base/pid.hpp"
+#include "rmoss_gz_base/shooter_controller.hpp"
 #include "rmoss_interfaces/msg/robot_status.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "rmoss_gz_base/pid.hpp"
 
 namespace rmoss_gz_base
 {
 // Node wrapper for Rmua19RobotBaseNode
-class Rmua19RobotBaseNode
-{
+class Rmua19RobotBaseNode {
 public:
-  explicit Rmua19RobotBaseNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit Rmua19RobotBaseNode(
+    const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 public:
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface()
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
+  get_node_base_interface()
   {
     return node_->get_node_base_interface();
   }
@@ -55,20 +56,21 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   // ros sub
-  rclcpp::Subscription<rmoss_interfaces::msg::RobotStatus>::SharedPtr robot_status_sub_;
+  rclcpp::Subscription<rmoss_interfaces::msg::RobotStatus>::SharedPtr
+    robot_status_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_power_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_control_sub_;
-  // ign actuator moudule
-  std::shared_ptr<rmoss_gz_base::IgnChassisActuator> chassis_actuator_;
-  std::shared_ptr<rmoss_gz_base::IgnGimbalActuator> gimbal_vel_actuator_;
-  std::shared_ptr<rmoss_gz_base::IgnShootActuator> shoot_actuator_;
-  std::shared_ptr<rmoss_gz_base::IgnLightBarCmd> gz_light_bar_cmd_;
-  // ign sensor moudule
-  std::shared_ptr<rmoss_gz_base::IgnGimbalEncoder> gz_gimbal_encoder_;
-  std::shared_ptr<rmoss_gz_base::IgnGimbalImu> gz_gimbal_imu_;
-  std::shared_ptr<rmoss_gz_base::IgnOdometry> gz_chassis_odometry_;
+  // gz actuator moudule
+  std::shared_ptr<rmoss_gz_base::GzChassisActuator> chassis_actuator_;
+  std::shared_ptr<rmoss_gz_base::GzGimbalActuator> gimbal_vel_actuator_;
+  std::shared_ptr<rmoss_gz_base::GzShootActuator> shoot_actuator_;
+  std::shared_ptr<rmoss_gz_base::GzLightBarCmd> gz_light_bar_cmd_;
+  // gz sensor moudule
+  std::shared_ptr<rmoss_gz_base::GzGimbalEncoder> gz_gimbal_encoder_;
+  std::shared_ptr<rmoss_gz_base::GzGimbalImu> gz_gimbal_imu_;
+  std::shared_ptr<rmoss_gz_base::GzOdometry> gz_chassis_odometry_;
   // ros controller/publisher wrapper
   std::shared_ptr<rmoss_gz_base::ChassisController> chassis_controller_;
   std::shared_ptr<rmoss_gz_base::GimbalController> gimbal_controller_;

@@ -15,35 +15,38 @@
 #define RMOSS_GZ_BASE__GZ_ODOMETRY_HPP_
 
 #include <memory>
-#include <string>
 #include <mutex>
+#include <string>
 
-#include "ignition/transport/Node.hh"
+#include "gz/msgs/odometry.pb.h"
+#include "gz/transport/Node.hh"
 #include "hardware_interface.hpp"
-#include "rclcpp/clock.hpp"
 #include "nav_msgs/msg/odometry.hpp"
+#include "rclcpp/clock.hpp"
 
 namespace rmoss_gz_base
 {
 
-class IgnOdometry
-{
+class GzOdometry {
 public:
-  IgnOdometry(
+  GzOdometry(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> gz_node,
+    std::shared_ptr<gz::transport::Node> gz_node,
     const std::string & gz_odom_topic);
-  ~IgnOdometry() {}
+  ~GzOdometry() {}
 
   void enable(bool enable) {enable_ = enable;}
-  Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor() {return odometry_sensor_;}
+  Sensor<nav_msgs::msg::Odometry>::SharedPtr get_odometry_sensor()
+  {
+    return odometry_sensor_;
+  }
 
 private:
-  void gz_odometry_cb(const ignition::msgs::Odometry & msg);
+  void gz_odometry_cb(const gz::msgs::Odometry & msg);
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   bool enable_{false};
   std::shared_ptr<DataSensor<nav_msgs::msg::Odometry>> odometry_sensor_;
 };

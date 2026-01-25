@@ -15,44 +15,49 @@
 #ifndef RMOSS_GZ_BASE__GZ_GIMBAL_ENCODER_HPP_
 #define RMOSS_GZ_BASE__GZ_GIMBAL_ENCODER_HPP_
 
-#include <memory>
-#include <string>
-#include <mutex>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <string>
 #include <vector>
 
-#include "ignition/transport/Node.hh"
+#include "gz/msgs/model.pb.h"
+#include "gz/transport/Node.hh"
 #include "hardware_interface.hpp"
 #include "rmoss_interfaces/msg/gimbal.hpp"
 
 namespace rmoss_gz_base
 {
 
-class IgnGimbalEncoder
-{
+class GzGimbalEncoder {
 public:
-  IgnGimbalEncoder(
+  GzGimbalEncoder(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> gz_node,
+    std::shared_ptr<gz::transport::Node> gz_node,
     const std::string & gz_joint_state_topic);
-  ~IgnGimbalEncoder() {}
+  ~GzGimbalEncoder() {}
 
 public:
   void enable(bool enable) {enable_ = enable;}
-  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor() {return position_sensor_;}
-  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_velocity_sensor() {return velocity_sensor_;}
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_position_sensor()
+  {
+    return position_sensor_;
+  }
+  Sensor<rmoss_interfaces::msg::Gimbal>::SharedPtr get_velocity_sensor()
+  {
+    return velocity_sensor_;
+  }
 
 private:
-  void gz_Joint_state_cb(const ignition::msgs::Model & msg);
+  void gz_Joint_state_cb(const gz::msgs::Model & msg);
 
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   bool enable_{false};
   // info
   std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> position_sensor_;
   std::shared_ptr<DataSensor<rmoss_interfaces::msg::Gimbal>> velocity_sensor_;
 };
-
 
 }  // namespace rmoss_gz_base
 

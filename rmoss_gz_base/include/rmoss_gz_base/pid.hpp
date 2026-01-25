@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "ignition/math/PID.hh"
+#include "gz/math/PID.hh"
 #include "rclcpp/rclcpp.hpp"
 
 namespace rmoss_gz_base
@@ -44,8 +44,8 @@ void declare_pid_parameter(
   const std::string & name, PidParam & pid_param);
 
 void get_pid_parameter(
-  rclcpp::Node::SharedPtr node,
-  const std::string & name, PidParam & pid_param);
+  rclcpp::Node::SharedPtr node, const std::string & name,
+  PidParam & pid_param);
 
 }  // namespace rmoss_gz_base
 

@@ -14,9 +14,9 @@
 
 #include "rmoss_gz_base/rmua19_robot_base_node.hpp"
 
-#include <thread>
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace rmoss_gz_base
 {
@@ -24,7 +24,7 @@ namespace rmoss_gz_base
 Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
 {
   node_ = std::make_shared<rclcpp::Node>("robot_base", options);
-  gz_node_ = std::make_shared<ignition::transport::Node>();
+  gz_node_ = std::make_shared<gz::transport::Node>();
   // parameters
   std::string world_name, robot_name;
   bool use_odometry = false;
@@ -37,50 +37,58 @@ Rmua19RobotBaseNode::Rmua19RobotBaseNode(const rclcpp::NodeOptions & options)
   is_red_ = (robot_name.find("blue") == std::string::npos);
   // ign topic string
   std::string gz_chassis_cmd_topic = "/" + robot_name + "/cmd_vel";
-  std::string gz_pitch_cmd_topic = "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
-  std::string gz_yaw_cmd_topic = "/model/" + robot_name + "/joint/gimbal_yaw_joint/cmd_vel";
-  std::string gz_joint_state_topic = "/world/" + world_name + "/model/" + robot_name +
-    "/joint_state";
-  std::string gz_gimbal_imu_topic = "/world/" + world_name + "/model/" + robot_name +
+  std::string gz_pitch_cmd_topic =
+    "/model/" + robot_name + "/joint/gimbal_pitch_joint/cmd_vel";
+  std::string gz_yaw_cmd_topic =
+    "/model/" + robot_name + "/joint/gimbal_yaw_joint/cmd_vel";
+  std::string gz_joint_state_topic =
+    "/world/" + world_name + "/model/" + robot_name + "/joint_state";
+  std::string gz_gimbal_imu_topic = "/world/" + world_name + "/model/" +
+    robot_name +
     "/link/gimbal_pitch/sensor/gimbal_imu/imu";
   std::string gz_light_bar_cmd_topic = "/" + robot_name + "/color/set_state";
   // create hardware moudule
   // Actuator
-  chassis_actuator_ = std::make_shared<rmoss_gz_base::IgnChassisActuator>(
-    node_, gz_node_, gz_chassis_cmd_topic);
-  gimbal_vel_actuator_ = std::make_shared<rmoss_gz_base::IgnGimbalActuator>(
-    node_, gz_node_, gz_pitch_cmd_topic, gz_yaw_cmd_topic);
-  shoot_actuator_ = std::make_shared<rmoss_gz_base::IgnShootActuator>(
-    node_, gz_node_, robot_name, "small_shooter");
-  gz_light_bar_cmd_ = std::make_shared<rmoss_gz_base::IgnLightBarCmd>(
-    gz_node_, gz_light_bar_cmd_topic);
+  chassis_actuator_ = std::make_shared<rmoss_gz_base::GzChassisActuator>(
+      node_, gz_node_, gz_chassis_cmd_topic);
+  gimbal_vel_actuator_ = std::make_shared<rmoss_gz_base::GzGimbalActuator>(
+      node_, gz_node_, gz_pitch_cmd_topic, gz_yaw_cmd_topic);
+  shoot_actuator_ = std::make_shared<rmoss_gz_base::GzShootActuator>(
+      node_, gz_node_, robot_name, "small_shooter");
+  gz_light_bar_cmd_ = std::make_shared<rmoss_gz_base::GzLightBarCmd>(
+      gz_node_, gz_light_bar_cmd_topic);
   // sensor wrapper
-  gz_gimbal_encoder_ = std::make_shared<rmoss_gz_base::IgnGimbalEncoder>(
-    node_, gz_node_, gz_joint_state_topic);
-  gz_gimbal_imu_ = std::make_shared<rmoss_gz_base::IgnGimbalImu>(
-    node_, gz_node_, gz_gimbal_imu_topic);
+  gz_gimbal_encoder_ = std::make_shared<rmoss_gz_base::GzGimbalEncoder>(
+      node_, gz_node_, gz_joint_state_topic);
+  gz_gimbal_imu_ = std::make_shared<rmoss_gz_base::GzGimbalImu>(
+      node_, gz_node_, gz_gimbal_imu_topic);
   // create controller and publisher
   chassis_controller_ = std::make_shared<rmoss_gz_base::ChassisController>(
-    node_, chassis_actuator_, gz_gimbal_encoder_->get_position_sensor());
+      node_, chassis_actuator_, gz_gimbal_encoder_->get_position_sensor());
   gimbal_controller_ = std::make_shared<rmoss_gz_base::GimbalController>(
-    node_, gimbal_vel_actuator_, gz_gimbal_imu_->get_position_sensor());
+      node_, gimbal_vel_actuator_, gz_gimbal_imu_->get_position_sensor());
   shooter_controller_ = std::make_shared<rmoss_gz_base::ShooterController>(
-    node_, shoot_actuator_, "small_shooter_controller");
+      node_, shoot_actuator_, "small_shooter_controller");
   // odometry
   if (use_odometry) {
-    gz_chassis_odometry_ = std::make_shared<rmoss_gz_base::IgnOdometry>(
-      node_, gz_node_, "/" + robot_name + "/odometry");
+    gz_chassis_odometry_ = std::make_shared<rmoss_gz_base::GzOdometry>(
+        node_, gz_node_, "/" + robot_name + "/odometry");
     odometry_publisher_ = std::make_shared<rmoss_gz_base::OdometryPublisher>(
-      node_, gz_chassis_odometry_->get_odometry_sensor());
+        node_, gz_chassis_odometry_->get_odometry_sensor());
   }
   //
   using namespace std::placeholders;
-  std::string robot_status_topic = "/referee_system/" + robot_name + "/robot_status";
-  robot_status_sub_ = node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
-    robot_status_topic, 10, std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
-  std::string enable_power_topic = "/referee_system/" + robot_name + "/enable_power";
+  std::string robot_status_topic =
+    "/referee_system/" + robot_name + "/robot_status";
+  robot_status_sub_ =
+    node_->create_subscription<rmoss_interfaces::msg::RobotStatus>(
+          robot_status_topic, 10,
+          std::bind(&Rmua19RobotBaseNode::robot_status_cb, this, _1));
+  std::string enable_power_topic =
+    "/referee_system/" + robot_name + "/enable_power";
   enable_power_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
-    enable_power_topic, 10, std::bind(&Rmua19RobotBaseNode::enable_power_cb, this, _1));
+      enable_power_topic, 10,
+      std::bind(&Rmua19RobotBaseNode::enable_power_cb, this, _1));
   // enable actuator and sensor
   chassis_actuator_->enable(true);
   gimbal_vel_actuator_->enable(true);
@@ -102,7 +110,8 @@ void Rmua19RobotBaseNode::robot_status_cb(
   shoot_actuator_->update_remain_num(remain_num);
 }
 
-void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr msg)
+void Rmua19RobotBaseNode::enable_power_cb(
+  const std_msgs::msg::Bool::SharedPtr msg)
 {
   if (msg->data) {
     // enable power
@@ -128,6 +137,6 @@ void Rmua19RobotBaseNode::enable_power_cb(const std_msgs::msg::Bool::SharedPtr m
 #include "rclcpp_components/register_node_macro.hpp"
 
 // Register the component with class_loader.
-// This acts as a sort of entry point, allowing the component to be discoverable when its library
-// is being loaded into a running process.
+// This acts as a sort of entry point, allowing the component to be discoverable
+// when its library is being loaded into a running process.
 RCLCPP_COMPONENTS_REGISTER_NODE(rmoss_gz_base::Rmua19RobotBaseNode)

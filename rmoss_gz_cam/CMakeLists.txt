@@ -18,14 +18,14 @@ find_package(rmoss_interfaces REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(ros_gz_bridge REQUIRED)
 
-# Gazebo Fortress
-find_package(ignition-transport11 REQUIRED)
-set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+# Gazebo Harmonic
+find_package(gz-transport13 REQUIRED)
+set(GZ_TRANSPORT_VER ${gz-transport13_VERSION_MAJOR})
 
-find_package(ignition-msgs8 REQUIRED)
-set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+find_package(gz-msgs10 REQUIRED)
+set(GZ_MSGS_VER ${gz-msgs10_VERSION_MAJOR})
 
-message(STATUS "Compiling against Ignition Fortress")
+message(STATUS "Compiling against Gz transport version ${GZ_TRANSPORT_VER}")
 
 
 # Include
@@ -47,8 +47,8 @@ set(dependencies
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
 
 target_link_libraries(${PROJECT_NAME}
-    ignition-msgs${IGN_MSGS_VER}::core
-    ignition-transport${IGN_TRANSPORT_VER}::core
+    gz-msgs${GZ_MSGS_VER}::core
+    gz-transport${GZ_TRANSPORT_VER}::core
 )
 
 # Create executable nodes

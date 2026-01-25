@@ -18,22 +18,21 @@
 #include <memory>
 #include <string>
 
-#include "ignition/transport/Node.hh"
-#include "rmoss_interfaces/msg/shoot_cmd.hpp"
+#include "gz/transport/Node.hh"
 #include "hardware_interface.hpp"
+#include "rmoss_interfaces/msg/shoot_cmd.hpp"
 
 namespace rmoss_gz_base
 {
 
-class IgnShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd>
-{
+class GzShootActuator : public Actuator<rmoss_interfaces::msg::ShootCmd> {
 public:
-  IgnShootActuator(
+  GzShootActuator(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<ignition::transport::Node> gz_node,
+    std::shared_ptr<gz::transport::Node> gz_node,
     const std::string & robot_name,
     const std::string & shooter_name);
-  ~IgnShootActuator() {}
+  ~GzShootActuator() {}
 
   void set(const rmoss_interfaces::msg::ShootCmd & data) override;
   void enable(bool enable) {enable_ = enable;}
@@ -41,10 +40,10 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<ignition::transport::Node> gz_node_;
+  std::shared_ptr<gz::transport::Node> gz_node_;
   // ign pub and sub
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_shoot_cmd_pub_;
-  std::unique_ptr<ignition::transport::Node::Publisher> gz_set_vel_pub_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_shoot_cmd_pub_;
+  std::unique_ptr<gz::transport::Node::Publisher> gz_set_vel_pub_;
   // data
   double projectile_vel_{0};
   int remain_num_{200};

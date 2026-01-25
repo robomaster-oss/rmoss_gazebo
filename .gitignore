@@ -4,3 +4,9 @@
 .vscode/
 #
 test.sh
+
+build/*
+install/*
+log/*
+
+.cache/*

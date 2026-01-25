@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(rmoss_gz_bridge)
 
-# Default to C++14
+# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -21,14 +21,14 @@ find_package(rmoss_interfaces REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(ros_gz_bridge REQUIRED)
 
-# ignition package
-find_package(ignition-transport11 REQUIRED)
-set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
+# gz package
+find_package(gz-transport13 REQUIRED)
+set(GZ_TRANSPORT_VER ${gz-transport13_VERSION_MAJOR})
 
-find_package(ignition-msgs8 REQUIRED)
-set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
+find_package(gz-msgs10 REQUIRED)
+set(GZ_MSGS_VER ${gz-msgs10_VERSION_MAJOR})
 
-message(STATUS "Compiling against Ignition Fortress")
+message(STATUS "Compiling against Gz transport version ${GZ_TRANSPORT_VER}")
 
 
 # include
@@ -48,8 +48,8 @@ set(dependencies
 # pose_bridge nodes
 add_executable(pose_bridge  src/pose_bridge_node.cpp src/pose_bridge_main.cpp)
 target_link_libraries(pose_bridge
-    ignition-msgs${IGN_MSGS_VER}::core
-    ignition-transport${IGN_TRANSPORT_VER}::core
+    gz-msgs${GZ_MSGS_VER}::core
+    gz-transport${GZ_TRANSPORT_VER}::core
 )
 ament_target_dependencies(pose_bridge ${dependencies})
 ament_target_dependencies(pose_bridge ros_gz_bridge)
@@ -82,6 +82,6 @@ endif()
 
 # ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(${dependencies})
-ament_export_dependencies(ignition-msgs${IGN_MSGS_VER})
-ament_export_dependencies(ignition-transport${IGN_TRANSPORT_VER})
+ament_export_dependencies(gz-msgs${GZ_MSGS_VER})
+ament_export_dependencies(gz-transport${GZ_TRANSPORT_VER})
 ament_package()
